@@ -13,8 +13,6 @@ public class Graph_canvas extends JPanel {
 	//public Graphics2D g2;
 	public Graph_canvas () {
 		setBackground (Color.lightGray);
-		//setSize(800, 600);
-		//g2 = (Graphics2D) g;
 	}
 	
 	protected void paintComponent(Graphics g) {

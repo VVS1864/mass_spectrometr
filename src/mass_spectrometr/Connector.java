@@ -2,6 +2,7 @@ package mass_spectrometr;
 
 import jssc.SerialPortList;
 
+import java.awt.Color;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -19,22 +20,35 @@ public class Connector {
 	public static double a4;
 	private static boolean f = true;
 	
+	
 	public Connector() {
-		String[] portNames = SerialPortList.getPortNames();
-		for (int i = 0; i < portNames.length; i++) {
-			System.out.println(portNames[i]);
-		}
-		serialPort = new SerialPort(portNames[0]);
+		Run.ports = SerialPortList.getPortNames();
+	}
+	
+	public void Connect() {
+		serialPort = new SerialPort((String) Run.pbox.getSelectedItem());
 		try {
 			serialPort.openPort();
 			serialPort.setParams(SerialPort.BAUDRATE_9600, SerialPort.DATABITS_8, SerialPort.STOPBITS_1,
 					SerialPort.PARITY_NONE);
+			//serialPort.setFlowControlMode(SerialPort.FLOWCONTROL_RTSCTS_IN);
 			serialPort.setEventsMask(SerialPort.MASK_RXCHAR);
 			serialPort.addEventListener(new EventListener());
+			try {
+				Thread.sleep(1500);
+			} catch (InterruptedException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
+			serialPort.writeBytes("1".getBytes());
+			
+			//serialPort.
 		} catch (SerialPortException ex) {
 			System.out.println(ex);
-		}
+		}		
 	}
+	
+	//public 
 
 	private static class EventListener implements SerialPortEventListener {
 
@@ -42,7 +56,7 @@ public class Connector {
 			if (event.isRXCHAR() && event.getEventValue() > 0){
 				try {
 					String buffer = serialPort.readString();
-					
+					System.out.println(buffer);
 					//Float 
 					//String regex = "<(\\d+[.]\\d+), (\\d+[.]\\d+), (\\d+[.]\\d+), (\\d+[.]\\d+)>";
 					
