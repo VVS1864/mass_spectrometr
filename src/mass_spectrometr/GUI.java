@@ -18,6 +18,8 @@ import javax.swing.JPanel;
 
 public class GUI {
 
+	protected JButton button_connect;
+	protected boolean is_ready = false;
 	public GUI(){
 		JFrame mainFrame = new JFrame("Java AWT Examples");
 		mainFrame.setLayout(new BorderLayout());
@@ -28,19 +30,42 @@ public class GUI {
 	         }        
 	      }); 
 	    
-//ActionListener
-	  		ActionListener connect_action_listener = new ActionListener(){
-	  			@Override
-	  			public void actionPerformed(ActionEvent e){
-	  				Run.arduino.Connect();
-	  			}
-	  		}; 
+//ActionListener  		
+		ActionListener connect_action_listener = new ActionListener() {
+			@Override
+			public void actionPerformed(ActionEvent e) {
+				if (!is_ready) {
+					is_ready = Run.arduino.Connect();
+					if (is_ready) {
+						button_connect.setText("Start");
+						set_status(Color.CYAN, "Arduino is ready");
+
+					} else {
+						set_status(Color.RED, "Port not found");
+					}
+				}
+				else {
+					Run.arduino.Start();
+	  				if(!Run.transferring_data) {
+	  					button_connect.setText("Stop");
+	  					Run.transferring_data = true;
+	  					set_status(Color.CYAN, "Transferring data");
+	  				}
+	  				else {
+	  					button_connect.setText("Start");
+	  					Run.transferring_data = false;
+	  					set_status(Color.ORANGE, "Transferring stopped");
+	  				}
+				}
+			}
+		};
+	  			  		
 //Status panel
 	  	final JPanel status_panel = new JPanel();
 	  	status_panel.setLayout(new BoxLayout(status_panel, BoxLayout.X_AXIS));
 	  	JLabel status_info = new JLabel("Status: ");
 	  	Run.status_info2 = new JLabel();
-	  	Run.status_info2.setForeground(Color.cyan);
+	  	
 	  	status_panel.add(status_info);
 	  	status_panel.add(Run.status_info2);
 	  	status_panel.setAlignmentX(Component.LEFT_ALIGNMENT);
@@ -50,7 +75,7 @@ public class GUI {
 	    Run.pbox = new JComboBox<String>(Run.ports);
 	    Run.pbox.setMaximumSize(new Dimension(140, 30));
 	    //Run.pbox.setSelectedIndex(0);
-	    JButton button_connect = new JButton("Connect");
+	    button_connect = new JButton("Connect");
 		button_connect.addActionListener(connect_action_listener);
 		
 	    port_panel.add(Run.pbox);
@@ -67,10 +92,14 @@ public class GUI {
 	    mainFrame.setVisible(true); 
 	    
 	    if(Run.ports.length==0) {
-			Run.status_info2.setForeground(Color.RED);
-			Run.status_info2.setText("Port not found");
+	    	set_status(Color.RED, "Port not found");
 			button_connect.setEnabled(false);
 		}
+	}
+	
+	protected void set_status(Color c, String s) {
+		Run.status_info2.setForeground(c);
+		Run.status_info2.setText(s);
 	}
 
 }

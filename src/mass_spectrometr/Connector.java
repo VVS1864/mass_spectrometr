@@ -25,36 +25,47 @@ public class Connector {
 		Run.ports = SerialPortList.getPortNames();
 	}
 	
-	public void Connect() {
+	public boolean Connect() {
 		serialPort = new SerialPort((String) Run.pbox.getSelectedItem());
 		try {
 			serialPort.openPort();
 			serialPort.setParams(SerialPort.BAUDRATE_9600, SerialPort.DATABITS_8, SerialPort.STOPBITS_1,
 					SerialPort.PARITY_NONE);
-			//serialPort.setFlowControlMode(SerialPort.FLOWCONTROL_RTSCTS_IN);
+			
 			serialPort.setEventsMask(SerialPort.MASK_RXCHAR);
 			serialPort.addEventListener(new EventListener());
+		
+		} catch (SerialPortException ex) {
+			System.out.println(ex);
+			return false;
+		}	
+		return true;
+	}
+	public void Start() {
+		try {
 			try {
-				Thread.sleep(1500);
+				Thread.sleep(400);
 			} catch (InterruptedException e) {
-				// TODO Auto-generated catch block
 				e.printStackTrace();
 			}
-			serialPort.writeBytes("1".getBytes());
-			
-			//serialPort.
+			if(!Run.transferring_data) {
+				serialPort.writeBytes("1".getBytes());
+			}
+			else {
+				serialPort.writeBytes("0".getBytes());
+			}
 		} catch (SerialPortException ex) {
 			System.out.println(ex);
 		}		
+		
 	}
 	
-	//public 
-
 	private static class EventListener implements SerialPortEventListener {
 
 		public void serialEvent(SerialPortEvent event) {
 			if (event.isRXCHAR() && event.getEventValue() > 0){
 				try {
+					//serialPort.openPort();
 					String buffer = serialPort.readString();
 					System.out.println(buffer);
 					//Float 

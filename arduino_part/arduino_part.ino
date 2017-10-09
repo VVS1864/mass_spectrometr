@@ -3,6 +3,7 @@ int mass = 150;
 boolean send_flag = false;
 int cmd;
 char start_cmd = '1';
+char stop_cmd = '0';
 
 int led = 13;//
 void setup() {
@@ -20,9 +21,14 @@ void loop() {
 void recvOneChar(){
  if(Serial.available()){
   cmd = Serial.read();
-  digitalWrite(led, HIGH);
+  
   if(cmd == start_cmd){
     send_flag = true;
+    digitalWrite(led, HIGH);
+  }
+  else{
+    send_flag = false;
+    digitalWrite(led, LOW);
   }
  } 
 }

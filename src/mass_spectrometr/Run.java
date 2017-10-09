@@ -21,6 +21,8 @@ public class Run {
 	
 	public static Connector arduino;
 	
+	public static boolean transferring_data = false;
+	
 	public Run() {
 		arduino = new Connector(); 
 		GUI user_interface = new GUI();
