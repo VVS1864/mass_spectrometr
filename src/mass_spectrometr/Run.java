@@ -1,6 +1,6 @@
 package mass_spectrometr;
 
-import java.awt.Color;
+
 import java.util.ArrayList;
 
 import javax.swing.JComboBox;
@@ -14,10 +14,12 @@ public class Run {
 	public static Graph_canvas cnvs;
 
 	public static JLabel status_info2;
-	public static String status_string;
-	public static Color status_color = Color.CYAN;
-	public static double X_factor = 5.0;
-	public static double Y_factor = 2.0;
+
+	public static double X_factor = 4.0;
+	public static double Y_factor = 1.0;
+	public static boolean autoscale = true;
+	
+	public static int x0 = 100;
 	
 	public static Connector arduino;
 	

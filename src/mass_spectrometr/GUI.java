@@ -26,7 +26,9 @@ public class GUI {
 	    mainFrame.setSize(800,600);
 	    mainFrame.addWindowListener(new WindowAdapter() {
 	         public void windowClosing(WindowEvent windowEvent){
+	        	Run.arduino.close();
 	            System.exit(0);
+	            
 	         }        
 	      }); 
 	    
@@ -59,6 +61,21 @@ public class GUI {
 				}
 			}
 		};
+		ActionListener move_L = new ActionListener() {
+			@Override
+			public void actionPerformed(ActionEvent e) {
+				Run.x0 -= 100;
+			}
+			
+		};
+		ActionListener move_R = new ActionListener() {
+			@Override
+			public void actionPerformed(ActionEvent e) {
+				Run.x0 += 100;
+			}
+			
+		};
+		
 	  			  		
 //Status panel
 	  	final JPanel status_panel = new JPanel();
@@ -78,8 +95,15 @@ public class GUI {
 	    button_connect = new JButton("Connect");
 		button_connect.addActionListener(connect_action_listener);
 		
+		JButton button_l = new JButton("<");
+		button_l.addActionListener(move_L);
+		JButton button_r = new JButton(">");
+		button_r.addActionListener(move_R);
+		
 	    port_panel.add(Run.pbox);
 	    port_panel.add(button_connect);
+	    port_panel.add(button_l);
+	    port_panel.add(button_r);
 	    port_panel.setAlignmentX(Component.LEFT_ALIGNMENT);
 		
 //Add all panels to frame

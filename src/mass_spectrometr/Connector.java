@@ -60,19 +60,25 @@ public class Connector {
 		
 	}
 	
+	public void close() {
+		try {
+			serialPort.closePort();
+		} catch (SerialPortException ex) {
+			System.out.println(ex);
+		}		
+	}
+	
 	private static class EventListener implements SerialPortEventListener {
 
 		public void serialEvent(SerialPortEvent event) {
 			if (event.isRXCHAR() && event.getEventValue() > 0){
 				try {
-					//serialPort.openPort();
 					String buffer = serialPort.readString();
-					System.out.println(buffer);
+					//System.out.println(buffer);
 					//Float 
 					//String regex = "<(\\d+[.]\\d+), (\\d+[.]\\d+), (\\d+[.]\\d+), (\\d+[.]\\d+)>";
-					
 					//int
-					String regex = "<(\\d+), (\\d+), (\\d+), (\\d+)>";
+					String regex = "<(\\d+[.]\\d+), (\\d+), (\\d+), (\\d+)>";
 					Pattern pattern = Pattern.compile(regex);
 					Matcher matcher = pattern.matcher(buffer);
 					
