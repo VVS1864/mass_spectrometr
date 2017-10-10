@@ -35,7 +35,7 @@ public class Connector {
 			serialPort.setEventsMask(SerialPort.MASK_RXCHAR);
 			serialPort.addEventListener(new EventListener());
 			try {
-				Thread.sleep(1000);
+				Thread.sleep(1200);
 			} catch (InterruptedException e) {
 				e.printStackTrace();
 			}
