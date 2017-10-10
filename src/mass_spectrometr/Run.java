@@ -15,15 +15,19 @@ public class Run {
 
 	public static JLabel status_info2;
 
-	public static double X_factor = 4.0;
-	public static double Y_factor = 1.0;
-	public static boolean autoscale = true;
+	public static double manual_X_factor = 4.0;
+	public static double manual_Y_factor = 4.0;
+	public static double scale_rate = 1.3;
 	
-	public static int x0 = 100;
+	public static boolean autoscaleY = true;
 	
+	public static int x0 = 10;
+
 	public static Connector arduino;
 	
 	public static boolean transferring_data = false;
+	public static int rendering_rate = 10;
+	public static int current_step = 0;
 	
 	public Run() {
 		arduino = new Connector(); 

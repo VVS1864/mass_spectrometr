@@ -34,7 +34,11 @@ public class Connector {
 			
 			serialPort.setEventsMask(SerialPort.MASK_RXCHAR);
 			serialPort.addEventListener(new EventListener());
-		
+			try {
+				Thread.sleep(1000);
+			} catch (InterruptedException e) {
+				e.printStackTrace();
+			}
 		} catch (SerialPortException ex) {
 			System.out.println(ex);
 			return false;
@@ -62,7 +66,7 @@ public class Connector {
 	
 	public void close() {
 		try {
-			serialPort.closePort();
+			if (serialPort!=null && serialPort.isOpened()) serialPort.closePort();
 		} catch (SerialPortException ex) {
 			System.out.println(ex);
 		}		
@@ -97,9 +101,18 @@ public class Connector {
 							Run.mass_data.add(0.0);
 							f = false;
 						}
+						//System.out.println(Run.mass_data.get(Run.mass_data.size()-2) + ", " + (a1+0.1));
+						if (Run.mass_data.get(Run.mass_data.size()-2) - (a1+0.1) > 0.000001) {
+							System.out.println("!!!");
+						}
 						Run.mass_data.add(a1);
 						Run.mass_data.add(a2);
-						Run.cnvs.repaint();
+						
+						if (Run.current_step == Run.rendering_rate) {
+							Run.cnvs.repaint();
+							Run.current_step = 0;
+						}
+						Run.current_step ++;
 					}
 					
 				} catch (SerialPortException ex) {

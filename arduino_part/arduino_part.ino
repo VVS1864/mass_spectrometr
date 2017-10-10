@@ -52,7 +52,7 @@ void send_data(){
     Serial.print(">");
 
     mass=mass-0.1;
-    delay(50);
+    delay(25);
   }
 }
 
