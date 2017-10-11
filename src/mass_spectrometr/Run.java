@@ -8,7 +8,7 @@ import javax.swing.JLabel;
 
 public class Run {
 	public static ArrayList<Double> mass_data = new ArrayList<Double>();
-	
+	public static ArrayList<String> mass_S = new ArrayList<String>();
 	public static JComboBox<String> pbox;
 	public static String[] ports;
 	public static Graph_canvas cnvs;
@@ -21,7 +21,7 @@ public class Run {
 	
 	public static boolean autoscaleY = true;
 	
-	public static int x0 = 10;
+	public static int x0 = 100;
 
 	public static Connector arduino;
 	

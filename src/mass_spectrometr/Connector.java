@@ -57,6 +57,7 @@ public class Connector {
 			}
 			else {
 				serialPort.writeBytes("0".getBytes());
+				//System.out.println(Run.mass_S.toString());
 			}
 		} catch (SerialPortException ex) {
 			System.out.println(ex);
@@ -78,10 +79,12 @@ public class Connector {
 			if (event.isRXCHAR() && event.getEventValue() > 0){
 				try {
 					String buffer = serialPort.readString();
+					//Run.mass_S.add(buffer);
 					//System.out.println(buffer);
 					//Float 
 					//String regex = "<(\\d+[.]\\d+), (\\d+[.]\\d+), (\\d+[.]\\d+), (\\d+[.]\\d+)>";
 					//int
+					
 					String regex = "<(\\d+[.]\\d+), (\\d+), (\\d+), (\\d+)>";
 					Pattern pattern = Pattern.compile(regex);
 					Matcher matcher = pattern.matcher(buffer);
