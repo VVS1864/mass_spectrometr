@@ -109,9 +109,7 @@ public class Graph_canvas extends JPanel {
         	g2.drawLine(x1.intValue(), y1.intValue(), x2.intValue(), y2.intValue());
         	
         }
-        //g2.setStroke(new BasicStroke(10));
-       // System.out.println("Mass " + x_cur/Run.X_factor);
-        //x_cur = x_cur/Run.X_factor*Run.Y_factor;
+       
         paint_current_mass(current_mass, g2);
 	}
 	
