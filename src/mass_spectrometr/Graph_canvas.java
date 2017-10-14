@@ -3,6 +3,7 @@ package mass_spectrometr;
 
 import java.awt.BasicStroke;
 import java.awt.Color;
+import java.awt.Font;
 import java.awt.Graphics;
 import java.awt.Graphics2D;
 
@@ -12,6 +13,7 @@ public class Graph_canvas extends JPanel {
 	
 	private final int h_axis = 51;
 	private final int w_axis = 51;
+	private final int arrow_w = 10;
 	private double max_intensity = 100;
 	private double max_mass = 0;
 	private double X_factor;
@@ -39,28 +41,40 @@ public class Graph_canvas extends JPanel {
         	Y_factor = Run.manual_Y_factor;
         }
         X_factor = Run.manual_X_factor;
+        
+        g.setFont(new Font(g.getFont().getFontName(), Font.PLAIN, 20)); 
 // Axis Y
         g.setColor(Color.BLACK);
         g2.setStroke(new BasicStroke(3));
-        g2.drawLine(w_axis, h_axis, w_axis, H);
+        g2.drawLine(w_axis, 10, w_axis, H);
+        //Arrow
+        g2.drawLine(w_axis-arrow_w/2, 10+arrow_w, w_axis, 10);
+        g2.drawLine(w_axis+arrow_w/2, 10+arrow_w, w_axis, 10);
+        g2.drawString("int", w_axis - 40, 10+arrow_w);
         
 // Axis X
         g.setColor(Color.BLACK);
         g2.setStroke(new BasicStroke(3));
         g2.drawLine(w_axis, H, W, H);
-
-// Units Y
+        g2.drawLine(W-arrow_w, H-arrow_w/2, W, H);
+        g2.drawLine(W-arrow_w, H+arrow_w/2, W, H);
+        g2.drawString("M", W-15, H+30);
+        
+        g.setFont(new Font(g.getFont().getFontName(), Font.PLAIN, 12));
+        
+// Units 
         BasicStroke unit_stroke; 
         int w_units = 5;
-        //int L_coord = x0 - w_units;
-        //int R_coord = x0 + w_units;
+        int units_rate;
+// Units Y
         int current_h = H;
-        int units_rate = 20;
-        
         if(Y_factor > 18) units_rate = 1;
         else if(Y_factor > 4.5) units_rate = 5;
-        else if(Y_factor > 2.5) units_rate = 10;
-        
+        else if(Y_factor > 3.5) units_rate = 10;
+        else if(Y_factor > 2.2) units_rate = 20;
+        else if(Y_factor > 1.2) units_rate = 50;
+        else units_rate = 100;
+       
         int current_unit = 0;
         int unit = 0;
         
@@ -92,31 +106,72 @@ public class Graph_canvas extends JPanel {
         	
         	
         }
+
+// Units X
+        int current_w = x0;
+        units_rate = 20;
+        current_unit = 0;
+        unit = 0;
+       
+        if(X_factor > 30) units_rate = 1;
+        else if(X_factor > 6.5) units_rate = 5;
+        else if(X_factor > 3.5) units_rate = 10;
+        else if(X_factor > 2) units_rate = 20;
+        else if(X_factor > 1.2) units_rate = 50;
+        else units_rate = 100;
+        
+        while(current_w < W-units_rate*X_factor) {
+        	
+        	
+        	int w;
+        	if(current_unit == 10 || current_unit == 100) {
+        		unit_stroke = new BasicStroke(3);
+        		w = w_units * 2; 
+        		current_unit = 0;
+        	}
+        	else {
+        		unit_stroke = new BasicStroke(1);
+        		w = w_units;
+        	}
+        	g2.setStroke(new BasicStroke(1));
+        	g.setColor(Color.GRAY);
+        	g2.drawLine(current_w, H, current_w, h_axis);
+        	
+        	g2.setStroke(unit_stroke);
+        	g.setColor(Color.BLACK);
+        	g2.drawString(Integer.toString(unit), current_w-8, H + w + 30);
+        	g2.drawLine(current_w, H-w, current_w, H+w);
+        	
+        	current_unit += units_rate;
+        	current_w += units_rate*X_factor;
+        	unit += units_rate;
+        }
+// Data rendering
         
         if(Run.mass_data.size() <= 2) return;
         
         g.setColor(Color.RED);
         g2.setStroke(new BasicStroke(1));
-        Double current_mass = Run.mass_data.get(Run.mass_data.size()-2);
-        Double current_intensity = Run.mass_data.get(Run.mass_data.size()-1);
+        double current_mass = Run.mass_data.get(Run.mass_data.size()-1);
+        int current_intensity = Run.intensity_data.get(Run.intensity_data.size()-1);
     	if (current_intensity > max_intensity) max_intensity = current_intensity;
     	if (current_mass > max_mass) max_mass = current_mass;
-        for(int i = 2; i<Run.mass_data.size()-1; i+=2) {        	
-        	Double x1 = Run.mass_data.get(i-2)*X_factor + x0;
-        	Double y1 = H - (Run.mass_data.get(i-1)*Y_factor);
-        	Double x2 = Run.mass_data.get(i)*X_factor + x0;
-        	Double y2 = H - (Run.mass_data.get(i+1)*Y_factor);
-        	g2.drawLine(x1.intValue(), y1.intValue(), x2.intValue(), y2.intValue());
+        for(int i = 1; i<Run.mass_data.size()-1; i++) {        	
+        	double x1 = Run.mass_data.get(i-1)*X_factor + x0;
+        	double y1 = H - (Run.intensity_data.get(i-1)*Y_factor);
+        	double x2 = Run.mass_data.get(i)*X_factor + x0;
+        	double y2 = H - (Run.intensity_data.get(i)*Y_factor);
+        	g2.drawLine((int)x1, (int)y1, (int)x2, (int)y2);
         	
         }
        
         paint_current_mass(current_mass, g2);
 	}
 	
-	private void paint_current_mass(Double mass, Graphics2D g2) {
+	private void paint_current_mass(double mass, Graphics2D g2) {
 		g2.setColor(Color.BLUE);
 		g2.setStroke(new BasicStroke(3));
-		mass=mass*X_factor + x0;
-		g2.drawLine(mass.intValue(), H, mass.intValue(), 0);
+		mass = mass*X_factor + x0;
+		g2.drawLine((int)mass, H, (int)mass, 0);
 	}
 }

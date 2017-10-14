@@ -1,16 +1,21 @@
-String spacer = ", ";
+unsigned long current_time;
 int mass = 1500;
+int en_el;
+int intensity;
+//bytes for transfer [current_time + mass + en_el + intensity]
+byte buf[4+2+2+2];
+
 boolean send_flag = false;
 int cmd;
 char start_cmd = '1';
 char stop_cmd = '0';
-byte buf[4];
+
 int v[2];
 int led = 13;//
 void setup() {
   pinMode(led, OUTPUT);
   digitalWrite(led, LOW);
-  Serial.begin(115200); 
+  Serial.begin(38400); 
 }
 
 // the loop function runs over and over again forever
@@ -36,60 +41,47 @@ void recvOneChar(){
 
 void send_data(){
   if(send_flag == true && mass>0){
+    current_time = millis();
+    
     int r = 10;
     int n = 0;
-    int x = random(60);
+    int x = random(70);
     if (x == 3) {
-      r = 100;
-      n = 50;
+      r = 1000;
+      n = 500;
     }
-   
-    int data2 = random(n, r);
+    en_el = random(30);
+    intensity = random(n, r);
     
-    ints_to_bytes(mass, data2, buf);
-    Serial.write(buf, 4);
+    ints_to_bytes();
+    Serial.write(buf, 10);
     mass--;
+    //delay(50);
   }
 }
+/*
 void bytes_to_int(byte bytes[4], int val[2]){
   val[0] = ((bytes[0] & 0xff) << 8) | (bytes[1] & 0xff);
   val[1] = ((bytes[2] & 0xff) << 8) | (bytes[3] & 0xff);
-}
-void ints_to_bytes(int n1, int n2, byte bytes[4]){
-  bytes[0] = (n1 >> 8) & 0xFF;
-  bytes[1] = n1 & 0xFF;
+}*/
+void ints_to_bytes(){
+  //unsigned long time
+  buf[0] = (current_time >> 24) & 0xFF;
+  buf[1] = (current_time >> 16) & 0xFF;
+  buf[2] = (current_time >> 8) & 0xFF;
+  buf[3] = current_time & 0xFF;
   
-  bytes[2] = (n2 >> 8) & 0xFF;
-  bytes[3] = n2 & 0xFF;
-  /*
-  bytes[0] = (byte) n1 >> 8;
-  bytes[1] = (byte) n1;
+  //int mass
+  buf[4] = (mass >> 8) & 0xFF;
+  buf[5] = mass & 0xFF;
   
-  bytes[2] = (byte) n2 >> 8;
-  bytes[3] = (byte) n2;
-  */
-  /*
-  bytes[0] = (byte) n1 >> 24;
-  bytes[1] = (byte) n1 >> 16;
-  bytes[2] = (byte) n1 >> 8;
-  bytes[3] = (byte) n1;
+  //int en_el
+  buf[6] = (en_el >> 8) & 0xFF;
+  buf[7] = en_el & 0xFF;
   
-  bytes[4] = (byte) n2 >> 24;
-  bytes[5] = (byte) n2 >> 16;
-  bytes[6] = (byte) n2 >> 8;
-  bytes[7] = (byte) n2;
-  */
-  /*
-  bytes[0] = (n2 >> 24) & 0xFF;
-  bytes[1] = (n2 >> 16) & 0xFF;
-  bytes[2] = (n2 >> 8) & 0xFF;
-  bytes[3] = n2 & 0xFF;
-  
-  bytes[4] = (n1 >> 24) & 0xFF;
-  bytes[5] = (n1 >> 16) & 0xFF;
-  bytes[6] = (n1 >> 8) & 0xFF;
-  bytes[7] = n1 & 0xFF;
-  */
+  //int intensity
+  buf[8] = (intensity >> 8) & 0xFF;
+  buf[9] = intensity & 0xFF;
 }
 
 

@@ -7,8 +7,10 @@ import javax.swing.JComboBox;
 import javax.swing.JLabel;
 
 public class Run {
+	public static ArrayList<Integer> time_data = new ArrayList<Integer>();
 	public static ArrayList<Double> mass_data = new ArrayList<Double>();
-	public static ArrayList<String> mass_S = new ArrayList<String>();
+	public static ArrayList<Integer> en_el_data = new ArrayList<Integer>();
+	public static ArrayList<Integer> intensity_data = new ArrayList<Integer>();
 	public static JComboBox<String> pbox;
 	public static String[] ports;
 	public static Graph_canvas cnvs;

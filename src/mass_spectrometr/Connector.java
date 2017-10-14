@@ -15,12 +15,11 @@ public class Connector {
 
 	private static SerialPort serialPort;
 	public static int[] a;
-	public static double a1;
-	public static double a2;
-	public static double a3;
-	public static double a4;
+	public static int a1;
+	public static int a2;
+	public static int a3;
+	public static int a4;
 	private static boolean f = true;
-	private static int m = 151;
 	
 	public Connector() {
 		Run.ports = SerialPortList.getPortNames();
@@ -30,7 +29,7 @@ public class Connector {
 		serialPort = new SerialPort((String) Run.pbox.getSelectedItem());
 		try {
 			serialPort.openPort();
-			serialPort.setParams(SerialPort.BAUDRATE_115200, SerialPort.DATABITS_8, SerialPort.STOPBITS_1,
+			serialPort.setParams(SerialPort.BAUDRATE_38400, SerialPort.DATABITS_8, SerialPort.STOPBITS_1,
 					SerialPort.PARITY_NONE);
 			
 			serialPort.setEventsMask(SerialPort.MASK_RXCHAR);
@@ -58,7 +57,6 @@ public class Connector {
 			}
 			else {
 				serialPort.writeBytes("0".getBytes());
-				
 			}
 		} catch (SerialPortException ex) {
 			System.out.println(ex);
@@ -75,34 +73,44 @@ public class Connector {
 	}
 	
 	private static class EventListener implements SerialPortEventListener {
-		public int[] byte_to_int(byte b[]) {
-			int value[] = new int[2];
-			value[0] = ((b[0] & 0xff) << 8) | (b[1] & 0xff);
-			value[1] = ((b[2] & 0xff) << 8) | (b[3] & 0xff);
-			return value;
+		public void byte_to_int(byte b[]) {
+			
+			a1 = (
+					(b[0] & 0xff) << 24 | 
+					(b[1] & 0xff) << 16 | 
+					(b[2] & 0xff) << 8 | 
+					(b[3] & 0xff));
+			
+			a2 = ((b[4] & 0xff) << 8) | (b[5] & 0xff);
+			a3 = ((b[6] & 0xff) << 8) | (b[7] & 0xff);
+			a4 = ((b[8] & 0xff) << 8) | (b[9] & 0xff);
+			
 		}
 		public void serialEvent(SerialPortEvent event) {			
 			if (event.isRXCHAR() && event.getEventValue() > 0){
 				try {
-					byte buf[] = serialPort.readBytes(4);
+					byte buf[] = serialPort.readBytes(10);
 
-					a = byte_to_int(buf);
-					a1 = a[0];
-					a1 /= 10.0;
-					a2 = a[1];
-
-					// if first
+					byte_to_int(buf);
+					//a2 /= 10.0;
+					double mass = ((double)a2)/10.0;		
 					if (f) {
-						Run.mass_data.add(a1);
-						Run.mass_data.add(0.0);
+						Run.time_data.add(0);
+						Run.mass_data.add(mass);
+						Run.en_el_data.add(0);
+						Run.intensity_data.add(0);
 						f = false;
 					}
-
-					if (Run.mass_data.get(Run.mass_data.size() - 2) - (a1 + 1) > 0.000001) {
+					
+					if (Run.mass_data.get(Run.mass_data.size() - 1) - (a2 + 1) > 0.000001) {
 						System.out.println("!!!");
 					}
-					Run.mass_data.add(a1);
-					Run.mass_data.add(a2);
+					Run.time_data.add(a1);
+					Run.mass_data.add(mass);
+					
+					Run.en_el_data.add(a3);
+					
+					Run.intensity_data.add(a4);
 					/*
 					  if (Run.current_step == Run.rendering_rate) {
 					  

@@ -253,9 +253,13 @@ public class GUI {
 	public void zoom(char c, char axis) {
 		double s = (c == '+') ? Run.scale_rate : 1.0/Run.scale_rate;
 		if (axis == 'Y') {
-			Run.manual_Y_factor *= s;
+			double new_scale = Run.manual_Y_factor * s;
+			if(new_scale > 0.25) Run.manual_Y_factor *= s;
 		}
 		else {
+			double new_scale = Run.manual_X_factor * s;
+			if(new_scale < 0.25) return;
+			
 			double cn = (Run.cnvs.W/2-Run.x0);
 			double o = cn*s - cn;
 			Run.x0 -= (int)o;
