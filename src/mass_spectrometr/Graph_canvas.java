@@ -4,8 +4,10 @@ package mass_spectrometr;
 import java.awt.BasicStroke;
 import java.awt.Color;
 import java.awt.Font;
+import java.awt.FontMetrics;
 import java.awt.Graphics;
 import java.awt.Graphics2D;
+import java.util.ArrayList;
 
 import javax.swing.JPanel;
 
@@ -32,16 +34,17 @@ public class Graph_canvas extends JPanel {
         H = this.getHeight()-h_axis;
         W = this.getWidth()-w_axis;
         x0 = Run.x0;
-        
+        ArrayList<Double> x_data = Run.mass_data;
+        ArrayList<Integer> y_data = Run.intensity_data;
 //factors
         if(Run.autoscaleY) {
-        	Y_factor = Run.manual_Y_factor = H/max_intensity;
+        	Y_factor = Run.manual_Y_factor = (H-h_axis)/max_intensity;
         }
         else {
         	Y_factor = Run.manual_Y_factor;
         }
         X_factor = Run.manual_X_factor;
-        
+
         g.setFont(new Font(g.getFont().getFontName(), Font.PLAIN, 20)); 
 // Axis Y
         g.setColor(Color.BLACK);
@@ -148,24 +151,52 @@ public class Graph_canvas extends JPanel {
         }
 // Data rendering
         
-        if(Run.mass_data.size() <= 2) return;
+        if(x_data.size() <= 2) return;
         
         g.setColor(Color.RED);
         g2.setStroke(new BasicStroke(1));
-        double current_mass = Run.mass_data.get(Run.mass_data.size()-1);
-        int current_intensity = Run.intensity_data.get(Run.intensity_data.size()-1);
+        double current_mass = x_data.get(x_data.size()-1);
+        int current_intensity = y_data.get(y_data.size()-1);
     	if (current_intensity > max_intensity) max_intensity = current_intensity;
     	if (current_mass > max_mass) max_mass = current_mass;
-        for(int i = 1; i<Run.mass_data.size()-1; i++) {        	
-        	double x1 = Run.mass_data.get(i-1)*X_factor + x0;
-        	double y1 = H - (Run.intensity_data.get(i-1)*Y_factor);
-        	double x2 = Run.mass_data.get(i)*X_factor + x0;
-        	double y2 = H - (Run.intensity_data.get(i)*Y_factor);
+        for(int i = 1; i<x_data.size()-1; i++) {        	
+        	double x1 = x_data.get(i-1)*X_factor + x0;
+        	double y1 = H - (y_data.get(i-1)*Y_factor);
+        	double x2 = x_data.get(i)*X_factor + x0;
+        	double y2 = H - (y_data.get(i)*Y_factor);
         	g2.drawLine((int)x1, (int)y1, (int)x2, (int)y2);
         	
         }
        
         paint_current_mass(current_mass, g2);
+        if(!Run.transferring_data && Run.analyser!=null) {
+        paint_peak_labels(g2);
+        }
+	}
+	private void paint_peak_labels(Graphics2D g2) {
+		boolean first = true;
+		double prev_label_x = 0;// = Run.analyser.peaks.get(0).x*X_factor + label_w;
+		Font f = g2.getFont();
+		FontMetrics m = g2.getFontMetrics(f);
+		for(Peak p: Run.analyser.peaks) {
+			String str = Double.toString(p.x);
+			double x = p.x*X_factor + x0;
+			double y = H - p.y*Y_factor;
+			int label_w = m.stringWidth(str)/2;
+			
+			double label_x = x - label_w;
+			
+			if (first) {
+				prev_label_x = x - label_w;
+				first = false;
+			}
+			if (label_x >= prev_label_x) {
+				double label_y = y;
+				g2.drawString(str, (int)label_x, (int)label_y);
+				prev_label_x = x + label_w;
+				g2.drawLine((int)x, (int)y+2, (int)x, (int)y+10);
+			}
+		}
 	}
 	
 	private void paint_current_mass(double mass, Graphics2D g2) {

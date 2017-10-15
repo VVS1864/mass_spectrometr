@@ -40,6 +40,7 @@ public class GUI {
 	    mainFrame.addWindowListener(new WindowAdapter() {
 	         public void windowClosing(WindowEvent windowEvent){
 	        	Run.arduino.close();
+	        	mainFrame.dispose();
 	            System.exit(0);
 	            
 	         }        

@@ -26,10 +26,13 @@ public class Run {
 	public static int x0 = 100;
 
 	public static Connector arduino;
+	public static Chart_analyser analyser;
 	
 	public static boolean transferring_data = false;
 	public static int rendering_rate = 10;
 	public static int current_step = 0;
+	
+	
 	
 	public Run() {
 		arduino = new Connector(); 

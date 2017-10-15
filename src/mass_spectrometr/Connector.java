@@ -57,7 +57,9 @@ public class Connector {
 			}
 			else {
 				serialPort.writeBytes("0".getBytes());
+				Run.analyser = new Chart_analyser(Run.mass_data, Run.intensity_data);
 			}
+			Run.cnvs.repaint();
 		} catch (SerialPortException ex) {
 			System.out.println(ex);
 		}		
