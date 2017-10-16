@@ -14,7 +14,7 @@ import javax.swing.JPanel;
 public class Graph_canvas extends JPanel {
 	
 	private final int h_axis = 51;
-	private final int w_axis = 51;
+	private final int w_axis = 100;
 	private final int arrow_w = 10;
 	private double max_intensity = 100;
 	private double max_mass = 0;
@@ -168,12 +168,13 @@ public class Graph_canvas extends JPanel {
         	
         }
        
-        paint_current_mass(current_mass, g2);
+        paint_current_mass(current_mass, current_intensity, g2);
         if(!Run.transferring_data && Run.analyser!=null) {
         paint_peak_labels(g2);
         }
 	}
 	private void paint_peak_labels(Graphics2D g2) {
+		g2.setStroke(new BasicStroke(3));
 		boolean first = true;
 		double prev_label_x = 0;// = Run.analyser.peaks.get(0).x*X_factor + label_w;
 		Font f = g2.getFont();
@@ -199,10 +200,12 @@ public class Graph_canvas extends JPanel {
 		}
 	}
 	
-	private void paint_current_mass(double mass, Graphics2D g2) {
+	private void paint_current_mass(double mass, int intensity, Graphics2D g2) {
 		g2.setColor(Color.BLUE);
 		g2.setStroke(new BasicStroke(3));
 		mass = mass*X_factor + x0;
 		g2.drawLine((int)mass, H, (int)mass, 0);
+		g2.setStroke(new BasicStroke(10));
+		g2.drawLine(w_axis/2, H - intensity, w_axis/2, H);
 	}
 }
