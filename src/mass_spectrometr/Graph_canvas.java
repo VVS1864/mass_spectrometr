@@ -155,32 +155,38 @@ public class Graph_canvas extends JPanel {
         
         g.setColor(Color.RED);
         g2.setStroke(new BasicStroke(1));
-        double current_mass = x_data.get(x_data.size()-1);
-        int current_intensity = y_data.get(y_data.size()-1);
+        double B1 = Run.current_mass;//x_data.get(x_data.size()-1);
+        double current_mass = B1*B1 * Run.K;
+        int current_intensity = Run.current_intensity;//y_data.get(y_data.size()-1);
     	if (current_intensity > max_intensity) max_intensity = current_intensity;
     	if (current_mass > max_mass) max_mass = current_mass;
-        for(int i = 1; i<x_data.size()-1; i++) {        	
-        	double x1 = x_data.get(i-1)*X_factor + x0;
+        for(int i = 1; i<x_data.size()-1; i++) {     
+        	B1 = x_data.get(i-1);
+        	double mass_1 = B1*B1 * Run.K;
+        	double B2 = x_data.get(i);
+        	double mass_2 = B2*B2 * Run.K; 
+        	double x1 = mass_1*X_factor + x0;
         	double y1 = H - (y_data.get(i-1)*Y_factor);
-        	double x2 = x_data.get(i)*X_factor + x0;
+        	double x2 = mass_2*X_factor + x0;
         	double y2 = H - (y_data.get(i)*Y_factor);
         	g2.drawLine((int)x1, (int)y1, (int)x2, (int)y2);
         	
         }
        
         paint_current_mass(current_mass, current_intensity, g2);
-        if(!Run.transferring_data && Run.analyser!=null) {
-        paint_peak_labels(g2);
+        if(Run.flow_mass) {
+        	Run.analyser = new Chart_analyser(Run.mass_data, Run.intensity_data);
+        	paint_peak_labels(g2);
         }
 	}
 	private void paint_peak_labels(Graphics2D g2) {
 		g2.setStroke(new BasicStroke(3));
 		boolean first = true;
-		double prev_label_x = 0;// = Run.analyser.peaks.get(0).x*X_factor + label_w;
+		double prev_label_x = 0;
 		Font f = g2.getFont();
 		FontMetrics m = g2.getFontMetrics(f);
 		for(Peak p: Run.analyser.peaks) {
-			String str = Double.toString(p.x);
+			String str = String.format("%.1f", p.x);
 			double x = p.x*X_factor + x0;
 			double y = H - p.y*Y_factor;
 			int label_w = m.stringWidth(str)/2;

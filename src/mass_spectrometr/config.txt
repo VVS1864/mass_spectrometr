@@ -1,0 +1,4 @@
+# Config file
+
+K = 1 
+port = COM3

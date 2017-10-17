@@ -11,9 +11,18 @@ public class Chart_analyser {
 	ArrayList<Peak> peaks = new ArrayList<Peak>();
 	int summ_noise = 0;
 	Chart_analyser(ArrayList<Double> x_data, ArrayList<Integer> y_data) {
-		this.x_data = x_data;
+		this.x_data = B_B_K(x_data, Run.K);
 		this.y_data = y_data;
 		analyse();
+	}
+	
+	public static ArrayList<Double> B_B_K(ArrayList<Double> x_data, double K) {
+		ArrayList<Double>new_x_data = new ArrayList<Double>();
+		for (Double B: x_data) {
+        	Double mass = B*B * K;
+        	new_x_data.add(mass);
+        } 
+		return new_x_data;
 	}
 	/**
 	 * get middle_noise and all peaks 

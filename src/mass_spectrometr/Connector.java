@@ -14,11 +14,12 @@ import jssc.SerialPortException;
 public class Connector {
 
 	private static SerialPort serialPort;
+	/*
 	public static int[] a;
 	public static int a1;
 	public static int a2;
 	public static int a3;
-	public static int a4;
+	public static int a4;*/
 	private static boolean f = true;
 	
 	public Connector() {
@@ -57,7 +58,7 @@ public class Connector {
 			}
 			else {
 				serialPort.writeBytes("0".getBytes());
-				Run.analyser = new Chart_analyser(Run.mass_data, Run.intensity_data);
+				
 			}
 			Run.cnvs.repaint();
 		} catch (SerialPortException ex) {
@@ -77,15 +78,15 @@ public class Connector {
 	private static class EventListener implements SerialPortEventListener {
 		public void byte_to_int(byte b[]) {
 			
-			a1 = (
+			Run.current_time = (
 					(b[0] & 0xff) << 24 | 
 					(b[1] & 0xff) << 16 | 
 					(b[2] & 0xff) << 8 | 
 					(b[3] & 0xff));
 			
-			a2 = ((b[4] & 0xff) << 8) | (b[5] & 0xff);
-			a3 = ((b[6] & 0xff) << 8) | (b[7] & 0xff);
-			a4 = ((b[8] & 0xff) << 8) | (b[9] & 0xff);
+			Run.current_mass = ((b[4] & 0xff) << 8) | (b[5] & 0xff);
+			Run.current_en_el = ((b[6] & 0xff) << 8) | (b[7] & 0xff);
+			Run.current_intensity = ((b[8] & 0xff) << 8) | (b[9] & 0xff);
 			
 		}
 		public void serialEvent(SerialPortEvent event) {			
@@ -94,25 +95,39 @@ public class Connector {
 					byte buf[] = serialPort.readBytes(10);
 
 					byte_to_int(buf);
-					//a2 /= 10.0;
-					double mass = ((double)a2)/10.0;		
+					if (Run.current_time==0 && Run.current_mass==0 && Run.current_en_el==0 & Run.current_intensity==0) {
+						if(Run.flow_mass) {
+							Run.time_data.clear(); 
+							Run.mass_data.clear();
+							Run.en_el_data.clear();
+							Run.intensity_data.clear();
+							Run.flow_mass = false;
+						}
+						else Run.flow_mass = true;
+						return;
+					}
+					
+					double B = ((double)Run.current_mass)/100.0;
+					Run.current_mass = B;
 					if (f) {
 						Run.time_data.add(0);
-						Run.mass_data.add(mass);
+						Run.mass_data.add(B);
 						Run.en_el_data.add(0);
 						Run.intensity_data.add(0);
 						f = false;
 					}
-					
+					/*
 					if (Run.mass_data.get(Run.mass_data.size() - 1) - (a2 + 1) > 0.000001) {
 						System.out.println("!!!");
+					}*/
+					if (!Run.flow_mass) {
+						Run.time_data.add(Run.current_time);
+						Run.mass_data.add(B);
+
+						Run.en_el_data.add(Run.current_en_el);
+
+						Run.intensity_data.add(Run.current_intensity);
 					}
-					Run.time_data.add(a1);
-					Run.mass_data.add(mass);
-					
-					Run.en_el_data.add(a3);
-					
-					Run.intensity_data.add(a4);
 					/*
 					  if (Run.current_step == Run.rendering_rate) {
 					  

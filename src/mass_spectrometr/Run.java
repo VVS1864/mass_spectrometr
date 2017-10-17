@@ -11,6 +11,13 @@ public class Run {
 	public static ArrayList<Double> mass_data = new ArrayList<Double>();
 	public static ArrayList<Integer> en_el_data = new ArrayList<Integer>();
 	public static ArrayList<Integer> intensity_data = new ArrayList<Integer>();
+	
+	public static int current_time = 0;
+	public static double current_mass = 0;
+	public static int current_en_el = 0;
+	public static int current_intensity = 0;
+	
+	
 	public static JComboBox<String> pbox;
 	public static String[] ports;
 	public static Graph_canvas cnvs;
@@ -29,9 +36,10 @@ public class Run {
 	public static Chart_analyser analyser;
 	
 	public static boolean transferring_data = false;
+	public static boolean flow_mass = false;
 	public static int rendering_rate = 10;
 	public static int current_step = 0;
-	
+	public static double K = 1;
 	
 	
 	public Run() {

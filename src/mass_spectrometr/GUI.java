@@ -21,6 +21,7 @@ import javax.swing.JFrame;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
 import javax.swing.JRootPane;
+import javax.swing.JTextField;
 import javax.swing.KeyStroke;
 
 public class GUI {
@@ -29,9 +30,7 @@ public class GUI {
 	protected JButton button_pY;
 	protected JButton button_mY;
 	
-	protected JButton button_pX;
-	protected JButton button_mX;
-	
+	protected JTextField k_textbox;
 	protected boolean is_ready = false;
 	public GUI(){
 		JFrame mainFrame = new JFrame("Java AWT Examples");
@@ -136,6 +135,24 @@ public class GUI {
 			}
 			
 		};
+		ActionListener update_K = new ActionListener() {
+			@Override
+			public void actionPerformed(ActionEvent e) {
+				String str = k_textbox.getText();
+				double new_K;
+				try {
+					new_K = Double.parseDouble(str);
+				}
+				catch(NumberFormatException ex) {
+					k_textbox.setBackground(Color.RED);
+					return;
+				}
+				k_textbox.setBackground(Color.WHITE);
+				Run.K = new_K;
+				Run.cnvs.repaint();
+			}
+			
+		};
 	  			  		
 //Status panel
 	  	final JPanel status_panel = new JPanel();
@@ -151,7 +168,7 @@ public class GUI {
 		port_panel.setLayout(new BoxLayout(port_panel, BoxLayout.X_AXIS));
 	    Run.pbox = new JComboBox<String>(Run.ports);
 	    Run.pbox.setMaximumSize(new Dimension(140, 30));
-	    //Run.pbox.setSelectedIndex(0);
+	    Run.pbox.setSelectedIndex(0);
 	    button_connect = new JButton("Connect");
 		button_connect.addActionListener(connect_action_listener);
 		
@@ -160,38 +177,47 @@ public class GUI {
 		JButton button_r = new JButton(">");
 		button_r.addActionListener(move_R);
 		
-		button_pY = new JButton("+");
-		button_pY.addActionListener(plusY);
-		button_pY.setEnabled(false);
-		button_mY = new JButton("-");
-		button_mY.addActionListener(minusY);
-		button_mY.setEnabled(false);
-		JButton button_a_scaleY = new JButton("Auto+-");
-		button_a_scaleY.addActionListener(autoscaleY);
+		JButton button_pX = new JButton("+");
+		button_pX.addActionListener(plusX);
 		
+		JButton button_mX = new JButton("-");
+		button_mX.addActionListener(minusX);
+		
+		k_textbox = new JTextField(Double.toString(Run.K));
+		k_textbox.setMaximumSize(new Dimension(50, 40));
+		
+		JButton button_K = new JButton("Update K");
+		button_K.addActionListener(update_K);
 		
 	    port_panel.add(Run.pbox);
 	    port_panel.add(button_connect);
 	    port_panel.add(button_l);
 	    port_panel.add(button_r);
-	    port_panel.add(button_pY);
-	    port_panel.add(button_mY);
-	    port_panel.add(button_a_scaleY);
+	    port_panel.add(button_pX);
+	    port_panel.add(button_mX);
+	    port_panel.add(k_textbox);
+	    port_panel.add(button_K);
 	    port_panel.setAlignmentX(Component.LEFT_ALIGNMENT);
 	    
 //toolbar for canvas
 	    final JPanel zoom_panel = new JPanel();
 		zoom_panel.setLayout(new BoxLayout(zoom_panel, BoxLayout.Y_AXIS));
 		
-	    button_pX = new JButton("+");
-		button_pX.addActionListener(plusX);
+	    
 		
-		button_mX = new JButton("--");
-		button_mX.addActionListener(minusX);
+		button_pY = new JButton("+");
+		button_pY.addActionListener(plusY);
+		button_pY.setEnabled(false);
+		button_mY = new JButton("--");
+		button_mY.addActionListener(minusY);
+		button_mY.setEnabled(false);
+		JButton button_a_scaleY = new JButton("+-");
+		button_a_scaleY.addActionListener(autoscaleY);
 		
 		
-		zoom_panel.add(button_pX);
-		zoom_panel.add(button_mX);
+		zoom_panel.add(button_pY);
+		zoom_panel.add(button_mY);
+		zoom_panel.add(button_a_scaleY);
 	    mainFrame.add(zoom_panel, BorderLayout.WEST);
 		
 //Add all panels to frame
