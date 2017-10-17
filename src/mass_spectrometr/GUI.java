@@ -168,7 +168,7 @@ public class GUI {
 		port_panel.setLayout(new BoxLayout(port_panel, BoxLayout.X_AXIS));
 	    Run.pbox = new JComboBox<String>(Run.ports);
 	    Run.pbox.setMaximumSize(new Dimension(140, 30));
-	    Run.pbox.setSelectedIndex(0);
+	    	    	
 	    button_connect = new JButton("Connect");
 		button_connect.addActionListener(connect_action_listener);
 		
@@ -257,7 +257,12 @@ public class GUI {
 	    if(Run.ports.length==0) {
 	    	set_status(Color.RED, "Port not found");
 			button_connect.setEnabled(false);
-		}
+			
+	    }
+		else {
+			Run.pbox.setSelectedIndex(0);
+		    }
+		
 	}
 	
 	protected void set_status(Color c, String s) {
