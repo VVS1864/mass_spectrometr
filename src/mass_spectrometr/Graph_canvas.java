@@ -38,7 +38,7 @@ public class Graph_canvas extends JPanel {
         ArrayList<Integer> y_data = Run.intensity_data;
 //factors
         if(Run.autoscaleY) {
-        	Y_factor = Run.manual_Y_factor = (H-h_axis)/max_intensity;
+        	Y_factor = Run.manual_Y_factor = (H-(2*h_axis))/max_intensity;
         }
         else {
         	Y_factor = Run.manual_Y_factor;
@@ -125,29 +125,30 @@ public class Graph_canvas extends JPanel {
         
         while(current_w < W-units_rate*X_factor) {
         	
-        	
-        	int w;
-        	if(current_unit == 10 || current_unit == 100) {
-        		unit_stroke = new BasicStroke(3);
-        		w = w_units * 2; 
-        		current_unit = 0;
-        	}
-        	else {
-        		unit_stroke = new BasicStroke(1);
-        		w = w_units;
-        	}
-        	g2.setStroke(new BasicStroke(1));
-        	g.setColor(Color.GRAY);
-        	g2.drawLine(current_w, H, current_w, h_axis);
-        	
-        	g2.setStroke(unit_stroke);
-        	g.setColor(Color.BLACK);
-        	g2.drawString(Integer.toString(unit), current_w-8, H + w + 30);
-        	g2.drawLine(current_w, H-w, current_w, H+w);
-        	
-        	current_unit += units_rate;
-        	current_w += units_rate*X_factor;
-        	unit += units_rate;
+			
+			int w;
+			if (current_unit == 10 || current_unit == 100) {
+				unit_stroke = new BasicStroke(3);
+				w = w_units * 2;
+				current_unit = 0;
+			} else {
+				unit_stroke = new BasicStroke(1);
+				w = w_units;
+			}
+			if (current_w > w_axis) {
+				g2.setStroke(new BasicStroke(1));
+				g.setColor(Color.GRAY);
+				g2.drawLine(current_w, H, current_w, h_axis);
+
+				g2.setStroke(unit_stroke);
+				g.setColor(Color.BLACK);
+				g2.drawString(Integer.toString(unit), current_w - 8, H + w + 30);
+				g2.drawLine(current_w, H - w, current_w, H + w);
+			}
+			current_unit += units_rate;
+			current_w += units_rate * X_factor;
+			unit += units_rate;
+			
         }
 // Data rendering
         
@@ -169,7 +170,8 @@ public class Graph_canvas extends JPanel {
         	double y1 = H - (y_data.get(i-1)*Y_factor);
         	double x2 = mass_2*X_factor + x0;
         	double y2 = H - (y_data.get(i)*Y_factor);
-        	g2.drawLine((int)x1, (int)y1, (int)x2, (int)y2);
+        	
+        	draw_line((int)x1, (int)y1, (int)x2, (int)y2, g2);
         	
         }
        
@@ -178,6 +180,16 @@ public class Graph_canvas extends JPanel {
         	Run.analyser = new Chart_analyser(Run.mass_data, Run.intensity_data);
         	paint_peak_labels(g2);
         }
+	}
+	private void draw_line(int x1, int y1, int x2, int y2, Graphics2D g2) {
+		if(x1>=w_axis && x2>=w_axis && x1<=W && x2<=W && y1>=10 && y2>=10 && y1<=H && y2<=H) {
+    		g2.drawLine((int)x1, (int)y1, (int)x2, (int)y2);
+		}
+	}
+	private void draw_string(String str, int x1, int y1, Graphics2D g2) {
+		if(x1>w_axis && x1<W && y1>10  && y1<H) {
+			g2.drawString(str, (int)x1, (int)y1);
+		}
 	}
 	private void paint_peak_labels(Graphics2D g2) {
 		g2.setStroke(new BasicStroke(3));
@@ -199,9 +211,9 @@ public class Graph_canvas extends JPanel {
 			}
 			if (label_x >= prev_label_x) {
 				double label_y = y;
-				g2.drawString(str, (int)label_x, (int)label_y);
+				draw_string(str, (int)label_x, (int)label_y, g2);
 				prev_label_x = x + label_w;
-				g2.drawLine((int)x, (int)y+2, (int)x, (int)y+10);
+				draw_line((int)x, (int)y+2, (int)x, (int)y+10, g2);
 			}
 		}
 	}
@@ -210,7 +222,7 @@ public class Graph_canvas extends JPanel {
 		g2.setColor(Color.BLUE);
 		g2.setStroke(new BasicStroke(3));
 		mass = mass*X_factor + x0;
-		g2.drawLine((int)mass, H, (int)mass, 0);
+		draw_line((int)mass, H, (int)mass, 10, g2);
 		g2.setStroke(new BasicStroke(10));
 		g2.drawLine(w_axis/2, H - intensity, w_axis/2, H);
 	}
