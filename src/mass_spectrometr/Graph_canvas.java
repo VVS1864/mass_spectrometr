@@ -150,15 +150,18 @@ public class Graph_canvas extends JPanel {
 			unit += units_rate;
 			
         }
-// Data rendering
+// Current mass and intensity rendering
+        double B1 = Run.current_mass;
+        double current_mass = B1*B1 * Run.K;
+        int current_intensity = Run.current_intensity;
+        paint_current_mass(current_mass, current_intensity, g2);
         
+// Data rendering
         if(x_data.size() <= 2) return;
         
         g.setColor(Color.RED);
         g2.setStroke(new BasicStroke(1));
-        double B1 = Run.current_mass;//x_data.get(x_data.size()-1);
-        double current_mass = B1*B1 * Run.K;
-        int current_intensity = Run.current_intensity;//y_data.get(y_data.size()-1);
+        
     	if (current_intensity > max_intensity) max_intensity = current_intensity;
     	if (current_mass > max_mass) max_mass = current_mass;
         for(int i = 1; i<x_data.size()-1; i++) {     
@@ -175,11 +178,11 @@ public class Graph_canvas extends JPanel {
         	
         }
        
-        paint_current_mass(current_mass, current_intensity, g2);
-        if(Run.flow_mass) {
-        	Run.analyser = new Chart_analyser(Run.mass_data, Run.intensity_data);
-        	paint_peak_labels(g2);
-        }
+        
+        g.setColor(Color.BLUE);
+        Run.analyser = new Chart_analyser(Run.mass_data, Run.intensity_data);
+        paint_peak_labels(g2);
+        
 	}
 	private void draw_line(int x1, int y1, int x2, int y2, Graphics2D g2) {
 		if(x1>=w_axis && x2>=w_axis && x1<=W && x2<=W && y1>=10 && y2>=10 && y1<=H && y2<=H) {

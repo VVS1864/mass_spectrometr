@@ -46,26 +46,6 @@ public class Connector {
 		}	
 		return true;
 	}
-	public void Start() {
-		try {
-			try {
-				Thread.sleep(400);
-			} catch (InterruptedException e) {
-				e.printStackTrace();
-			}
-			if(!Run.transferring_data) {
-				serialPort.writeBytes("1".getBytes());
-			}
-			else {
-				serialPort.writeBytes("0".getBytes());
-				
-			}
-			Run.cnvs.repaint();
-		} catch (SerialPortException ex) {
-			System.out.println(ex);
-		}		
-		
-	}
 	
 	public void close() {
 		try {
@@ -95,8 +75,10 @@ public class Connector {
 					byte buf[] = serialPort.readBytes(10);
 
 					byte_to_int(buf);
+					/*
 					if (Run.current_time==0 && Run.current_mass==0 && Run.current_en_el==0 & Run.current_intensity==0) {
 						if(Run.flow_mass) {
+							System.out.println(111);
 							Run.time_data.clear(); 
 							Run.mass_data.clear();
 							Run.en_el_data.clear();
@@ -106,9 +88,10 @@ public class Connector {
 						else Run.flow_mass = true;
 						return;
 					}
-					
+					*/
 					double B = ((double)Run.current_mass)/100.0;
 					Run.current_mass = B;
+					
 					if (f) {
 						Run.time_data.add(0);
 						Run.mass_data.add(B);
@@ -120,7 +103,7 @@ public class Connector {
 					if (Run.mass_data.get(Run.mass_data.size() - 1) - (a2 + 1) > 0.000001) {
 						System.out.println("!!!");
 					}*/
-					if (!Run.flow_mass) {
+					if (Run.draw_graph) {
 						Run.time_data.add(Run.current_time);
 						Run.mass_data.add(B);
 

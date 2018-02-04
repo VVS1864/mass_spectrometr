@@ -5,15 +5,9 @@ int en_el;
 int intensity;
 //bytes for transfer [current_time + mass + en_el + intensity]
 byte buf[4+2+2+2];
-
-boolean send_flag = false;
 boolean back_flag = false;
-int cmd;
-char start_cmd = '1';
-char stop_cmd = '0';
-
-int v[2];
-int led = 13;//
+//int v[2];
+int led = 13;
 void setup() {
   pinMode(led, OUTPUT);
   digitalWrite(led, LOW);
@@ -22,63 +16,38 @@ void setup() {
 
 // the loop function runs over and over again forever
 void loop() {
-  recvOneChar();
+  set_mass();
+  set_data();
   send_data();
-
+  delay(100);
 }
-void recvOneChar(){
-  if(Serial.available()){
-    cmd = Serial.read();
-
-    if(cmd == start_cmd){
-      send_flag = true;
-      digitalWrite(led, HIGH);
+void set_mass(){
+  set_demo_mass();
+}
+void set_demo_mass(){
+  if (back_flag == false){
+    if(mass>0){
+      mass-=4;
     }
     else{
-      send_flag = false;
-      digitalWrite(led, LOW);
+      mass = 0;
+      back_flag = true;
     }
-  } 
-}
-
-void send_data(){
-  if(send_flag == true){
-    if(!back_flag){
-      if (mass>0){
-        set_random();
-        mass-=4;
-      }
-      else{
-        back_flag = true;
-        set_zero();
-        }
+  }
+  else{
+    if(mass<init_mass){
+      mass+=4;
     }
-    else {
-      if(mass<init_mass){
-        set_random();
-        mass += 4;
-        delay(100);
-      }
-      else{
-        set_zero();
-        back_flag = false;
-        ints_to_bytes();
-        Serial.write(buf, 10);
-        mass = init_mass;
-        return;
-      }
-      
+  
+    else{
+      mass = init_mass;
+      back_flag = false;
     }
-    
-    ints_to_bytes();
-    Serial.write(buf, 10);
   }
 }
-void set_zero(){
-  current_time = 0;  
-  en_el = 0;
-  intensity = 0;
-  mass = 0;
+
+void set_data(){
+  set_random();
 }
 
 void set_random(){
@@ -93,6 +62,12 @@ void set_random(){
   en_el = random(30);
   intensity = random(n, r);
 }
+
+void send_data(){
+  ints_to_bytes();
+  Serial.write(buf, 10); 
+}
+
 /*
 void bytes_to_int(byte bytes[4], int val[2]){
  val[0] = ((bytes[0] & 0xff) << 8) | (bytes[1] & 0xff);
@@ -117,6 +92,7 @@ void ints_to_bytes(){
   buf[8] = (intensity >> 8) & 0xFF;
   buf[9] = intensity & 0xFF;
 }
+
 
 
 

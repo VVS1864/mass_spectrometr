@@ -35,8 +35,7 @@ public class Run {
 	public static Connector arduino;
 	public static Chart_analyser analyser;
 	
-	public static boolean transferring_data = false;
-	public static boolean flow_mass = false;
+	public static boolean draw_graph = false;
 	public static int rendering_rate = 10;
 	public static int current_step = 0;
 	public static double K = 1;
@@ -45,6 +44,13 @@ public class Run {
 	public Run() {
 		arduino = new Connector(); 
 		GUI user_interface = new GUI();
+	}
+	
+	public static void reset() {
+		time_data.clear();
+		mass_data.clear();
+		en_el_data.clear();
+		intensity_data.clear();
 	}
 	
 	public static void main(String[] args) {

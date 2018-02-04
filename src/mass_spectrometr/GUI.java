@@ -32,6 +32,7 @@ public class GUI {
 	
 	protected JTextField k_textbox;
 	protected boolean is_ready = false;
+	protected boolean reset = false;
 	public GUI(){
 		JFrame mainFrame = new JFrame("Java AWT Examples");
 		mainFrame.setLayout(new BorderLayout());
@@ -53,25 +54,33 @@ public class GUI {
 				if (!is_ready) {
 					is_ready = Run.arduino.Connect();
 					if (is_ready) {
-						button_connect.setText("Start");
-						set_status(Color.CYAN, "Arduino is ready");
+						button_connect.setText("Draw graph");
+						set_status(Color.CYAN, "Transfering data from arduino");
 
 					} else {
 						set_status(Color.RED, "Port is busy or not found");
 					}
 				}
 				else {
-					Run.arduino.Start();
-	  				if(!Run.transferring_data) {
+	  				if(!Run.draw_graph && !reset) {
 	  					button_connect.setText("Stop");
-	  					Run.transferring_data = true;
-	  					set_status(Color.CYAN, "Transferring data");
+	  					Run.draw_graph = true;
+	  					set_status(Color.CYAN, "Transfering data from arduino, draw graph");
 	  				}
-	  				else {
-	  					button_connect.setText("Start");
-	  					Run.transferring_data = false;
-	  					set_status(Color.ORANGE, "Transferring stopped");
+	  				else if(Run.draw_graph && !reset) {
+	  					button_connect.setText("Reset");
+	  					Run.draw_graph = false;
+	  					reset = true;
+	  					set_status(Color.CYAN, "Transfering data from arduino");
 	  				}
+	  				else if(reset) {
+	  					button_connect.setText("Draw graph");
+	  					set_status(Color.CYAN, "Transfering data from arduino");
+	  					Run.draw_graph = false;
+	  					reset = false;
+	  					Run.reset();
+	  				}
+	  				
 				}
 			}
 		};
