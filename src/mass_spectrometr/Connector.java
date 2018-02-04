@@ -35,11 +35,15 @@ public class Connector {
 			
 			serialPort.setEventsMask(SerialPort.MASK_RXCHAR);
 			serialPort.addEventListener(new EventListener());
+			
 			try {
-				Thread.sleep(1200);
+				Thread.sleep(1600);
 			} catch (InterruptedException e) {
 				e.printStackTrace();
 			}
+			
+			serialPort.writeBytes("1".getBytes());
+			
 		} catch (SerialPortException ex) {
 			System.out.println(ex);
 			return false;
@@ -116,6 +120,7 @@ public class Connector {
 					  
 					  Run.current_step = 0; } Run.current_step ++;
 					 */
+					
 					Run.cnvs.repaint();
 					
 				} catch (SerialPortException ex) {

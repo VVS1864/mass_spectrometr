@@ -153,6 +153,7 @@ public class Graph_canvas extends JPanel {
 // Current mass and intensity rendering
         double B1 = Run.current_mass;
         double current_mass = B1*B1 * Run.K;
+        //System.out.println(Run.current_mass + " " + current_mass);
         int current_intensity = Run.current_intensity;
         paint_current_mass(current_mass, current_intensity, g2);
         
@@ -177,11 +178,12 @@ public class Graph_canvas extends JPanel {
         	draw_line((int)x1, (int)y1, (int)x2, (int)y2, g2);
         	
         }
-       
-        
+
         g.setColor(Color.BLUE);
-        Run.analyser = new Chart_analyser(Run.mass_data, Run.intensity_data);
-        paint_peak_labels(g2);
+        if(x_data.size()>2 && Run.draw_graph == false) {
+        	Run.analyser = new Chart_analyser(Run.mass_data, Run.intensity_data);
+        	paint_peak_labels(g2);
+        }
         
 	}
 	private void draw_line(int x1, int y1, int x2, int y2, Graphics2D g2) {

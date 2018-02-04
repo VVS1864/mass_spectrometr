@@ -6,6 +6,8 @@ int intensity;
 //bytes for transfer [current_time + mass + en_el + intensity]
 byte buf[4+2+2+2];
 boolean back_flag = false;
+boolean send_flag = false;
+char start_cmd = '1';
 //int v[2];
 int led = 13;
 void setup() {
@@ -19,7 +21,7 @@ void loop() {
   set_mass();
   set_data();
   send_data();
-  delay(100);
+  delay(20);
 }
 void set_mass(){
   set_demo_mass();
@@ -64,8 +66,18 @@ void set_random(){
 }
 
 void send_data(){
-  ints_to_bytes();
-  Serial.write(buf, 10); 
+  if(send_flag == false){
+    if(Serial.available()){
+      char cmd = Serial.read();
+      if(cmd == start_cmd){
+        send_flag = true;
+      }
+    }
+  }
+  if(send_flag == true){
+    ints_to_bytes();
+    Serial.write(buf, 10);
+  }
 }
 
 /*
