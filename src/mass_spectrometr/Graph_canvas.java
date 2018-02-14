@@ -7,6 +7,7 @@ import java.awt.Font;
 import java.awt.FontMetrics;
 import java.awt.Graphics;
 import java.awt.Graphics2D;
+import java.text.DecimalFormat;
 import java.util.ArrayList;
 
 import javax.swing.JPanel;
@@ -152,7 +153,7 @@ public class Graph_canvas extends JPanel {
         }
 // Current mass and intensity rendering
         double B1 = Run.current_mass;
-        double current_mass = B1*B1 * Run.K;
+        double current_mass = calc_mass(B1);
         //System.out.println(Run.current_mass + " " + current_mass);
         int current_intensity = Run.current_intensity;
         paint_current_mass(current_mass, current_intensity, g2);
@@ -167,9 +168,9 @@ public class Graph_canvas extends JPanel {
     	if (current_mass > max_mass) max_mass = current_mass;
         for(int i = 1; i<x_data.size()-1; i++) {     
         	B1 = x_data.get(i-1);
-        	double mass_1 = B1*B1 * Run.K;
+        	double mass_1 = calc_mass(B1);
         	double B2 = x_data.get(i);
-        	double mass_2 = B2*B2 * Run.K; 
+        	double mass_2 = calc_mass(B2); 
         	double x1 = mass_1*X_factor + x0;
         	double y1 = H - (y_data.get(i-1)*Y_factor);
         	double x2 = mass_2*X_factor + x0;
@@ -186,8 +187,12 @@ public class Graph_canvas extends JPanel {
         }
         
 	}
+	private double calc_mass(double B) {
+		return Run.M0 + Run.K * (Run.B0+B)*(Run.B0+B);
+	}
 	private void draw_line(int x1, int y1, int x2, int y2, Graphics2D g2) {
-		if(x1>=w_axis && x2>=w_axis && x1<=W && x2<=W && y1>=10 && y2>=10 && y1<=H && y2<=H) {
+	//	if(x1>=w_axis && x2>=w_axis && x1<=W && x2<=W && y1>=10 && y2>=10 && y1<=H && y2<=H) {
+		if((x1>=w_axis && x2>=w_axis && x1<=W) && (x2<=W || y1>=10 || y2>=10 || y1<=H || y2<=H)) {
     		g2.drawLine((int)x1, (int)y1, (int)x2, (int)y2);
 		}
 	}
@@ -224,9 +229,14 @@ public class Graph_canvas extends JPanel {
 	}
 	
 	private void paint_current_mass(double mass, int intensity, Graphics2D g2) {
+		DecimalFormat formatter = new DecimalFormat("#0.00");
+		Run.label_mass.setText(formatter.format(mass));
+		Run.label_intensity.setText(formatter.format(intensity));
+		
 		g2.setColor(Color.BLUE);
 		g2.setStroke(new BasicStroke(3));
-		mass = mass*X_factor + x0;
+		mass = mass * X_factor + x0;
+		intensity *= Y_factor;
 		draw_line((int)mass, H, (int)mass, 10, g2);
 		g2.setStroke(new BasicStroke(10));
 		g2.drawLine(w_axis/2, H - intensity, w_axis/2, H);

@@ -93,12 +93,12 @@ public class Connector {
 						return;
 					}
 					*/
-					double B = ((double)Run.current_mass)/100.0;
-					Run.current_mass = B;
+					//double B = ((double)Run.current_mass)/100.0;
+					//Run.current_mass = B;
 					
-					if (f) {
+					if (Run.draw_graph && f) {
 						Run.time_data.add(0);
-						Run.mass_data.add(B);
+						Run.mass_data.add(Run.current_mass);
 						Run.en_el_data.add(0);
 						Run.intensity_data.add(0);
 						f = false;
@@ -109,7 +109,7 @@ public class Connector {
 					}*/
 					if (Run.draw_graph) {
 						Run.time_data.add(Run.current_time);
-						Run.mass_data.add(B);
+						Run.mass_data.add(Run.current_mass);
 
 						Run.en_el_data.add(Run.current_en_el);
 

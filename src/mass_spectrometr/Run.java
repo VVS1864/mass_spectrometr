@@ -23,6 +23,8 @@ public class Run {
 	public static Graph_canvas cnvs;
 
 	public static JLabel status_info2;
+	public static JLabel label_mass;
+	public static JLabel label_intensity;
 
 	public static double manual_X_factor = 4.0;
 	public static double manual_Y_factor = 4.0;
@@ -38,8 +40,9 @@ public class Run {
 	public static boolean draw_graph = false;
 	public static int rendering_rate = 10;
 	public static int current_step = 0;
-	public static double K = 1;
-	
+	public static double M0 = 0;
+	public static double K = 0.0001;
+	public static double B0 = 0;
 	
 	public Run() {
 		arduino = new Connector(); 

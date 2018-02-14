@@ -30,7 +30,9 @@ public class GUI {
 	protected JButton button_pY;
 	protected JButton button_mY;
 	
+	protected JTextField m0_textbox;
 	protected JTextField k_textbox;
+	protected JTextField b0_textbox;
 	protected boolean is_ready = false;
 	protected boolean reset = false;
 	public GUI(){
@@ -147,17 +149,30 @@ public class GUI {
 		ActionListener update_K = new ActionListener() {
 			@Override
 			public void actionPerformed(ActionEvent e) {
-				String str = k_textbox.getText();
+				String str_m0 = m0_textbox.getText();
+				double new_M0;
+				String str_k = k_textbox.getText();
 				double new_K;
+				String str_b0 = b0_textbox.getText();
+				double new_B0;
+				
 				try {
-					new_K = Double.parseDouble(str);
+					new_M0 = Double.parseDouble(str_m0);
+					new_K = Double.parseDouble(str_k);
+					new_B0 = Double.parseDouble(str_b0);
 				}
 				catch(NumberFormatException ex) {
 					k_textbox.setBackground(Color.RED);
+					m0_textbox.setBackground(Color.RED);
+					b0_textbox.setBackground(Color.RED);
 					return;
 				}
 				k_textbox.setBackground(Color.WHITE);
+				m0_textbox.setBackground(Color.WHITE);
+				b0_textbox.setBackground(Color.WHITE);
+				Run.M0 = new_M0;
 				Run.K = new_K;
+				Run.B0 = new_B0;
 				Run.cnvs.repaint();
 			}
 			
@@ -173,8 +188,15 @@ public class GUI {
 	  	status_panel.add(Run.status_info2);
 	  	status_panel.setAlignmentX(Component.LEFT_ALIGNMENT);
 //Port panel
-	    final JPanel port_panel = new JPanel();
-		port_panel.setLayout(new BoxLayout(port_panel, BoxLayout.X_AXIS));
+	    final JPanel top_panel = new JPanel();
+		top_panel.setLayout(new BoxLayout(top_panel, BoxLayout.Y_AXIS));
+		
+		final JPanel top_panel_1 = new JPanel();
+		top_panel_1.setLayout(new BoxLayout(top_panel_1, BoxLayout.X_AXIS));
+		
+		final JPanel top_panel_2 = new JPanel();
+		top_panel_2.setLayout(new BoxLayout(top_panel_2, BoxLayout.X_AXIS));
+		
 	    Run.pbox = new JComboBox<String>(Run.ports);
 	    Run.pbox.setMaximumSize(new Dimension(140, 30));
 	    	    	
@@ -192,21 +214,51 @@ public class GUI {
 		JButton button_mX = new JButton("-");
 		button_mX.addActionListener(minusX);
 		
+	    top_panel_1.add(Run.pbox);
+	    top_panel_1.add(button_connect);
+	    top_panel_1.add(button_l);
+	    top_panel_1.add(button_r);
+	    top_panel_1.add(button_pX);
+	    top_panel_1.add(button_mX);
+	    top_panel_1.setAlignmentX(Component.LEFT_ALIGNMENT);
+	    
+	    
+		
+		JLabel coefficients = new JLabel("Coefficients: ");
+		JLabel M0 = new JLabel("M0: ");
+		m0_textbox = new JTextField(Double.toString(Run.M0));
+		m0_textbox.setMaximumSize(new Dimension(50, 40));
+		JLabel K = new JLabel("K: ");
 		k_textbox = new JTextField(Double.toString(Run.K));
 		k_textbox.setMaximumSize(new Dimension(50, 40));
-		
-		JButton button_K = new JButton("Update K");
+		JLabel B0 = new JLabel("B0: ");
+		b0_textbox = new JTextField(Double.toString(Run.B0));
+		b0_textbox.setMaximumSize(new Dimension(50, 40));
+		JButton button_K = new JButton("Update");
 		button_K.addActionListener(update_K);
+		JLabel current_mass = new JLabel("Mass: ");
+		Run.label_mass = new JLabel();
+		JLabel spacer = new JLabel("  ");
+		JLabel current_intensity = new JLabel("Intensity: ");
+		Run.label_intensity = new JLabel();		
 		
-	    port_panel.add(Run.pbox);
-	    port_panel.add(button_connect);
-	    port_panel.add(button_l);
-	    port_panel.add(button_r);
-	    port_panel.add(button_pX);
-	    port_panel.add(button_mX);
-	    port_panel.add(k_textbox);
-	    port_panel.add(button_K);
-	    port_panel.setAlignmentX(Component.LEFT_ALIGNMENT);
+		top_panel_2.add(coefficients);
+		top_panel_2.add(M0);
+		top_panel_2.add(m0_textbox);
+		top_panel_2.add(K);
+	    top_panel_2.add(k_textbox);
+	    top_panel_2.add(B0);
+	    top_panel_2.add(b0_textbox);
+	    top_panel_2.add(button_K);
+	    top_panel_2.add(current_mass);
+	    top_panel_2.add(Run.label_mass);
+	    top_panel_2.add(spacer);
+	    top_panel_2.add(current_intensity);
+	    top_panel_2.add(Run.label_intensity);
+	    top_panel_2.setAlignmentX(Component.LEFT_ALIGNMENT);
+	    
+	    top_panel.add(top_panel_1);
+	    top_panel.add(top_panel_2);
 	    
 //toolbar for canvas
 	    final JPanel zoom_panel = new JPanel();
@@ -238,7 +290,9 @@ public class GUI {
 	        @Override
 	        public boolean dispatchKeyEvent(KeyEvent e) {
 	        	int action = e.getID();
-	        	if (action == KeyEvent.KEY_PRESSED) {
+	        	Component focus = mainFrame.getFocusOwner();
+	        	if (focus != m0_textbox && focus != b0_textbox && focus != k_textbox &&
+	        			action == KeyEvent.KEY_PRESSED) {
 	        		char c = e.getKeyChar();
 	        		int code = e.getKeyCode();
 	        		
@@ -257,7 +311,7 @@ public class GUI {
 	        }
 	  });
 	    
-	    mainFrame.add(port_panel, BorderLayout.NORTH);
+	    mainFrame.add(top_panel, BorderLayout.NORTH);
 	    mainFrame.add(Run.cnvs,  BorderLayout.CENTER);
 	    mainFrame.add(status_panel, BorderLayout.SOUTH);
 	    
