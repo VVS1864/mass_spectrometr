@@ -11,7 +11,7 @@ public class Chart_analyser {
 	ArrayList<Peak> peaks = new ArrayList<Peak>();
 	int summ_noise = 0;
 	Chart_analyser(ArrayList<Double> x_data, ArrayList<Integer> y_data) {
-		this.x_data = B_B_K(x_data, Run.K);
+		this.x_data = B_B_K(x_data, Run.prog.K);
 		this.y_data = y_data;
 		analyse();
 	}

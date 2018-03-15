@@ -41,9 +41,10 @@ public class GUI {
 	    mainFrame.setSize(800,600);
 	    mainFrame.addWindowListener(new WindowAdapter() {
 	         public void windowClosing(WindowEvent windowEvent){
-	        	Run.arduino.close();
-	        	mainFrame.dispose();
-	            System.exit(0);
+	        	 Run.prog.close();
+	        	        	
+	        	 mainFrame.dispose();	       
+	        	 System.exit(0);
 	            
 	         }        
 	      }); 
@@ -54,7 +55,7 @@ public class GUI {
 			@Override
 			public void actionPerformed(ActionEvent e) {
 				if (!is_ready) {
-					is_ready = Run.arduino.Connect();
+					is_ready = Run.prog.arduino.Connect();
 					if (is_ready) {
 						button_connect.setText("Draw graph");
 						set_status(Color.CYAN, "Transfering data from arduino");
@@ -64,23 +65,23 @@ public class GUI {
 					}
 				}
 				else {
-	  				if(!Run.draw_graph && !reset) {
+	  				if(!Run.prog.draw_graph && !reset) {
 	  					button_connect.setText("Stop");
-	  					Run.draw_graph = true;
+	  					Run.prog.draw_graph = true;
 	  					set_status(Color.CYAN, "Transfering data from arduino, draw graph");
 	  				}
-	  				else if(Run.draw_graph && !reset) {
+	  				else if(Run.prog.draw_graph && !reset) {
 	  					button_connect.setText("Reset");
-	  					Run.draw_graph = false;
+	  					Run.prog.draw_graph = false;
 	  					reset = true;
 	  					set_status(Color.CYAN, "Transfering data from arduino");
 	  				}
 	  				else if(reset) {
 	  					button_connect.setText("Draw graph");
 	  					set_status(Color.CYAN, "Transfering data from arduino");
-	  					Run.draw_graph = false;
+	  					Run.prog.draw_graph = false;
 	  					reset = false;
-	  					Run.reset();
+	  					Run.prog.reset();
 	  				}
 	  				
 				}
@@ -118,17 +119,17 @@ public class GUI {
 		ActionListener autoscaleY = new ActionListener() {
 			@Override
 			public void actionPerformed(ActionEvent e) {
-				if(Run.autoscaleY) {
-					Run.autoscaleY = false;
+				if(Run.prog.autoscaleY) {
+					Run.prog.autoscaleY = false;
 					button_pY.setEnabled(true);
 					button_mY.setEnabled(true);
 				}
 				else {
-					Run.autoscaleY = true;
+					Run.prog.autoscaleY = true;
 					button_pY.setEnabled(false);
 					button_mY.setEnabled(false);
 				}
-				Run.cnvs.repaint();
+				Run.prog.cnvs.repaint();
 			}
 			
 		};
@@ -170,10 +171,10 @@ public class GUI {
 				k_textbox.setBackground(Color.WHITE);
 				m0_textbox.setBackground(Color.WHITE);
 				b0_textbox.setBackground(Color.WHITE);
-				Run.M0 = new_M0;
-				Run.K = new_K;
-				Run.B0 = new_B0;
-				Run.cnvs.repaint();
+				Run.prog.M0 = new_M0;
+				Run.prog.K = new_K;
+				Run.prog.B0 = new_B0;
+				Run.prog.cnvs.repaint();
 			}
 			
 		};
@@ -182,10 +183,10 @@ public class GUI {
 	  	final JPanel status_panel = new JPanel();
 	  	status_panel.setLayout(new BoxLayout(status_panel, BoxLayout.X_AXIS));
 	  	JLabel status_info = new JLabel("Status: ");
-	  	Run.status_info2 = new JLabel();
+	  	Run.prog.status_info2 = new JLabel();
 	  	
 	  	status_panel.add(status_info);
-	  	status_panel.add(Run.status_info2);
+	  	status_panel.add(Run.prog.status_info2);
 	  	status_panel.setAlignmentX(Component.LEFT_ALIGNMENT);
 //Port panel
 	    final JPanel top_panel = new JPanel();
@@ -197,8 +198,8 @@ public class GUI {
 		final JPanel top_panel_2 = new JPanel();
 		top_panel_2.setLayout(new BoxLayout(top_panel_2, BoxLayout.X_AXIS));
 		
-	    Run.pbox = new JComboBox<String>(Run.ports);
-	    Run.pbox.setMaximumSize(new Dimension(140, 30));
+	    Run.prog.portbox = new JComboBox<String>(Run.prog.ports);
+	    Run.prog.portbox.setMaximumSize(new Dimension(140, 30));
 	    	    	
 	    button_connect = new JButton("Connect");
 		button_connect.addActionListener(connect_action_listener);
@@ -214,7 +215,7 @@ public class GUI {
 		JButton button_mX = new JButton("-");
 		button_mX.addActionListener(minusX);
 		
-	    top_panel_1.add(Run.pbox);
+	    top_panel_1.add(Run.prog.portbox);
 	    top_panel_1.add(button_connect);
 	    top_panel_1.add(button_l);
 	    top_panel_1.add(button_r);
@@ -226,21 +227,21 @@ public class GUI {
 		
 		JLabel coefficients = new JLabel("Coefficients: ");
 		JLabel M0 = new JLabel("M0: ");
-		m0_textbox = new JTextField(Double.toString(Run.M0));
+		m0_textbox = new JTextField(Double.toString(Run.prog.M0));
 		m0_textbox.setMaximumSize(new Dimension(50, 40));
 		JLabel K = new JLabel("K: ");
-		k_textbox = new JTextField(Double.toString(Run.K));
+		k_textbox = new JTextField(Double.toString(Run.prog.K));
 		k_textbox.setMaximumSize(new Dimension(50, 40));
 		JLabel B0 = new JLabel("B0: ");
-		b0_textbox = new JTextField(Double.toString(Run.B0));
+		b0_textbox = new JTextField(Double.toString(Run.prog.B0));
 		b0_textbox.setMaximumSize(new Dimension(50, 40));
 		JButton button_K = new JButton("Update");
 		button_K.addActionListener(update_K);
 		JLabel current_mass = new JLabel("Mass: ");
-		Run.label_mass = new JLabel();
+		Run.prog.label_mass = new JLabel();
 		JLabel spacer = new JLabel("  ");
 		JLabel current_intensity = new JLabel("Intensity: ");
-		Run.label_intensity = new JLabel();		
+		Run.prog.label_intensity = new JLabel();		
 		
 		top_panel_2.add(coefficients);
 		top_panel_2.add(M0);
@@ -251,10 +252,10 @@ public class GUI {
 	    top_panel_2.add(b0_textbox);
 	    top_panel_2.add(button_K);
 	    top_panel_2.add(current_mass);
-	    top_panel_2.add(Run.label_mass);
+	    top_panel_2.add(Run.prog.label_mass);
 	    top_panel_2.add(spacer);
 	    top_panel_2.add(current_intensity);
-	    top_panel_2.add(Run.label_intensity);
+	    top_panel_2.add(Run.prog.label_intensity);
 	    top_panel_2.setAlignmentX(Component.LEFT_ALIGNMENT);
 	    
 	    top_panel.add(top_panel_1);
@@ -283,7 +284,7 @@ public class GUI {
 		
 //Add all panels to frame
 				
-	    Run.cnvs = new Graph_canvas();
+	    Run.prog.cnvs = new Graph_canvas();
 	    
 	    KeyboardFocusManager.getCurrentKeyboardFocusManager()
 	    .addKeyEventDispatcher(new KeyEventDispatcher() {
@@ -312,32 +313,32 @@ public class GUI {
 	  });
 	    
 	    mainFrame.add(top_panel, BorderLayout.NORTH);
-	    mainFrame.add(Run.cnvs,  BorderLayout.CENTER);
+	    mainFrame.add(Run.prog.cnvs,  BorderLayout.CENTER);
 	    mainFrame.add(status_panel, BorderLayout.SOUTH);
 	    
 	    mainFrame.setVisible(true); 
 	    
-	    if(Run.ports.length==0) {
+	    if(Run.prog.ports.length==0) {
 	    	set_status(Color.RED, "Port not found");
 			button_connect.setEnabled(false);
 			
 	    }
 		else {
-			Run.pbox.setSelectedIndex(0);
+			Run.prog.portbox.setSelectedIndex(0);
 		    }
 		
 	}
 	
 	protected void set_status(Color c, String s) {
-		Run.status_info2.setForeground(c);
-		Run.status_info2.setText(s);
+		Run.prog.status_info2.setForeground(c);
+		Run.prog.status_info2.setText(s);
 	}
 	
 	public void move(char left) {
-		if(left == 'L') Run.x0 -= 10;
-		else Run.x0 += 10;
+		if(left == 'L') Run.prog.x0 += 10;
+		else Run.prog.x0 -= 10;
 		
-		Run.cnvs.repaint();
+		Run.prog.cnvs.repaint();
 	}
 	
 	/**
@@ -346,21 +347,21 @@ public class GUI {
 	 * @param axis 'X' or 'Y'
 	 */
 	public void zoom(char c, char axis) {
-		double s = (c == '+') ? Run.scale_rate : 1.0/Run.scale_rate;
+		double s = (c == '+') ? Run.prog.scale_rate : 1.0/Run.prog.scale_rate;
 		if (axis == 'Y') {
-			double new_scale = Run.manual_Y_factor * s;
-			if(new_scale > 0.25) Run.manual_Y_factor *= s;
+			double new_scale = Run.prog.manual_Y_factor * s;
+			if(new_scale > 0.25) Run.prog.manual_Y_factor *= s;
 		}
 		else {
-			double new_scale = Run.manual_X_factor * s;
+			double new_scale = Run.prog.manual_X_factor * s;
 			if(new_scale < 0.25) return;
 			
-			double cn = (Run.cnvs.W/2-Run.x0);
+			double cn = (Run.prog.cnvs.W/2-Run.prog.x0);
 			double o = cn*s - cn;
-			Run.x0 -= (int)o;
-			Run.manual_X_factor *= s;	
+			Run.prog.x0 -= (int)o;
+			Run.prog.manual_X_factor *= s;	
 		}
-		Run.cnvs.repaint();
+		Run.prog.cnvs.repaint();
 	}
 
 }
