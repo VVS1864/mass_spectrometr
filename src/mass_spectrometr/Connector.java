@@ -19,6 +19,7 @@ public class Connector {
 	 * Size of array of B-raw
 	 */
 	private int count = 0;
+	private int local_N_approx;
 	
 	private ArrayList<Integer> time_part;
 	private ArrayList<Double> B_part;
@@ -68,11 +69,12 @@ public class Connector {
 	}
 	
 	public void clear_parts() {
-		time_part = new ArrayList<Integer>(Run.prog.approx_N);
-		B_part = new ArrayList<Double>(Run.prog.approx_N);
-		B_approximated = new ArrayList<Double>(Run.prog.approx_N);
-		en_el_part = new ArrayList<Integer>(Run.prog.approx_N);
-		intensity_part = new ArrayList<Integer>(Run.prog.approx_N);
+		local_N_approx = Run.prog.approx_N;
+		time_part = new ArrayList<Integer>(local_N_approx);
+		B_part = new ArrayList<Double>(local_N_approx);
+		B_approximated = new ArrayList<Double>(local_N_approx);
+		en_el_part = new ArrayList<Integer>(local_N_approx);
+		intensity_part = new ArrayList<Integer>(local_N_approx);
 		
 		count = 0;
 	}
@@ -109,9 +111,9 @@ public class Connector {
 						count++;
 
 						// Calculate approximation and repaint
-						if (count == Run.prog.approx_N) {
+						if (count == local_N_approx) {
 							Approximator A = new Approximator();
-							B_approximated = A.Approximate(B_part, time_part, Run.prog.approx_N);
+							B_approximated = A.Approximate(B_part, time_part, local_N_approx);
 							Run.prog.data_Bo.addAll(B_approximated);
 							Run.prog.data_time.addAll(time_part);
 							Run.prog.data_en_el.addAll(en_el_part);
