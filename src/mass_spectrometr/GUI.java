@@ -25,6 +25,12 @@ import javax.swing.JTextField;
 import javax.swing.KeyStroke;
 
 public class GUI {
+	public  JComboBox<String> portbox;
+	public  Graph_canvas cnvs;
+
+	public  JLabel status_info2;
+	public  JLabel label_mass;
+	public  JLabel label_intensity;
 
 	protected JButton button_connect;
 	protected JButton button_pY;
@@ -33,6 +39,7 @@ public class GUI {
 	protected JTextField m0_textbox;
 	protected JTextField k_textbox;
 	protected JTextField b0_textbox;
+	protected JTextField N_textbox;
 	protected boolean is_ready = false;
 	protected boolean reset = false;
 	public GUI(){
@@ -129,7 +136,7 @@ public class GUI {
 					button_pY.setEnabled(false);
 					button_mY.setEnabled(false);
 				}
-				Run.prog.cnvs.repaint();
+				cnvs.repaint();
 			}
 			
 		};
@@ -156,25 +163,32 @@ public class GUI {
 				double new_K;
 				String str_b0 = b0_textbox.getText();
 				double new_B0;
+				String str_N = N_textbox.getText();
+				int new_N;
 				
 				try {
 					new_M0 = Double.parseDouble(str_m0);
 					new_K = Double.parseDouble(str_k);
 					new_B0 = Double.parseDouble(str_b0);
+					new_N = Integer.parseInt(str_N);
 				}
 				catch(NumberFormatException ex) {
 					k_textbox.setBackground(Color.RED);
 					m0_textbox.setBackground(Color.RED);
 					b0_textbox.setBackground(Color.RED);
+					N_textbox.setBackground(Color.RED);
 					return;
 				}
 				k_textbox.setBackground(Color.WHITE);
 				m0_textbox.setBackground(Color.WHITE);
 				b0_textbox.setBackground(Color.WHITE);
+				N_textbox.setBackground(Color.WHITE);
 				Run.prog.M0 = new_M0;
 				Run.prog.K = new_K;
 				Run.prog.B0 = new_B0;
-				Run.prog.cnvs.repaint();
+				Run.prog.approx_N = new_N;
+				
+				cnvs.repaint();
 			}
 			
 		};
@@ -183,10 +197,10 @@ public class GUI {
 	  	final JPanel status_panel = new JPanel();
 	  	status_panel.setLayout(new BoxLayout(status_panel, BoxLayout.X_AXIS));
 	  	JLabel status_info = new JLabel("Status: ");
-	  	Run.prog.status_info2 = new JLabel();
+	  	status_info2 = new JLabel();
 	  	
 	  	status_panel.add(status_info);
-	  	status_panel.add(Run.prog.status_info2);
+	  	status_panel.add(status_info2);
 	  	status_panel.setAlignmentX(Component.LEFT_ALIGNMENT);
 //Port panel
 	    final JPanel top_panel = new JPanel();
@@ -198,8 +212,8 @@ public class GUI {
 		final JPanel top_panel_2 = new JPanel();
 		top_panel_2.setLayout(new BoxLayout(top_panel_2, BoxLayout.X_AXIS));
 		
-	    Run.prog.portbox = new JComboBox<String>(Run.prog.ports);
-	    Run.prog.portbox.setMaximumSize(new Dimension(140, 30));
+	    portbox = new JComboBox<String>(Run.prog.ports);
+	    portbox.setMaximumSize(new Dimension(140, 30));
 	    	    	
 	    button_connect = new JButton("Connect");
 		button_connect.addActionListener(connect_action_listener);
@@ -215,7 +229,7 @@ public class GUI {
 		JButton button_mX = new JButton("-");
 		button_mX.addActionListener(minusX);
 		
-	    top_panel_1.add(Run.prog.portbox);
+	    top_panel_1.add(portbox);
 	    top_panel_1.add(button_connect);
 	    top_panel_1.add(button_l);
 	    top_panel_1.add(button_r);
@@ -235,13 +249,16 @@ public class GUI {
 		JLabel B0 = new JLabel("B0: ");
 		b0_textbox = new JTextField(Double.toString(Run.prog.B0));
 		b0_textbox.setMaximumSize(new Dimension(50, 40));
+		JLabel N = new JLabel("N: ");
+		N_textbox = new JTextField(Integer.toString(Run.prog.approx_N));
+		N_textbox.setMaximumSize(new Dimension(50, 40));
 		JButton button_K = new JButton("Update");
 		button_K.addActionListener(update_K);
 		JLabel current_mass = new JLabel("Mass: ");
-		Run.prog.label_mass = new JLabel();
+		label_mass = new JLabel();
 		JLabel spacer = new JLabel("  ");
 		JLabel current_intensity = new JLabel("Intensity: ");
-		Run.prog.label_intensity = new JLabel();		
+		label_intensity = new JLabel();		
 		
 		top_panel_2.add(coefficients);
 		top_panel_2.add(M0);
@@ -250,12 +267,14 @@ public class GUI {
 	    top_panel_2.add(k_textbox);
 	    top_panel_2.add(B0);
 	    top_panel_2.add(b0_textbox);
+	    top_panel_2.add(N);
+	    top_panel_2.add(N_textbox);
 	    top_panel_2.add(button_K);
 	    top_panel_2.add(current_mass);
-	    top_panel_2.add(Run.prog.label_mass);
+	    top_panel_2.add(label_mass);
 	    top_panel_2.add(spacer);
 	    top_panel_2.add(current_intensity);
-	    top_panel_2.add(Run.prog.label_intensity);
+	    top_panel_2.add(label_intensity);
 	    top_panel_2.setAlignmentX(Component.LEFT_ALIGNMENT);
 	    
 	    top_panel.add(top_panel_1);
@@ -273,7 +292,7 @@ public class GUI {
 		button_mY = new JButton("--");
 		button_mY.addActionListener(minusY);
 		button_mY.setEnabled(false);
-		JButton button_a_scaleY = new JButton("+-");
+		JButton button_a_scaleY = new JButton("A");
 		button_a_scaleY.addActionListener(autoscaleY);
 		
 		
@@ -284,7 +303,7 @@ public class GUI {
 		
 //Add all panels to frame
 				
-	    Run.prog.cnvs = new Graph_canvas();
+	    cnvs = new Graph_canvas();
 	    
 	    KeyboardFocusManager.getCurrentKeyboardFocusManager()
 	    .addKeyEventDispatcher(new KeyEventDispatcher() {
@@ -292,7 +311,7 @@ public class GUI {
 	        public boolean dispatchKeyEvent(KeyEvent e) {
 	        	int action = e.getID();
 	        	Component focus = mainFrame.getFocusOwner();
-	        	if (focus != m0_textbox && focus != b0_textbox && focus != k_textbox &&
+	        	if (focus != m0_textbox && focus != b0_textbox && focus != k_textbox && focus != N_textbox &&
 	        			action == KeyEvent.KEY_PRESSED) {
 	        		char c = e.getKeyChar();
 	        		int code = e.getKeyCode();
@@ -313,7 +332,7 @@ public class GUI {
 	  });
 	    
 	    mainFrame.add(top_panel, BorderLayout.NORTH);
-	    mainFrame.add(Run.prog.cnvs,  BorderLayout.CENTER);
+	    mainFrame.add(cnvs,  BorderLayout.CENTER);
 	    mainFrame.add(status_panel, BorderLayout.SOUTH);
 	    
 	    mainFrame.setVisible(true); 
@@ -324,21 +343,21 @@ public class GUI {
 			
 	    }
 		else {
-			Run.prog.portbox.setSelectedIndex(0);
+			portbox.setSelectedIndex(0);
 		    }
 		
 	}
 	
 	protected void set_status(Color c, String s) {
-		Run.prog.status_info2.setForeground(c);
-		Run.prog.status_info2.setText(s);
+		status_info2.setForeground(c);
+		status_info2.setText(s);
 	}
 	
 	public void move(char left) {
 		if(left == 'L') Run.prog.x0 += 10;
 		else Run.prog.x0 -= 10;
 		
-		Run.prog.cnvs.repaint();
+		cnvs.repaint();
 	}
 	
 	/**
@@ -356,12 +375,12 @@ public class GUI {
 			double new_scale = Run.prog.manual_X_factor * s;
 			if(new_scale < 0.25) return;
 			
-			double cn = (Run.prog.cnvs.W/2-Run.prog.x0);
+			double cn = (cnvs.W/2-Run.prog.x0);
 			double o = cn*s - cn;
 			Run.prog.x0 -= (int)o;
 			Run.prog.manual_X_factor *= s;	
 		}
-		Run.prog.cnvs.repaint();
+		cnvs.repaint();
 	}
 
 }

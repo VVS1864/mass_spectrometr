@@ -35,8 +35,8 @@ public class Graph_canvas extends JPanel {
         H = this.getHeight()-h_axis;
         W = this.getWidth()-w_axis;
         x0 = Run.prog.x0;
-        ArrayList<Double> x_data = Run.prog.mass_data;
-        ArrayList<Integer> y_data = Run.prog.intensity_data;
+        ArrayList<Double> x_data = Run.prog.data_Bo;
+        ArrayList<Integer> y_data = Run.prog.data_intensity;
 //factors
         if(Run.prog.autoscaleY) {
         	Y_factor = Run.prog.manual_Y_factor = (H-(2*h_axis))/max_intensity;
@@ -152,7 +152,7 @@ public class Graph_canvas extends JPanel {
 			
         }
 // Current mass and intensity rendering
-        double B1 = Run.prog.current_mass;
+        double B1 = Run.prog.current_B;
         double current_mass = calc_mass(B1);
         //System.out.println(Run.prog.current_mass + " " + current_mass);
         int current_intensity = Run.prog.current_intensity;
@@ -166,7 +166,9 @@ public class Graph_canvas extends JPanel {
         
     	if (current_intensity > max_intensity) max_intensity = current_intensity;
     	if (current_mass > max_mass) max_mass = current_mass;
-        for(int i = 1; i<x_data.size()-1; i++) {     
+    	if (x_data.size() == 0 || y_data.size() == 0) return;
+        for(int i = 1; i<x_data.size()-1; i++) {    
+        	//System.out.println(x_data.size()+"__"+y_data.size());
         	B1 = x_data.get(i-1);
         	double mass_1 = calc_mass(B1);
         	double B2 = x_data.get(i);
@@ -182,7 +184,7 @@ public class Graph_canvas extends JPanel {
 
         g.setColor(Color.BLUE);
         if(x_data.size()>2 && Run.prog.draw_graph == false) {
-        	Run.prog.analyser = new Chart_analyser(Run.prog.mass_data, Run.prog.intensity_data);
+        	Run.prog.analyser = new Chart_analyser(x_data, y_data);
         	paint_peak_labels(g2);
         }
         
@@ -230,8 +232,8 @@ public class Graph_canvas extends JPanel {
 	
 	private void paint_current_mass(double mass, int intensity, Graphics2D g2) {
 		DecimalFormat formatter = new DecimalFormat("#0.00");
-		Run.prog.label_mass.setText(formatter.format(mass));
-		Run.prog.label_intensity.setText(formatter.format(intensity));
+		Run.prog.user_interface.label_mass.setText(formatter.format(mass));
+		Run.prog.user_interface.label_intensity.setText(formatter.format(intensity));
 		
 		g2.setColor(Color.BLUE);
 		g2.setStroke(new BasicStroke(3));

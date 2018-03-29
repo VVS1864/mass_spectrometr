@@ -30,7 +30,7 @@ public class Chart_analyser {
 	public void analyse() {
 		int i = 0;
 		do {
-			int ind = y_data.size() - i - 1;
+			int ind = x_data.size() - i - 1;
 			int y = y_data.get(ind);
 			double x = x_data.get(ind);
 			i++;

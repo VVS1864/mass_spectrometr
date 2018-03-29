@@ -1,8 +1,15 @@
 package mass_spectrometr;
 
+import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileOutputStream;
+import java.io.FileReader;
 import java.io.IOException;
+import java.io.InputStream;
+import java.io.InputStreamReader;
+import java.io.Reader;
+import java.net.URISyntaxException;
+import java.security.CodeSource;
 import java.util.Properties;
 
 public class Config {
@@ -12,13 +19,18 @@ public class Config {
 	public Config() {		
 		load_config("config.txt");
 	}
+	/**
+	 * store config to file in directory of .jar file
+	 */
 	public void store_config() {
+		File jarDir = new File(ClassLoader.getSystemClassLoader().getResource(".").getPath());
+		File conf = new File(jarDir, "config.txt");
 		try {
-			FileOutputStream fos = new FileOutputStream(config_path);
-			config.store(fos, null);
-
+			FileOutputStream stream = new FileOutputStream(conf);
+			config.store(stream, null);
+			System.out.println("Settings are written to config file " + conf.getAbsolutePath());
 		} catch (IOException e) {
-			System.err.println("Error! Config file '" + config_path + "' not found.");
+			System.err.println("Error store config! Config file '" + config_path + "' not found.");
 		}
 	}
 	public void set_conf_value(String value_name, String new_value) {
@@ -38,16 +50,32 @@ public class Config {
 	}
 	
 	private void load_config(String config_name){
-		String rootPath = Thread.currentThread().getContextClassLoader().getResource("").getPath();
-		config_path = rootPath + "/mass_spectrometr/config.txt";
+		//First try load from config in jar directory
+		boolean read_from_fir = false;
+		File jarDir = new File(ClassLoader.getSystemClassLoader().getResource(".").getPath());
+		File conf = null;
 		
 		try {
-			FileInputStream fis = new FileInputStream(config_path);
-			config.load(fis);
-
+			conf = new File(jarDir, "config.txt");
+			InputStream stream = new FileInputStream(conf);
+			config.load(stream);
+			read_from_fir = true;
+			System.out.println("Config loaded from directory " + jarDir.getAbsolutePath());
 		} catch (IOException e) {
-			System.err.println("Error! Config file '" + config_path + "' not found.");
+			System.err.println("Error load config! Config file in " + jarDir.getAbsolutePath() + " not found.");
 		}
+		
+		//If config not exist - load default config from jar
+		if (read_from_fir == false){
+			try {
+				InputStreamReader stream = new InputStreamReader(getClass().getResourceAsStream("config.txt"));
+				config.load(stream);
+				System.out.println("Config loaded from jar by default");
+			} catch (IOException e) {
+				System.err.println("Error reading default config file!");
+			}
+		}
+		
 	}
 
 	public static void main(String[] args) {

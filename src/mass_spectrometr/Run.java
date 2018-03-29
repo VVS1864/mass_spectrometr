@@ -8,24 +8,21 @@ import javax.swing.JLabel;
 
 public class Run {
 	public static Run prog;
-	public  ArrayList<Integer> time_data = new ArrayList<Integer>();
-	public  ArrayList<Double> mass_data = new ArrayList<Double>();
-	public  ArrayList<Integer> en_el_data = new ArrayList<Integer>();
-	public  ArrayList<Integer> intensity_data = new ArrayList<Integer>();
+	public  ArrayList<Integer> data_time = new ArrayList<Integer>();
+	public  ArrayList<Integer> data_en_el = new ArrayList<Integer>();
+	public  ArrayList<Integer> data_intensity = new ArrayList<Integer>();
+	/**
+	 * B - approximated
+	 */
+	public  ArrayList<Double> data_Bo = new ArrayList<Double>();
 	
-	public  int current_time = 0;
-	public  double current_mass = 0;
-	public  int current_en_el = 0;
-	public  int current_intensity = 0;
+	public  int current_time;
+	public  double current_B;
+	public  int current_en_el;
+	public  int current_intensity;
 	
-	
-	public  JComboBox<String> portbox;
 	public  String[] ports;
-	public  Graph_canvas cnvs;
-
-	public  JLabel status_info2;
-	public  JLabel label_mass;
-	public  JLabel label_intensity;
+	
 
 	public  double manual_X_factor = 4.0;
 	public  double manual_Y_factor = 4.0;
@@ -37,6 +34,8 @@ public class Run {
 
 	public  Connector arduino;
 	public  Chart_analyser analyser;
+	public GUI user_interface;
+	private Config cfg;
 	
 	public  boolean draw_graph = false;
 	public  int rendering_rate = 10;
@@ -44,15 +43,19 @@ public class Run {
 	public  double M0;
 	public  double K;
 	public  double B0;
+	/**
+	 * size of array for approximation B
+	 */
+	public  int approx_N = 100;
 	
-	private Config cfg;
+	
 	
 	public Run() {
 		prog = this;
 		arduino = new Connector(); 
 		cfg = new Config();
 		read_settings();
-		GUI user_interface = new GUI();
+		user_interface = new GUI();
 	}
 	
 	private void read_settings() {
@@ -66,7 +69,6 @@ public class Run {
 		cfg.set_conf_value("B0", Double.toString(B0));
 		cfg.set_conf_value("K", Double.toString(K));
 		cfg.store_config();
-		System.out.println("Settings are written to config!");
 	}
 	
 	private double parse_double(String value_name, double default_value) {
@@ -82,10 +84,13 @@ public class Run {
 	}
 	
 	public void reset() {
-		time_data.clear();
-		mass_data.clear();
-		en_el_data.clear();
-		intensity_data.clear();
+		data_time.clear();
+		//data_B.clear();
+		data_Bo.clear();
+		data_en_el.clear();
+		data_intensity.clear();
+		
+		arduino.clear_parts();
 	}
 	
 	public void close() {

@@ -1,4 +1,5 @@
-unsigned long current_time;
+unsigned long current_time = 0;
+//unsigned long max_time = 30000;
 int mass = 1224;
 int init_mass = 1224;
 int en_el;
@@ -29,7 +30,7 @@ void set_mass(){
 void set_demo_mass(){
   if (back_flag == false){
     if(mass>0){
-      mass-=4;
+      mass-=1 + random(-3, 3);
     }
     else{
       mass = 0;
@@ -38,7 +39,7 @@ void set_demo_mass(){
   }
   else{
     if(mass<init_mass){
-      mass+=4;
+      mass+=1 + random(-3, 3);
     }
   
     else{
@@ -49,6 +50,10 @@ void set_demo_mass(){
 }
 
 void set_data(){
+  //if (current_time >= max_time){
+  //  current_time = 0;
+ // }
+  //current_time ++;
   set_random();
 }
 
