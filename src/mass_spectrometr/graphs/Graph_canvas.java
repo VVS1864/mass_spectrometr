@@ -1,4 +1,4 @@
-package mass_spectrometr;
+package mass_spectrometr.graphs;
 
 
 import java.awt.BasicStroke;
@@ -12,41 +12,70 @@ import java.util.ArrayList;
 
 import javax.swing.JPanel;
 
-public class Graph_canvas extends JPanel {
+import mass_spectrometr.Chart_analyser;
+import mass_spectrometr.Peak;
+import mass_spectrometr.Run;
+
+public abstract class Graph_canvas extends JPanel {
+	protected ArrayList<Double> x_data;
+	protected ArrayList<Integer> y_data;
 	
 	private final int h_axis = 51;
 	private final int w_axis = 100;
 	private final int arrow_w = 10;
-	private double max_intensity = 100;
-	private double max_mass = 0;
-	private double X_factor;
-	private double Y_factor;
-	private int x0;
-	public int  H; 
+	protected double max_y = 100;
+	protected double max_x = 0;
+	
+	protected double X_factor;
+	protected double Y_factor;
+	public  boolean autoscaleY = true;
+	public  double manual_X_factor = 4.0;
+	public  double manual_Y_factor = 4.0;
+	public  double scale_rate = 1.3;
+	
+	public int x0 = 100;
+	protected int  H; 
 	public int  W;
-	//public Graphics2D g2;
-	public Graph_canvas () {
+	
+	protected Graphics g;
+	protected Graphics2D g2;
+	
+	public Graph_canvas (ArrayList<Double> x_data, ArrayList<Integer> y_data) {
+		this.x_data = x_data;
+		this.y_data = y_data;
 		setBackground (Color.lightGray);
 	}
 	
 	protected void paintComponent(Graphics g) {
+		this.g = g;
         super.paintComponent(g);      
-        Graphics2D g2 = (Graphics2D) g;
-        H = this.getHeight()-h_axis;
+        this.g2 = (Graphics2D) g;
+        
+        draw_axis();
+        
+        draw_data();
+	}
+	
+    abstract void draw_data();
+	
+	protected void draw_axis() {
+		H = this.getHeight()-h_axis;
         W = this.getWidth()-w_axis;
-        x0 = Run.prog.x0;
-        ArrayList<Double> x_data = Run.prog.data_Bo;
-        ArrayList<Integer> y_data = Run.prog.data_intensity;
+        //x0 = Run.prog.x0;
+        //ArrayList<Double> x_data = Run.prog.data_Bo;
+        //ArrayList<Integer> y_data = Run.prog.data_intensity;
 //factors
-        if(Run.prog.autoscaleY) {
-        	Y_factor = Run.prog.manual_Y_factor = (H-(2*h_axis))/max_intensity;
+        if(autoscaleY) {
+        	Y_factor = manual_Y_factor = (H-(2*h_axis))/max_y;
         }
         else {
-        	Y_factor = Run.prog.manual_Y_factor;
+        	Y_factor = manual_Y_factor;
         }
-        X_factor = Run.prog.manual_X_factor;
+        X_factor = manual_X_factor;
 
         g.setFont(new Font(g.getFont().getFontName(), Font.PLAIN, 20)); 
+       
+        
 // Axis Y
         g.setColor(Color.BLACK);
         g2.setStroke(new BasicStroke(3));
@@ -151,48 +180,8 @@ public class Graph_canvas extends JPanel {
 			unit += units_rate;
 			
         }
-// Current mass and intensity rendering
-        double B1 = Run.prog.current_B;
-        double current_mass = calc_mass(B1);
-        //System.out.println(Run.prog.current_mass + " " + current_mass);
-        int current_intensity = Run.prog.current_intensity;
-        paint_current_mass(current_mass, current_intensity, g2);
-        
-// Data rendering
-        if(x_data.size() <= 2) return;
-        
-        g.setColor(Color.RED);
-        g2.setStroke(new BasicStroke(1));
-        
-    	if (current_intensity > max_intensity) max_intensity = current_intensity;
-    	if (current_mass > max_mass) max_mass = current_mass;
-    	if (x_data.size() == 0 || y_data.size() == 0) return;
-        for(int i = 1; i<x_data.size()-1; i++) {    
-        	//System.out.println(x_data.size()+"__"+y_data.size());
-        	B1 = x_data.get(i-1);
-        	double mass_1 = calc_mass(B1);
-        	double B2 = x_data.get(i);
-        	double mass_2 = calc_mass(B2); 
-        	double x1 = mass_1*X_factor + x0;
-        	double y1 = H - (y_data.get(i-1)*Y_factor);
-        	double x2 = mass_2*X_factor + x0;
-        	double y2 = H - (y_data.get(i)*Y_factor);
-        	
-        	draw_line((int)x1, (int)y1, (int)x2, (int)y2, g2);
-        	
-        }
-
-        g.setColor(Color.BLUE);
-        if(x_data.size()>2 && Run.prog.draw_graph == false) {
-        	Run.prog.analyser = new Chart_analyser(x_data, y_data);
-        	paint_peak_labels(g2);
-        }
-        
 	}
-	private double calc_mass(double B) {
-		return Run.prog.M0 + Run.prog.K * (Run.prog.B0+B)*(Run.prog.B0+B);
-	}
-	private void draw_line(int x1, int y1, int x2, int y2, Graphics2D g2) {
+	protected void draw_line(int x1, int y1, int x2, int y2, Graphics2D g2) {
 	//	if(x1>=w_axis && x2>=w_axis && x1<=W && x2<=W && y1>=10 && y2>=10 && y1<=H && y2<=H) {
 		if((x1>=w_axis && x2>=w_axis && x1<=W) && (x2<=W || y1>=10 || y2>=10 || y1<=H || y2<=H)) {
     		g2.drawLine((int)x1, (int)y1, (int)x2, (int)y2);
@@ -203,7 +192,7 @@ public class Graph_canvas extends JPanel {
 			g2.drawString(str, (int)x1, (int)y1);
 		}
 	}
-	private void paint_peak_labels(Graphics2D g2) {
+	protected void paint_peak_labels(Graphics2D g2) {
 		g2.setStroke(new BasicStroke(3));
 		boolean first = true;
 		double prev_label_x = 0;
@@ -230,17 +219,14 @@ public class Graph_canvas extends JPanel {
 		}
 	}
 	
-	private void paint_current_mass(double mass, int intensity, Graphics2D g2) {
-		DecimalFormat formatter = new DecimalFormat("#0.00");
-		Run.prog.user_interface.label_mass.setText(formatter.format(mass));
-		Run.prog.user_interface.label_intensity.setText(formatter.format(intensity));
+	protected void paint_current_data(double current_x, int current_y) {
 		
 		g2.setColor(Color.BLUE);
 		g2.setStroke(new BasicStroke(3));
-		mass = mass * X_factor + x0;
-		intensity *= Y_factor;
-		draw_line((int)mass, H, (int)mass, 10, g2);
+		current_x = current_x * X_factor + x0;
+		current_y *= Y_factor;
+		draw_line((int)current_x, H, (int)current_x, 10, g2);
 		g2.setStroke(new BasicStroke(10));
-		g2.drawLine(w_axis/2, H - intensity, w_axis/2, H);
+		g2.drawLine(w_axis/2, H - current_y, w_axis/2, H);
 	}
 }

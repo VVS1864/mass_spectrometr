@@ -4,6 +4,7 @@ import jssc.SerialPortList;
 
 import java.math.BigInteger;
 import java.nio.ByteBuffer;
+import java.text.DecimalFormat;
 import java.util.ArrayList;
 import java.util.Arrays;
 
@@ -121,7 +122,9 @@ public class Connector {
 							clear_parts();
 						}
 					}
-					Run.prog.user_interface.cnvs.repaint();
+					Run.prog.user_interface.repaint_cnvs();
+					Run.prog.print_current_mass_intensity();
+					
 				} catch (SerialPortException ex) {
 					System.err.println(ex);
 				}

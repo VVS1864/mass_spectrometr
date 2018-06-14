@@ -1,6 +1,7 @@
 package mass_spectrometr;
 
 
+import java.text.DecimalFormat;
 import java.util.ArrayList;
 
 import javax.swing.JComboBox;
@@ -24,13 +25,13 @@ public class Run {
 	public  String[] ports;
 	
 
-	public  double manual_X_factor = 4.0;
-	public  double manual_Y_factor = 4.0;
-	public  double scale_rate = 1.3;
+	//public  double manual_X_factor = 4.0;
+	//public  double manual_Y_factor = 4.0;
+	//public  double scale_rate = 1.3;
 	
-	public  boolean autoscaleY = true;
+	//public  boolean autoscaleY = true;
 	
-	public  int x0 = 100;
+	//public  int x0 = 100;
 
 	public  Connector arduino;
 	public  Chart_analyser analyser;
@@ -83,6 +84,16 @@ public class Run {
 		return ret;
 	}
 	
+	public double calc_mass(double B) {
+		return M0 + K * (B0+B)*(B0+B);
+	}
+	
+	public void print_current_mass_intensity() {
+		DecimalFormat formatter = new DecimalFormat("#0.00");
+		double mass = calc_mass(current_B);
+		Run.prog.user_interface.cnvs_panel.label_mass.setText(formatter.format(mass));
+		Run.prog.user_interface.cnvs_panel.label_intensity.setText(formatter.format(current_intensity));
+	}
 	public void reset() {
 		data_time.clear();
 		//data_B.clear();
