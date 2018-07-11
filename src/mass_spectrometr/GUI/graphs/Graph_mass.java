@@ -1,4 +1,4 @@
-package mass_spectrometr.graphs;
+package mass_spectrometr.GUI.graphs;
 
 import java.awt.BasicStroke;
 import java.awt.Color;
@@ -9,8 +9,8 @@ import mass_spectrometr.Run;
 
 public class Graph_mass extends Graph_canvas{
 
-	public Graph_mass(ArrayList<Double> x_data, ArrayList<Integer> y_data) {
-		super(x_data, y_data);
+	public Graph_mass(ArrayList<Double> x_data, ArrayList<Integer> y_data, String x_measure, String y_measure) {
+		super(x_data, y_data, x_measure, y_measure);
 	}
 	
 	@Override 

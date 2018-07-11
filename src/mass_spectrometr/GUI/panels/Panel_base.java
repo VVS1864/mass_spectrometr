@@ -1,4 +1,4 @@
-package mass_spectrometr.panels;
+package mass_spectrometr.GUI.panels;
 
 import java.awt.BorderLayout;
 import java.awt.Color;
@@ -16,15 +16,15 @@ import javax.swing.JLabel;
 import javax.swing.JPanel;
 import javax.swing.JTextField;
 
-import mass_spectrometr.E_energy;
+import mass_spectrometr.GUI.E_energy;
 import mass_spectrometr.Run;
-import mass_spectrometr.graphs.Graph_canvas;
-import mass_spectrometr.graphs.Graph_mass;
+import mass_spectrometr.GUI.graphs.Graph_canvas;
+import mass_spectrometr.GUI.graphs.Graph_mass;
 
-public class Panel_base extends JPanel {
+public class Panel_base extends JPanel implements Panel_base_interfase{
 	
-	public  JLabel label_mass;
-	public  JLabel label_intensity;
+	public  JLabel label_X;
+	public  JLabel label_Y;
 
 	
 	protected JButton button_pY;
@@ -33,7 +33,7 @@ public class Panel_base extends JPanel {
 	protected final JPanel param_panel = new JPanel();
 	protected final JPanel top_panel_1 = new JPanel();
 	protected final JPanel top_panel_2 = new JPanel();
-	public  Graph_canvas cnvs;
+	public Graph_canvas cnvs;
 	
 	
 	
@@ -98,7 +98,7 @@ public class Panel_base extends JPanel {
 			}
 			
 		};
-		
+		/*
 		KeyboardFocusManager.getCurrentKeyboardFocusManager()
 	    .addKeyEventDispatcher(new KeyEventDispatcher() {
 	        @Override
@@ -108,8 +108,7 @@ public class Panel_base extends JPanel {
 	        	
 	        	//if (focus != m0_textbox && focus != b0_textbox && focus != k_textbox && focus != N_textbox &&
 	        	//		action == KeyEvent.KEY_PRESSED) {
-	        	if (!(focus instanceof JTextField) && action == KeyEvent.KEY_PRESSED) {
-	        		char c = e.getKeyChar();
+	        	if (!(focus instanceof JTextField) && action == KeyEvent.KEY_PRESSED) {	        		char c = e.getKeyChar();
 	        		int code = e.getKeyCode();
 	        		
 					if (c == '+' | c == '-'){
@@ -125,8 +124,8 @@ public class Panel_base extends JPanel {
 	          
 	          return false;
 	        }
-	  });
-		
+	  	});
+		*/
 		param_panel.setLayout(new BoxLayout(param_panel, BoxLayout.Y_AXIS));
 		top_panel_1.setLayout(new BoxLayout(top_panel_1, BoxLayout.X_AXIS));
 		top_panel_2.setLayout(new BoxLayout(top_panel_2, BoxLayout.X_AXIS));
@@ -170,14 +169,14 @@ public class Panel_base extends JPanel {
 		zoom_panel.add(button_mY);
 		zoom_panel.add(button_a_scaleY);
 		
-	    cnvs = new Graph_mass(Run.prog.data_Bo, Run.prog.data_intensity);
+	    //cnvs = new Graph_mass(Run.prog.data_Bo, Run.prog.data_intensity);
 	    
 	    
 	    add(param_panel, BorderLayout.NORTH);
-	    add(cnvs, BorderLayout.CENTER);
+	    
 	    add(zoom_panel, BorderLayout.WEST);
 	}
-	
+	@Override
 	public void move(char left) {
 		if(left == 'L') cnvs.x0 += 10;
 		else cnvs.x0 -= 10;
@@ -190,6 +189,7 @@ public class Panel_base extends JPanel {
 	 * @param c '+' or '-'
 	 * @param axis 'X' or 'Y'
 	 */
+	@Override
 	public void zoom(char c, char axis) {
 		double s = (c == '+') ? cnvs.scale_rate : 1.0/cnvs.scale_rate;
 		if (axis == 'Y') {

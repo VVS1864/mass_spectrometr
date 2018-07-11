@@ -1,11 +1,20 @@
 package mass_spectrometr;
 
 
+import java.awt.Component;
+import java.awt.KeyEventDispatcher;
+import java.awt.KeyboardFocusManager;
+import java.awt.event.KeyEvent;
 import java.text.DecimalFormat;
 import java.util.ArrayList;
 
 import javax.swing.JComboBox;
 import javax.swing.JLabel;
+import javax.swing.JTextField;
+
+import mass_spectrometr.GUI.GUI;
+import mass_spectrometr.GUI.panels.Panel_base;
+import mass_spectrometr.GUI.panels.Panel_base_interfase;
 
 public class Run {
 	public static Run prog;
@@ -44,6 +53,11 @@ public class Run {
 	public  double M0;
 	public  double K;
 	public  double B0;
+	
+	// Parameters for electron energy
+	public  double start_V;
+	public  double stop_V;
+	public  double speed_V;
 	/**
 	 * size of array for approximation B
 	 */
@@ -57,6 +71,41 @@ public class Run {
 		cfg = new Config();
 		read_settings();
 		user_interface = new GUI();
+		
+		KeyboardFocusManager.getCurrentKeyboardFocusManager()
+	    .addKeyEventDispatcher(new KeyEventDispatcher() {
+	        @Override
+	        public boolean dispatchKeyEvent(KeyEvent e) {
+	        	int action = e.getID();
+	        	Component focus = user_interface.get_focus_owner();
+	        	
+	        	//if (focus != m0_textbox && focus != b0_textbox && focus != k_textbox && focus != N_textbox &&
+	        	//		action == KeyEvent.KEY_PRESSED) {
+	        	if (!(focus instanceof JTextField) && action == KeyEvent.KEY_PRESSED) {	
+	        		Panel_base_interfase D;
+	        		if (user_interface.e_energy_frame.isAncestorOf(focus)) {
+	        			D = user_interface.e_energy_frame.energy_panel;
+	        		}
+	        		else {
+	        			D = user_interface.cnvs_panel;
+	        		}
+	        		char c = e.getKeyChar();
+	        		int code = e.getKeyCode();
+	        		
+					if (c == '+' | c == '-'){
+						D.zoom(c, 'X');
+					}
+					else if(code == KeyEvent.VK_LEFT) {
+						D.move('L');
+					}
+					else if(code == KeyEvent.VK_RIGHT) {
+						D.move('R');
+					}
+	        	}
+	          
+	          return false;
+	        }
+	  });
 	}
 	
 	private void read_settings() {
@@ -91,8 +140,8 @@ public class Run {
 	public void print_current_mass_intensity() {
 		DecimalFormat formatter = new DecimalFormat("#0.00");
 		double mass = calc_mass(current_B);
-		Run.prog.user_interface.cnvs_panel.label_mass.setText(formatter.format(mass));
-		Run.prog.user_interface.cnvs_panel.label_intensity.setText(formatter.format(current_intensity));
+		Run.prog.user_interface.cnvs_panel.label_X.setText(formatter.format(mass));
+		Run.prog.user_interface.cnvs_panel.label_Y.setText(formatter.format(current_intensity));
 	}
 	public void reset() {
 		data_time.clear();

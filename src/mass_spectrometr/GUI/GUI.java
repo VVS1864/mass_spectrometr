@@ -1,4 +1,4 @@
-package mass_spectrometr;
+package mass_spectrometr.GUI;
 
 import java.awt.BorderLayout;
 import java.awt.Color;
@@ -6,6 +6,7 @@ import java.awt.Component;
 import java.awt.Dimension;
 import java.awt.KeyEventDispatcher;
 import java.awt.KeyboardFocusManager;
+import java.awt.Window;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.KeyEvent;
@@ -15,6 +16,7 @@ import java.awt.event.WindowEvent;
 
 import javax.swing.AbstractAction;
 import javax.swing.BoxLayout;
+import javax.swing.FocusManager;
 import javax.swing.JButton;
 import javax.swing.JComboBox;
 import javax.swing.JFrame;
@@ -24,19 +26,20 @@ import javax.swing.JRootPane;
 import javax.swing.JTextField;
 import javax.swing.KeyStroke;
 
-import mass_spectrometr.graphs.Graph_canvas;
-import mass_spectrometr.graphs.Graph_mass;
-import mass_spectrometr.panels.Panel_base;
-import mass_spectrometr.panels.Panel_mass;
+import mass_spectrometr.Run;
+import mass_spectrometr.GUI.graphs.Graph_canvas;
+import mass_spectrometr.GUI.graphs.Graph_mass;
+import mass_spectrometr.GUI.panels.Panel_base;
+import mass_spectrometr.GUI.panels.Panel_mass;
 
 public class GUI {
 	public JFrame mainFrame;
-	protected Panel_mass cnvs_panel;
+	public Panel_mass cnvs_panel;
 	
 	protected JButton button_connect;
 	public  JComboBox<String> portbox;
 	
-	protected E_energy e_energy_frame;
+	public E_energy e_energy_frame;
 	public  JLabel status_info2;
 	
 	protected boolean is_ready = false;
@@ -46,8 +49,10 @@ public class GUI {
 		mainFrame = new JFrame("Java AWT Examples");
 		mainFrame.setLayout(new BorderLayout());
 	    mainFrame.setSize(800,600);
+	    mainFrame.setMinimumSize(new Dimension(640, 480));
 	    mainFrame.addWindowListener(new WindowAdapter() {
-	         public void windowClosing(WindowEvent windowEvent){
+	
+	    	public void windowClosing(WindowEvent windowEvent){
 	        	 Run.prog.close();
 	        	        	
 	        	 mainFrame.dispose();	       
@@ -170,6 +175,12 @@ public class GUI {
 	
 	public void repaint_cnvs() {
 		cnvs_panel.cnvs.repaint();
+	}
+	
+	public Component get_focus_owner() {
+		Window active = FocusManager.getCurrentManager().getActiveWindow();
+		Component focus = active.getFocusOwner();
+		return focus;
 	}
 
 }

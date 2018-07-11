@@ -1,4 +1,4 @@
-package mass_spectrometr.graphs;
+package mass_spectrometr.GUI.graphs;
 
 
 import java.awt.BasicStroke;
@@ -40,10 +40,15 @@ public abstract class Graph_canvas extends JPanel {
 	protected Graphics g;
 	protected Graphics2D g2;
 	
-	public Graph_canvas (ArrayList<Double> x_data, ArrayList<Integer> y_data) {
+	protected String x_measure;
+	protected String y_measure;
+	
+	public Graph_canvas (ArrayList<Double> x_data, ArrayList<Integer> y_data, String x_measure, String y_measure) {
 		this.x_data = x_data;
 		this.y_data = y_data;
 		setBackground (Color.lightGray);
+		this.x_measure = x_measure;
+		this.y_measure = y_measure;
 	}
 	
 	protected void paintComponent(Graphics g) {
@@ -83,7 +88,7 @@ public abstract class Graph_canvas extends JPanel {
         //Arrow
         g2.drawLine(w_axis-arrow_w/2, 10+arrow_w, w_axis, 10);
         g2.drawLine(w_axis+arrow_w/2, 10+arrow_w, w_axis, 10);
-        g2.drawString("int", w_axis - 40, 10+arrow_w);
+        g2.drawString(y_measure, w_axis - 40, 10+arrow_w);
         
 // Axis X
         g.setColor(Color.BLACK);
@@ -91,7 +96,7 @@ public abstract class Graph_canvas extends JPanel {
         g2.drawLine(w_axis, H, W, H);
         g2.drawLine(W-arrow_w, H-arrow_w/2, W, H);
         g2.drawLine(W-arrow_w, H+arrow_w/2, W, H);
-        g2.drawString("M", W-15, H+30);
+        g2.drawString(x_measure, W-15, H+30);
         
         g.setFont(new Font(g.getFont().getFontName(), Font.PLAIN, 12));
         

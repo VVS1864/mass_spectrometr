@@ -1,5 +1,6 @@
-package mass_spectrometr.panels;
+package mass_spectrometr.GUI.panels;
 
+import java.awt.BorderLayout;
 import java.awt.Color;
 import java.awt.Component;
 import java.awt.Dimension;
@@ -11,6 +12,8 @@ import javax.swing.JLabel;
 import javax.swing.JTextField;
 
 import mass_spectrometr.Run;
+import mass_spectrometr.GUI.Volt_engine;
+import mass_spectrometr.GUI.graphs.Graph_mass;
 
 public class Panel_mass extends Panel_base{
 	
@@ -18,7 +21,7 @@ public class Panel_mass extends Panel_base{
 	protected JTextField k_textbox;
 	protected JTextField b0_textbox;
 	protected JTextField N_textbox;
-	
+	public Volt_engine volt;
 	public Panel_mass() {
 		
 		ActionListener update_K = new ActionListener() {
@@ -76,10 +79,10 @@ public class Panel_mass extends Panel_base{
 		JButton button_K = new JButton("Update");
 		button_K.addActionListener(update_K);
 		JLabel current_mass = new JLabel(" Mass: ");
-		label_mass = new JLabel();
+		label_X = new JLabel();
 		JLabel spacer = new JLabel("  ");
 		JLabel current_intensity = new JLabel(" Intensity: ");
-		label_intensity = new JLabel();	
+		label_Y = new JLabel();	
 
 		top_panel_2.add(coefficients);
 		top_panel_2.add(M0);
@@ -92,10 +95,16 @@ public class Panel_mass extends Panel_base{
 	    top_panel_2.add(N_textbox);
 	    top_panel_2.add(button_K);
 	    top_panel_2.add(current_mass);
-	    top_panel_2.add(label_mass);
+	    top_panel_2.add(label_X);
 	    top_panel_2.add(spacer);
 	    top_panel_2.add(current_intensity);
-	    top_panel_2.add(label_intensity);
+	    top_panel_2.add(label_Y);
 	    top_panel_2.setAlignmentX(Component.LEFT_ALIGNMENT);
+	    
+	    cnvs = new Graph_mass(Run.prog.data_Bo, Run.prog.data_intensity, "M", "int");
+	    add(cnvs, BorderLayout.CENTER);
+	    
+	    volt = new Volt_engine();
+	    add(volt, BorderLayout.SOUTH);
 	}
 }
