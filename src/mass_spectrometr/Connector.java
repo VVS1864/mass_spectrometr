@@ -94,6 +94,26 @@ public class Connector {
 			Run.prog.current_intensity = ((b[8] & 0xff) << 8) | (b[9] & 0xff);
 		}
 		
+		public void int_to_byte(byte buf[]) {
+			//unsigned long time
+			  buf[0] = (byte)((Run.prog.current_time >> 24) & 0xFF);
+			  buf[1] = (byte)((Run.prog.current_time >> 16) & 0xFF);
+			  buf[2] = (byte)((Run.prog.current_time >> 8) & 0xFF);
+			  buf[3] = (byte)(Run.prog.current_time & 0xFF);
+
+			  //int mass
+			  buf[4] = (byte)(((int)Run.prog.current_B >> 8) & 0xFF);
+			  buf[5] = (byte)((int)Run.prog.current_B & 0xFF);
+
+			  //int en_el
+			  buf[6] = (byte)((Run.prog.current_en_el >> 8) & 0xFF);
+			  buf[7] = (byte)(Run.prog.current_en_el & 0xFF);
+
+			  //int intensity
+			  buf[8] = (byte)((Run.prog.current_intensity >> 8) & 0xFF);
+			  buf[9] = (byte)(Run.prog.current_intensity & 0xFF);
+		}
+		
 		/**
 		 * read bytes from Arduino and put in data arrays, every N times approximate B and repaint.
 		 */
@@ -101,8 +121,12 @@ public class Connector {
 			if (event.isRXCHAR() && event.getEventValue() > 0) {
 				try {
 					byte buf[] = serialPort.readBytes(10);
-
+					
 					byte_to_int(buf);
+					Run.prog.current_B++;
+					System.out.println(Run.prog.current_B);
+					int_to_byte(buf);
+					serialPort.writeBytes(buf);
 					
 					if (Run.prog.draw_graph) {
 						time_part.add(Run.prog.current_time);

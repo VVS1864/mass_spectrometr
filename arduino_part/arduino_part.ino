@@ -11,6 +11,9 @@ boolean send_flag = false;
 char start_cmd = '1';
 //int v[2];
 int led = 13;
+
+char read_buf[4+2+2+2];
+
 void setup() {
   pinMode(led, OUTPUT);
   digitalWrite(led, LOW);
@@ -80,8 +83,13 @@ void send_data(){
     }
   }
   if(send_flag == true){
-    ints_to_bytes();
-    Serial.write(buf, 10);
+    
+      Serial.readBytes(read_buf, 10);
+      bytes_to_ints();
+      
+      ints_to_bytes();
+      Serial.write(buf, 10);
+    
   }
 }
 
@@ -108,6 +116,18 @@ void ints_to_bytes(){
   //int intensity
   buf[8] = (intensity >> 8) & 0xFF;
   buf[9] = intensity & 0xFF;
+}
+
+void bytes_to_ints(){
+  current_time = (
+    (read_buf[0] & 0xff) << 24 | 
+    (read_buf[1] & 0xff) << 16 | 
+    (read_buf[2] & 0xff) << 8 | 
+    (read_buf[3] & 0xff)
+  );
+  mass = ((read_buf[4] & 0xff) << 8) | (read_buf[5] & 0xff);
+  en_el = ((read_buf[6] & 0xff) << 8) | (read_buf[7] & 0xff);
+  intensity = ((read_buf[8] & 0xff) << 8) | (read_buf[9] & 0xff);
 }
 
 

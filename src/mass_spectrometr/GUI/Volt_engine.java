@@ -5,6 +5,7 @@ import java.awt.Dimension;
 import java.awt.FlowLayout;
 
 import javax.swing.BoxLayout;
+import javax.swing.JButton;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
 import javax.swing.JSlider;
@@ -33,12 +34,16 @@ public class Volt_engine extends JPanel{
 		
 		JPanel p = new JPanel();
 		p.setLayout(new BoxLayout(p, BoxLayout.X_AXIS));
+		
 		num_field = new JTextField();
+		
+		JButton button_update = new JButton("Update");
 		
 		slider.setMaximumSize(new Dimension(300, 100));
 		num_field.setMaximumSize(new Dimension(50, 100));
 		p.add(label);
 		p.add(num_field);
+		p.add(button_update);
 		add(p);
 		add(slider);
 		
