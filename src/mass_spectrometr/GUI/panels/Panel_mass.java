@@ -101,7 +101,7 @@ public class Panel_mass extends Panel_base{
 	    top_panel_2.add(label_Y);
 	    top_panel_2.setAlignmentX(Component.LEFT_ALIGNMENT);
 	    
-	    cnvs = new Graph_mass(Run.prog.data_Bo, Run.prog.data_intensity, "M", "int");
+	    cnvs = new Graph_mass(Run.prog.data_Bo, Run.prog.data_mass_intensity, "M", "int", Run.prog.analyser_mass);
 	    add(cnvs, BorderLayout.CENTER);
 	    
 	    volt = new Volt_engine();

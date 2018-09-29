@@ -8,19 +8,17 @@ import java.awt.event.KeyEvent;
 import java.text.DecimalFormat;
 import java.util.ArrayList;
 
-import javax.swing.JComboBox;
-import javax.swing.JLabel;
 import javax.swing.JTextField;
 
 import mass_spectrometr.GUI.GUI;
-import mass_spectrometr.GUI.panels.Panel_base;
 import mass_spectrometr.GUI.panels.Panel_base_interfase;
 
 public class Run {
 	public static Run prog;
 	public  ArrayList<Integer> data_time = new ArrayList<Integer>();
-	public  ArrayList<Integer> data_en_el = new ArrayList<Integer>();
-	public  ArrayList<Integer> data_intensity = new ArrayList<Integer>();
+	public  ArrayList<Double> data_en_el = new ArrayList<Double>();
+	public  ArrayList<Integer> data_mass_intensity = new ArrayList<Integer>();
+	public  ArrayList<Integer> data_en_el_intensity = new ArrayList<Integer>();
 	/**
 	 * B - approximated
 	 */
@@ -28,7 +26,7 @@ public class Run {
 	
 	public  int current_time;
 	public  double current_B;
-	public  int current_en_el;
+	public  double current_en_el;
 	public  int current_intensity;
 	
 	public  String[] ports;
@@ -43,11 +41,13 @@ public class Run {
 	//public  int x0 = 100;
 
 	public  Connector arduino;
-	public  Chart_analyser analyser;
+	public  Chart_analyser analyser_mass;
+	public  Chart_analyser analyser_en_el;
 	public GUI user_interface;
 	private Config cfg;
 	
-	public  boolean draw_graph = false;
+	public  boolean draw_graph_mass = false;
+	public  boolean draw_graph_en_el = false;
 	public  int rendering_rate = 10;
 	public  int current_step = 0;
 	public  double M0;
@@ -55,9 +55,21 @@ public class Run {
 	public  double B0;
 	
 	// Parameters for electron energy
-	public  double start_V;
-	public  double stop_V;
-	public  double speed_V;
+	/**
+	 * if true - is available to set dac_voltage manually, 
+	 */
+	public int start_V_cyclic = 0;
+	public int stop_V_cyclic = 0;
+	public int step_V_cyclic = 0;
+	
+	public int start_V = 0;
+	public int stop_V = 0;
+	public int step_V = 0;
+	public int cycle_scan = 0; //0 - linear, 1 - cycle
+	public int start_e_scan = 0; //0 - stop, 1 - start
+	public int dac_voltage = 0;
+	
+	public int scan_count = 0;
 	/**
 	 * size of array for approximation B
 	 */
@@ -87,7 +99,7 @@ public class Run {
 	        			D = user_interface.e_energy_frame.energy_panel;
 	        		}
 	        		else {
-	        			D = user_interface.cnvs_panel;
+	        			D = user_interface.mass_panel;
 	        		}
 	        		char c = e.getKeyChar();
 	        		int code = e.getKeyCode();
@@ -112,6 +124,12 @@ public class Run {
 		M0 = parse_double("M0", 0);
 		B0 = parse_double("B0", 0);
 		K = parse_double("K", 0.001);
+		
+		//load standard settings for fast scan of energy
+		start_V_cyclic = (int)parse_double("start_V_cyclic", 0);
+		stop_V_cyclic = (int)parse_double("stop_V_cyclic", 0);
+		step_V_cyclic = (int)parse_double("step_V_cyclic", 0);
+		
 	}
 	
 	private void write_settings() {
@@ -140,15 +158,30 @@ public class Run {
 	public void print_current_mass_intensity() {
 		DecimalFormat formatter = new DecimalFormat("#0.00");
 		double mass = calc_mass(current_B);
-		Run.prog.user_interface.cnvs_panel.label_X.setText(formatter.format(mass));
-		Run.prog.user_interface.cnvs_panel.label_Y.setText(formatter.format(current_intensity));
+		Run.prog.user_interface.mass_panel.label_X.setText(formatter.format(mass));
+		Run.prog.user_interface.e_energy_frame.energy_panel.mass_indication.setText(formatter.format(mass));
+		Run.prog.user_interface.mass_panel.label_Y.setText(formatter.format(current_intensity));
+		Run.prog.user_interface.e_energy_frame.energy_panel.label_X.setText(formatter.format(current_en_el));
+		Run.prog.user_interface.e_energy_frame.energy_panel.label_Y.setText(formatter.format(current_intensity));
+		if (start_e_scan == 1) {
+			Run.prog.user_interface.mass_panel.volt.set_value((int)current_en_el);
+		}
 	}
+	public void en_el_scan_loop() {
+		if (cycle_scan == 0) {
+			if (scan_count < 0) {
+				Run.prog.user_interface.mass_panel.volt.stop_scan();
+			}
+			scan_count--; 
+		}
+	}
+	
 	public void reset() {
 		data_time.clear();
 		//data_B.clear();
 		data_Bo.clear();
 		data_en_el.clear();
-		data_intensity.clear();
+		data_mass_intensity.clear();
 		
 		arduino.clear_parts();
 	}

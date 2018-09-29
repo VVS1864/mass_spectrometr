@@ -34,7 +34,7 @@ import mass_spectrometr.GUI.panels.Panel_mass;
 
 public class GUI {
 	public JFrame mainFrame;
-	public Panel_mass cnvs_panel;
+	public Panel_mass mass_panel;
 	
 	protected JButton button_connect;
 	public  JComboBox<String> portbox;
@@ -79,21 +79,21 @@ public class GUI {
 					}
 				}
 				else {
-	  				if(!Run.prog.draw_graph && !reset) {
+	  				if(!Run.prog.draw_graph_mass && !reset) {
 	  					button_connect.setText("Stop");
-	  					Run.prog.draw_graph = true;
+	  					Run.prog.draw_graph_mass = true;
 	  					set_status(Color.CYAN, "Transfering data from arduino, draw graph");
 	  				}
-	  				else if(Run.prog.draw_graph && !reset) {
+	  				else if(Run.prog.draw_graph_mass && !reset) {
 	  					button_connect.setText("Reset");
-	  					Run.prog.draw_graph = false;
+	  					Run.prog.draw_graph_mass = false;
 	  					reset = true;
 	  					set_status(Color.CYAN, "Transfering data from arduino");
 	  				}
 	  				else if(reset) {
 	  					button_connect.setText("Draw graph");
 	  					set_status(Color.CYAN, "Transfering data from arduino");
-	  					Run.prog.draw_graph = false;
+	  					Run.prog.draw_graph_mass = false;
 	  					reset = false;
 	  					Run.prog.reset();
 	  				}
@@ -141,7 +141,7 @@ public class GUI {
 	    top_panel_0.add(button_E_energy);
 	    top_panel_0.setAlignmentX(Component.LEFT_ALIGNMENT);
 	    
-	    cnvs_panel = new Panel_mass();
+	    mass_panel = new Panel_mass();
 		
 		
 	    
@@ -152,7 +152,7 @@ public class GUI {
 //Add all panels to frame
 
 	    mainFrame.add(top_panel, BorderLayout.NORTH);
-	    mainFrame.add(cnvs_panel,  BorderLayout.CENTER);
+	    mainFrame.add(mass_panel,  BorderLayout.CENTER);
 	    mainFrame.add(status_panel, BorderLayout.SOUTH);
 	    
 	    mainFrame.setVisible(true); 
@@ -174,7 +174,8 @@ public class GUI {
 	}
 	
 	public void repaint_cnvs() {
-		cnvs_panel.cnvs.repaint();
+		mass_panel.cnvs.repaint();
+		e_energy_frame.energy_panel.cnvs.repaint();
 	}
 	
 	public Component get_focus_owner() {

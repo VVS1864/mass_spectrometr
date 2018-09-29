@@ -16,7 +16,7 @@ public class E_energy extends JDialog{
 	
 	public E_energy(JFrame jframe) {
 		super(jframe, "Electron energy");
-		setSize(640, 480);
+		setSize(1000, 500);
 		
 		
 		addWindowListener(new WindowAdapter() {

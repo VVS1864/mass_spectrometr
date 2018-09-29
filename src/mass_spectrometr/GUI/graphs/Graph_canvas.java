@@ -43,12 +43,15 @@ public abstract class Graph_canvas extends JPanel {
 	protected String x_measure;
 	protected String y_measure;
 	
-	public Graph_canvas (ArrayList<Double> x_data, ArrayList<Integer> y_data, String x_measure, String y_measure) {
+	protected Chart_analyser analyser;
+	
+	public Graph_canvas (ArrayList<Double> x_data, ArrayList<Integer> y_data, String x_measure, String y_measure, Chart_analyser analyser) {
 		this.x_data = x_data;
 		this.y_data = y_data;
 		setBackground (Color.lightGray);
 		this.x_measure = x_measure;
 		this.y_measure = y_measure;
+		this.analyser = analyser;
 	}
 	
 	protected void paintComponent(Graphics g) {
@@ -203,7 +206,7 @@ public abstract class Graph_canvas extends JPanel {
 		double prev_label_x = 0;
 		Font f = g2.getFont();
 		FontMetrics m = g2.getFontMetrics(f);
-		for(Peak p: Run.prog.analyser.peaks) {
+		for(Peak p: analyser.peaks) {
 			String str = String.format("%.1f", p.x);
 			double x = p.x*X_factor + x0;
 			double y = H - p.y*Y_factor;

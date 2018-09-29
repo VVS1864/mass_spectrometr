@@ -3,3 +3,7 @@
 M0 = 0
 B0 = 0
 K = 0.01 
+
+step_V_cyclic = 20
+stop_V_cyclic = 4000
+start_V_cyclic = 0
