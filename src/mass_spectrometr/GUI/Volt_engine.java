@@ -82,7 +82,7 @@ public class Volt_engine extends JPanel{
 		stop_textbox.setMaximumSize(new Dimension(50, 30));
 		
 		JLabel Speed = new JLabel(" Speed: ");		
-		speed_textbox = new JTextField(Integer.toString(Run.prog.step_V));
+		speed_textbox = new JTextField(Float.toString(Run.prog.step_V));
 		speed_textbox.setMaximumSize(new Dimension(50, 30));
 		
 		JLabel dac_voltage = new JLabel("Voltage: ");
@@ -123,6 +123,8 @@ public class Volt_engine extends JPanel{
 				JSlider slider = (JSlider)event.getSource();
 				int value = slider.getValue();
 				dac_voltage_textbox.setText(Integer.toString(value));
+				
+				if(Run.prog.start_e_scan == 0) Run.prog.dac_voltage = value;
 			}
 		};
 		
@@ -134,7 +136,7 @@ public class Volt_engine extends JPanel{
 		String str_stop = stop_textbox.getText();
 		int new_stop;
 		String str_speed = speed_textbox.getText();
-		int new_speed;
+		float new_speed;
 		String str_dac_voltage = dac_voltage_textbox.getText();
 		int new_dac_voltage;
 		
@@ -142,18 +144,30 @@ public class Volt_engine extends JPanel{
 		try {
 			new_start = Integer.parseInt(str_start);
 			new_stop = Integer.parseInt(str_stop);
-			new_speed = Integer.parseInt(str_speed);
+			new_speed = Float.parseFloat(str_speed);
 			new_dac_voltage = Integer.parseInt(str_dac_voltage);
 		}
 		catch(NumberFormatException ex) {
-			start_textbox.setBackground(Color.RED);
-			stop_textbox.setBackground(Color.RED);
-			speed_textbox.setBackground(Color.RED);
-			dac_voltage_textbox.setBackground(Color.RED);
+			set_red();
 			return false;
 		}
 		
-		if (!set_value(new_dac_voltage)) return false;
+		// Check values for MAX value
+		if (!set_value(new_dac_voltage)||
+			(new_stop < new_start)||
+			(new_stop > MAX)||
+			(new_start + new_speed > MAX)) {
+			
+			set_red();
+			return false;
+		}
+				
+				
+		/*		 
+		if (new_stop < new_start) return false;
+		if (new_stop > MAX) return false;
+		if (new_start + new_speed > MAX) return false;
+		*/
 		
 		start_textbox.setBackground(Color.WHITE);
 		stop_textbox.setBackground(Color.WHITE);
@@ -169,6 +183,13 @@ public class Volt_engine extends JPanel{
 		
 		return true;
 	}
+	private void set_red() {
+		start_textbox.setBackground(Color.RED);
+		stop_textbox.setBackground(Color.RED);
+		speed_textbox.setBackground(Color.RED);
+		dac_voltage_textbox.setBackground(Color.RED);
+	}
+	
 	public void start_scan() {
 		Run.prog.start_e_scan = 1;
 		button_start.setText("Stop scan");
@@ -177,9 +198,11 @@ public class Volt_engine extends JPanel{
 			Run.prog.stop_V = Run.prog.stop_V_cyclic;
 			Run.prog.step_V = Run.prog.step_V_cyclic;
 		}
-		else {
-			Run.prog.scan_count = (Run.prog.stop_V - Run.prog.start_V)/Run.prog.step_V;
-		}
+		Run.prog.dac_voltage_float = Run.prog.start_V;
+		Run.prog.dac_voltage = Run.prog.start_V;
+		//else {
+			//Run.prog.scan_count = Math.round((Run.prog.stop_V - Run.prog.start_V)/Run.prog.step_V);
+		//}
 		
 		slider.setEnabled(false);
 		Cyclic_check.setEnabled(false);

@@ -98,17 +98,18 @@ public class Connector {
 			  buf[2] = (byte)((Run.prog.current_time >> 8) & 0xFF);
 			  buf[3] = (byte)(Run.prog.current_time & 0xFF);
 			 */
-						 
 			  buf[0] = (byte)(((int)Run.prog.dac_voltage >> 8) & 0xFF);
 			  buf[1] = (byte)((int)Run.prog.dac_voltage & 0xFF);
+			  /*
 			  buf[2] = (byte)((Run.prog.start_e_scan >> 8) & 0xFF);
 			  buf[3] = (byte)(Run.prog.start_e_scan & 0xFF);
 			  buf[4] = (byte)((Run.prog.start_V >> 8) & 0xFF);
 			  buf[5] = (byte)(Run.prog.start_V & 0xFF);
 			  buf[6] = (byte)((Run.prog.stop_V >> 8) & 0xFF);
 			  buf[7] = (byte)(Run.prog.stop_V & 0xFF);
-			  buf[8] = (byte)((Run.prog.step_V >> 8) & 0xFF);
-			  buf[9] = (byte)(Run.prog.step_V & 0xFF);
+			  buf[8] = (byte)((step_V >> 8) & 0xFF);
+			  buf[9] = (byte)(step_V & 0xFF);
+			  */
 			  //buf[10] = (byte)((Run.prog.cycle_scan >> 8) & 0xFF);
 			  //buf[11] = (byte)(Run.prog.cycle_scan & 0xFF);
 			  
@@ -125,7 +126,7 @@ public class Connector {
 					byte_to_int(buf);
 					Run.prog.current_B++;
 					//System.out.println(Run.prog.current_B);
-					byte write_buf[] = new byte[10];
+					byte write_buf[] = new byte[2];
 					int_to_byte(write_buf);
 					serialPort.writeBytes(write_buf);
 					

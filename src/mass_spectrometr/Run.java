@@ -60,16 +60,17 @@ public class Run {
 	 */
 	public int start_V_cyclic = 0;
 	public int stop_V_cyclic = 0;
-	public int step_V_cyclic = 0;
+	public float step_V_cyclic = 0;
 	
 	public int start_V = 0;
-	public int stop_V = 0;
-	public int step_V = 0;
+	public int stop_V = 4000;
+	public float step_V = 0.02f;
 	public int cycle_scan = 0; //0 - linear, 1 - cycle
 	public int start_e_scan = 0; //0 - stop, 1 - start
 	public int dac_voltage = 0;
+	public float dac_voltage_float = 0; //for use step_V (float)
 	
-	public int scan_count = 0;
+	//public int scan_count = 0;
 	/**
 	 * size of array for approximation B
 	 */
@@ -128,7 +129,8 @@ public class Run {
 		//load standard settings for fast scan of energy
 		start_V_cyclic = (int)parse_double("start_V_cyclic", 0);
 		stop_V_cyclic = (int)parse_double("stop_V_cyclic", 0);
-		step_V_cyclic = (int)parse_double("step_V_cyclic", 0);
+		step_V_cyclic = (float)parse_double("step_V_cyclic", 0);
+		
 		
 	}
 	
@@ -158,21 +160,42 @@ public class Run {
 	public void print_current_mass_intensity() {
 		DecimalFormat formatter = new DecimalFormat("#0.00");
 		double mass = calc_mass(current_B);
-		Run.prog.user_interface.mass_panel.label_X.setText(formatter.format(mass));
-		Run.prog.user_interface.e_energy_frame.energy_panel.mass_indication.setText(formatter.format(mass));
-		Run.prog.user_interface.mass_panel.label_Y.setText(formatter.format(current_intensity));
-		Run.prog.user_interface.e_energy_frame.energy_panel.label_X.setText(formatter.format(current_en_el));
-		Run.prog.user_interface.e_energy_frame.energy_panel.label_Y.setText(formatter.format(current_intensity));
+		user_interface.mass_panel.label_X.setText(formatter.format(mass));
+		user_interface.e_energy_frame.energy_panel.mass_indication.setText(formatter.format(mass));
+		user_interface.mass_panel.label_Y.setText(formatter.format(current_intensity));
+		user_interface.e_energy_frame.energy_panel.label_X.setText(formatter.format(current_en_el));
+		user_interface.e_energy_frame.energy_panel.label_Y.setText(formatter.format(current_intensity));
 		if (start_e_scan == 1) {
-			Run.prog.user_interface.mass_panel.volt.set_value((int)current_en_el);
+			user_interface.mass_panel.volt.set_value((int)current_en_el);
 		}
 	}
+	
 	public void en_el_scan_loop() {
-		if (cycle_scan == 0) {
-			if (scan_count < 0) {
-				Run.prog.user_interface.mass_panel.volt.stop_scan();
-			}
-			scan_count--; 
+		switch(cycle_scan) {
+		case(0): en_el_scan_long();
+		case(1): en_el_scan_fast();
+		}
+	}
+	
+	public void en_el_scan_long() {
+		if(dac_voltage < stop_V) {
+			dac_voltage_float += step_V;
+			dac_voltage = Math.round(dac_voltage_float);
+		}
+		else {
+			user_interface.mass_panel.volt.stop_scan();
+		}
+	}
+	
+	public void en_el_scan_fast() {
+		if(dac_voltage < stop_V) {
+			dac_voltage_float += step_V;
+			dac_voltage = Math.round(dac_voltage_float);
+		}
+		else {
+			dac_voltage = start_V;
+			dac_voltage_float = start_V;
+			
 		}
 	}
 	
