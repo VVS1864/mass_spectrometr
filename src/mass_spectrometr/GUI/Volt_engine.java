@@ -7,39 +7,39 @@ import java.awt.event.ActionListener;
 
 import javax.swing.BoxLayout;
 import javax.swing.JButton;
-import javax.swing.JCheckBox;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
-import javax.swing.JRadioButton;
 import javax.swing.JSlider;
 import javax.swing.JTextField;
 import javax.swing.event.ChangeEvent;
 import javax.swing.event.ChangeListener;
+import javax.swing.border.TitledBorder;
 
 import mass_spectrometr.Run;
 
-public class Volt_engine extends JPanel{
-	private JTextField dac_voltage_textbox;
-	private JSlider slider;
-	private JRadioButton Cyclic_check;
+public abstract class Volt_engine extends JPanel{
+	protected JTextField dac_voltage_textbox;
+	protected JSlider slider;
+	//private JRadioButton Cyclic_check;
 	
-	private JTextField start_textbox;
-	private JTextField stop_textbox;
-	private JTextField speed_textbox;
+	protected JTextField start_textbox;
+	protected JTextField stop_textbox;
+	protected JTextField speed_textbox;
 	private final JPanel r_p = new JPanel();
 	
 	public JButton button_update;
-	private JButton button_start;
+	protected JButton button_start;
 	static final int MIN = 0;
 	static final int MAX = 4096;
 	static final int INIT = 0;
-	
+		
 	public Volt_engine() {
 		ActionListener start = new ActionListener() {
 			@Override
 			public void actionPerformed(ActionEvent e) {
 				if (check_values()) {
 					if (Run.prog.start_e_scan == 0) {
+						Run.prog.cycle_scan = get_cycle_scan();
 						start_scan();
 					}
 					else {
@@ -74,15 +74,15 @@ public class Volt_engine extends JPanel{
 		JLabel spacer = new JLabel("  ");
 		
 		JLabel Start = new JLabel(" Start: ");
-		start_textbox = new JTextField(Integer.toString(Run.prog.start_V));
+		start_textbox = new JTextField(Integer.toString(get_start_V()));
 		start_textbox.setMaximumSize(new Dimension(50, 30));
 		
 		JLabel Stop = new JLabel(" Stop: ");
-		stop_textbox = new JTextField(Integer.toString(Run.prog.stop_V));
+		stop_textbox = new JTextField(Integer.toString(get_stop_V()));
 		stop_textbox.setMaximumSize(new Dimension(50, 30));
 		
 		JLabel Speed = new JLabel(" Speed: ");		
-		speed_textbox = new JTextField(Float.toString(Run.prog.step_V));
+		speed_textbox = new JTextField(Float.toString(get_step_V()));
 		speed_textbox.setMaximumSize(new Dimension(50, 30));
 		
 		JLabel dac_voltage = new JLabel("Voltage: ");
@@ -96,7 +96,7 @@ public class Volt_engine extends JPanel{
 		button_start = new JButton("Start scan");
 		button_start.addActionListener(start);
 		
-		Cyclic_check = new JRadioButton(" Cyclic:");
+		//Cyclic_check = new JRadioButton(" Cyclic:");
 		
 		slider.setMaximumSize(new Dimension(300, 100));
 		
@@ -107,7 +107,7 @@ public class Volt_engine extends JPanel{
 		add(Speed);
 		add(speed_textbox);
 	    
-		add(Cyclic_check);
+		//add(Cyclic_check);
 		p.add(dac_voltage);
 		p.add(dac_voltage_textbox);
 		p.add(button_update);
@@ -117,13 +117,20 @@ public class Volt_engine extends JPanel{
 		r_p.add(slider);
 		
 		add(r_p);
+		
+		String t;
+		if(get_cycle_scan() == 1) t = "Fast cyclic scan";
+		else t = "Long linear scan";
+		TitledBorder title = new TitledBorder(t);
+		setBorder(title);
+		
 		ChangeListener listener = new ChangeListener(){
 			public void stateChanged(ChangeEvent event){
 		
 				JSlider slider = (JSlider)event.getSource();
 				int value = slider.getValue();
 				dac_voltage_textbox.setText(Integer.toString(value));
-				
+				StartStopController.set_sliders(value);
 				if(Run.prog.start_e_scan == 0) Run.prog.dac_voltage = value;
 			}
 		};
@@ -174,12 +181,12 @@ public class Volt_engine extends JPanel{
 		speed_textbox.setBackground(Color.WHITE);
 		dac_voltage_textbox.setBackground(Color.WHITE);
 		
-		Run.prog.start_V = new_start;
-		Run.prog.stop_V = new_stop;
-		Run.prog.step_V = new_speed;
+		set_start_V(new_start);
+		set_stop_V(new_stop);
+		set_step_V(new_speed);
 		Run.prog.dac_voltage = new_dac_voltage;
-		if (Cyclic_check.isSelected()) Run.prog.cycle_scan = 1;
-		else Run.prog.cycle_scan = 0;
+		//if (Cyclic_check.isSelected()) Run.prog.cycle_scan = 1;
+		//else Run.prog.cycle_scan = 0;
 		
 		return true;
 	}
@@ -192,7 +199,7 @@ public class Volt_engine extends JPanel{
 	
 	public void start_scan() {
 		Run.prog.start_e_scan = 1;
-		button_start.setText("Stop scan");
+		
 		if (Run.prog.cycle_scan == 1) {
 			Run.prog.start_V = Run.prog.start_V_cyclic;
 			Run.prog.stop_V = Run.prog.stop_V_cyclic;
@@ -204,30 +211,38 @@ public class Volt_engine extends JPanel{
 			//Run.prog.scan_count = Math.round((Run.prog.stop_V - Run.prog.start_V)/Run.prog.step_V);
 		//}
 		
+		StartStopController.set_enable_disable(false);
+		/*
+		button_start.setText("Stop scan");
 		slider.setEnabled(false);
-		Cyclic_check.setEnabled(false);
 		dac_voltage_textbox.setEnabled(false);
 		start_textbox.setEnabled(false);
 		stop_textbox.setEnabled(false);
 		speed_textbox.setEnabled(false);
 		button_update.setEnabled(false);
+		*/
 	}
 	public void stop_scan() {
 		Run.prog.start_e_scan = 0;
-		button_start.setText("Start scan");
 		
+		
+		StartStopController.set_enable_disable(true);
+		/*
+		button_start.setText("Start scan");
 		slider.setEnabled(true);
-		Cyclic_check.setEnabled(true);
+		//Cyclic_check.setEnabled(true);
 		dac_voltage_textbox.setEnabled(true);
 		start_textbox.setEnabled(true);
 		stop_textbox.setEnabled(true);
 		speed_textbox.setEnabled(true);
 		button_update.setEnabled(true);
+		*/
 	}
 	public boolean set_value(int value) {
 		if(value <= MAX && value >= MIN) {
 			dac_voltage_textbox.setText(Integer.toString(value));
-			slider.setValue(value);
+			//slider.setValue(value);
+			StartStopController.set_sliders(value);
 			dac_voltage_textbox.setBackground(Color.WHITE);
 			return true;
 		}
@@ -240,4 +255,12 @@ public class Volt_engine extends JPanel{
 	public int get_value() {
 		return slider.getValue();
 	}
+	abstract int get_start_V();
+	abstract int get_stop_V();
+	abstract float get_step_V();
+	abstract int get_cycle_scan();
+	
+	abstract void set_start_V(int v);
+	abstract void set_stop_V(int v);
+	abstract void set_step_V(float v);
 }

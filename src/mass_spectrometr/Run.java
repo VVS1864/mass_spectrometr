@@ -167,6 +167,7 @@ public class Run {
 		user_interface.e_energy_frame.energy_panel.label_Y.setText(formatter.format(current_intensity));
 		if (start_e_scan == 1) {
 			user_interface.mass_panel.volt.set_value((int)current_en_el);
+			user_interface.e_energy_frame.energy_panel.volt.set_value((int)current_en_el);
 		}
 	}
 	

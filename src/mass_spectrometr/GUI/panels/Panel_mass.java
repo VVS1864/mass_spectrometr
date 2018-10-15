@@ -13,6 +13,8 @@ import javax.swing.JTextField;
 
 import mass_spectrometr.Run;
 import mass_spectrometr.GUI.Volt_engine;
+import mass_spectrometr.GUI.Volt_engine_fast;
+import mass_spectrometr.GUI.Volt_engine_long;
 import mass_spectrometr.GUI.graphs.Graph_mass;
 
 public class Panel_mass extends Panel_base{
@@ -104,7 +106,7 @@ public class Panel_mass extends Panel_base{
 	    cnvs = new Graph_mass(Run.prog.data_Bo, Run.prog.data_mass_intensity, "M", "int", Run.prog.analyser_mass);
 	    add(cnvs, BorderLayout.CENTER);
 	    
-	    volt = new Volt_engine();
+	    volt = new Volt_engine_fast();
 	    add(volt, BorderLayout.SOUTH);
 	}
 }
