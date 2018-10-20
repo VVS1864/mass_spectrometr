@@ -4,6 +4,7 @@ import java.awt.Color;
 import java.awt.Dimension;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.util.Hashtable;
 
 import javax.swing.BoxLayout;
 import javax.swing.JButton;
@@ -29,8 +30,8 @@ public abstract class Volt_engine extends JPanel{
 	
 	public JButton button_update;
 	protected JButton button_start;
-	static final int MIN = 0;
-	static final int MAX = 4096;
+	static final int MIN = -200;
+	static final int MAX = 1700;
 	static final int INIT = 0;
 		
 	public Volt_engine() {
@@ -60,13 +61,19 @@ public abstract class Volt_engine extends JPanel{
 		setLayout(new BoxLayout(this, BoxLayout.X_AXIS));
 		r_p.setLayout(new BoxLayout(r_p, BoxLayout.Y_AXIS));
 		
-		slider = new JSlider(JSlider.HORIZONTAL,
-                MIN, MAX, INIT);
+		Hashtable<Integer, JLabel> label_table = new Hashtable<>();
+		int[] labels_ints = new int[] {-2, -1, 0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17};
+		for(int i:labels_ints) {
+			label_table.put(new Integer(i*100), new JLabel(Integer.toString(i)));
+		}
 		
+		slider = new JSlider(JSlider.HORIZONTAL, MIN, MAX, INIT);
+		
+		slider.setLabelTable(label_table);
 		slider.setPaintTicks(true);
 		slider.setPaintLabels(true);
-		slider.setMajorTickSpacing(1000);
-		slider.setMinorTickSpacing(500);
+		slider.setMajorTickSpacing(100);
+		slider.setMinorTickSpacing(50);
 		
 		JPanel p = new JPanel();
 		p.setLayout(new BoxLayout(p, BoxLayout.X_AXIS));
@@ -74,11 +81,12 @@ public abstract class Volt_engine extends JPanel{
 		JLabel spacer = new JLabel("  ");
 		
 		JLabel Start = new JLabel(" Start: ");
-		start_textbox = new JTextField(Integer.toString(get_start_V()));
+		start_textbox = new JTextField(Float.toString(get_start_V()));
 		start_textbox.setMaximumSize(new Dimension(50, 30));
 		
+		
 		JLabel Stop = new JLabel(" Stop: ");
-		stop_textbox = new JTextField(Integer.toString(get_stop_V()));
+		stop_textbox = new JTextField(Float.toString(get_stop_V()));
 		stop_textbox.setMaximumSize(new Dimension(50, 30));
 		
 		JLabel Speed = new JLabel(" Speed: ");		
@@ -86,7 +94,7 @@ public abstract class Volt_engine extends JPanel{
 		speed_textbox.setMaximumSize(new Dimension(50, 30));
 		
 		JLabel dac_voltage = new JLabel("Voltage: ");
-		dac_voltage_textbox = new JTextField(Integer.toString(Run.prog.dac_voltage));
+		dac_voltage_textbox = new JTextField(Float.toString(calc_float_from_int(Run.prog.dac_voltage)));
 		dac_voltage_textbox.setMaximumSize(new Dimension(50, 30));
 		
 		
@@ -98,7 +106,7 @@ public abstract class Volt_engine extends JPanel{
 		
 		//Cyclic_check = new JRadioButton(" Cyclic:");
 		
-		slider.setMaximumSize(new Dimension(300, 100));
+		//slider.setMaximumSize(new Dimension(300, 100));
 		
 		add(Start);
 		add(start_textbox);
@@ -128,10 +136,12 @@ public abstract class Volt_engine extends JPanel{
 			public void stateChanged(ChangeEvent event){
 		
 				JSlider slider = (JSlider)event.getSource();
-				int value = slider.getValue();
-				dac_voltage_textbox.setText(Integer.toString(value));
-				StartStopController.set_sliders(value);
-				if(Run.prog.start_e_scan == 0) Run.prog.dac_voltage = value;
+				int i_value = slider.getValue();
+				float f_value = get_slider_value();
+				dac_voltage_textbox.setText(Float.toString(f_value));
+				StartStopController.set_sliders(i_value);
+				if(Run.prog.start_e_scan == 0) set_dac_voltage();
+				
 			}
 		};
 		
@@ -139,32 +149,36 @@ public abstract class Volt_engine extends JPanel{
 	}
 	private boolean check_values() {
 		String str_start = start_textbox.getText();
-		int new_start;
+		float new_start;
 		String str_stop = stop_textbox.getText();
-		int new_stop;
+		float new_stop;
 		String str_speed = speed_textbox.getText();
 		float new_speed;
 		String str_dac_voltage = dac_voltage_textbox.getText();
-		int new_dac_voltage;
+		float new_dac_voltage;
 		
 		
 		try {
-			new_start = Integer.parseInt(str_start);
-			new_stop = Integer.parseInt(str_stop);
+			new_start = Float.parseFloat(str_start);
+			new_stop = Float.parseFloat(str_stop);
 			new_speed = Float.parseFloat(str_speed);
-			new_dac_voltage = Integer.parseInt(str_dac_voltage);
+			new_dac_voltage = Float.parseFloat(str_dac_voltage);
 		}
 		catch(NumberFormatException ex) {
 			set_red();
 			return false;
 		}
+		int i_new_stop = Math.round(new_stop * 100);
+		int i_new_start = Math.round(new_start * 100);
+		float f_new_speed = calc_step(new_speed);
 		
 		// Check values for MAX value
 		if (!set_value(new_dac_voltage)||
-			(new_stop < new_start)||
-			(new_stop > MAX)||
-			(new_start + new_speed > MAX)) {
-			
+			(i_new_stop < i_new_start)||
+			(i_new_stop > MAX)||
+			(i_new_start + f_new_speed > MAX)||
+			i_new_start < MIN) {
+
 			set_red();
 			return false;
 		}
@@ -184,7 +198,9 @@ public abstract class Volt_engine extends JPanel{
 		set_start_V(new_start);
 		set_stop_V(new_stop);
 		set_step_V(new_speed);
-		Run.prog.dac_voltage = new_dac_voltage;
+		set_dac_voltage();
+		//Run.prog.dac_voltage = new_dac_voltage;
+		
 		//if (Cyclic_check.isSelected()) Run.prog.cycle_scan = 1;
 		//else Run.prog.cycle_scan = 0;
 		
@@ -238,11 +254,18 @@ public abstract class Volt_engine extends JPanel{
 		button_update.setEnabled(true);
 		*/
 	}
-	public boolean set_value(int value) {
-		if(value <= MAX && value >= MIN) {
-			dac_voltage_textbox.setText(Integer.toString(value));
+	public void set_new_en_el(int en_el) {
+		float f_en_el = calc_float_from_int(en_el);
+		set_value(f_en_el);
+		
+	}
+	
+	public boolean set_value(float value) {
+		int i_value = Math.round(value*100);
+		if(i_value <= MAX && i_value >= MIN) {
+			dac_voltage_textbox.setText(Float.toString(value));
 			//slider.setValue(value);
-			StartStopController.set_sliders(value);
+			StartStopController.set_sliders(i_value);
 			dac_voltage_textbox.setBackground(Color.WHITE);
 			return true;
 		}
@@ -252,15 +275,53 @@ public abstract class Volt_engine extends JPanel{
 		}
 	}
 	
-	public int get_value() {
-		return slider.getValue();
+	public float get_slider_value() {
+		return slider.getValue()/100.0f;
 	}
-	abstract int get_start_V();
-	abstract int get_stop_V();
+	private void set_slider_value(float v) {
+		slider.setValue(Math.round(v*100));
+	}
+	
+	abstract float get_start_V();
+	abstract float get_stop_V();
 	abstract float get_step_V();
 	abstract int get_cycle_scan();
 	
-	abstract void set_start_V(int v);
-	abstract void set_stop_V(int v);
+	abstract void set_start_V(float v);
+	abstract void set_stop_V(float v);
 	abstract void set_step_V(float v);
+	
+	private void set_dac_voltage() {
+		Run.prog.dac_voltage = calc_int_from_float(get_slider_value());
+	}
+	/**
+	 * For calc (0, 3800) from (-2, 17)
+	 * @return
+	 */
+	protected int calc_int_from_float(float f_value){
+		int K = 200;
+		int b = 400;
+		return Math.round(f_value*K + b);
+	}
+	/**
+	 * For calc (-2, 17) from (0, 3800)
+	 * @return
+	 */
+	protected float calc_float_from_int(int i_value){
+		float K = 200;
+		float b = 400;
+		
+		return (i_value-b)/K;
+	}
+	
+	/**
+	 * for calc (-2, 17) step to (0, 3800)
+	 * @param step
+	 * @return
+	 */
+	protected float calc_step(float step) {
+		return step*200;
+	}
+	
+	
 }

@@ -55,15 +55,13 @@ public class Run {
 	public  double B0;
 	
 	// Parameters for electron energy
-	/**
-	 * if true - is available to set dac_voltage manually, 
-	 */
+	
 	public int start_V_cyclic = 0;
-	public int stop_V_cyclic = 0;
-	public float step_V_cyclic = 0;
+	public int stop_V_cyclic = 3800;
+	public float step_V_cyclic = 0.02f;
 	
 	public int start_V = 0;
-	public int stop_V = 4000;
+	public int stop_V = 3800;
 	public float step_V = 0.02f;
 	public int cycle_scan = 0; //0 - linear, 1 - cycle
 	public int start_e_scan = 0; //0 - stop, 1 - start
@@ -127,9 +125,9 @@ public class Run {
 		K = parse_double("K", 0.001);
 		
 		//load standard settings for fast scan of energy
-		start_V_cyclic = (int)parse_double("start_V_cyclic", 0);
-		stop_V_cyclic = (int)parse_double("stop_V_cyclic", 0);
-		step_V_cyclic = (float)parse_double("step_V_cyclic", 0);
+		//start_V_cyclic = parse_double("start_V_cyclic", 0);
+		//stop_V_cyclic = parse_double("stop_V_cyclic", 0);
+		//step_V_cyclic = (float)parse_double("step_V_cyclic", 0);
 		
 		
 	}
@@ -166,8 +164,8 @@ public class Run {
 		user_interface.e_energy_frame.energy_panel.label_X.setText(formatter.format(current_en_el));
 		user_interface.e_energy_frame.energy_panel.label_Y.setText(formatter.format(current_intensity));
 		if (start_e_scan == 1) {
-			user_interface.mass_panel.volt.set_value((int)current_en_el);
-			user_interface.e_energy_frame.energy_panel.volt.set_value((int)current_en_el);
+			user_interface.mass_panel.volt.set_new_en_el((int)current_en_el);
+			//user_interface.e_energy_frame.energy_panel.volt.set_new_en_el((int)current_en_el);
 		}
 	}
 	
@@ -179,7 +177,7 @@ public class Run {
 	}
 	
 	public void en_el_scan_long() {
-		if(dac_voltage < stop_V) {
+		if(dac_voltage + step_V < stop_V) {
 			dac_voltage_float += step_V;
 			dac_voltage = Math.round(dac_voltage_float);
 		}
@@ -189,9 +187,10 @@ public class Run {
 	}
 	
 	public void en_el_scan_fast() {
-		if(dac_voltage < stop_V) {
+		if(dac_voltage + step_V < stop_V) {
 			dac_voltage_float += step_V;
 			dac_voltage = Math.round(dac_voltage_float);
+			
 		}
 		else {
 			dac_voltage = start_V;

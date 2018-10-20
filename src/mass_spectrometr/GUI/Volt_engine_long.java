@@ -5,13 +5,13 @@ import mass_spectrometr.Run;
 public class Volt_engine_long extends Volt_engine{
 
 	@Override
-	int get_start_V() {
-		return Run.prog.start_V;
+	float get_start_V() {
+		return calc_float_from_int(Run.prog.start_V);
 	}
 
 	@Override
-	int get_stop_V() {
-		return Run.prog.stop_V;
+	float get_stop_V() {
+		return calc_float_from_int(Run.prog.stop_V);
 	}
 
 	@Override
@@ -25,19 +25,19 @@ public class Volt_engine_long extends Volt_engine{
 	}
 
 	@Override
-	void set_start_V(int v) {
-		Run.prog.start_V = v;
+	void set_start_V(float v) {
+		Run.prog.start_V = calc_int_from_float(v);
 	}
 
 	@Override
-	void set_stop_V(int v) {
-		Run.prog.stop_V = v;
+	void set_stop_V(float v) {
+		Run.prog.stop_V = calc_int_from_float(v);
 		
 	}
 
 	@Override
 	void set_step_V(float v) {
-		Run.prog.step_V = v;
+		Run.prog.step_V = calc_step(v);
 		
 	}
 	
