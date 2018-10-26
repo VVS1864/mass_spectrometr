@@ -32,7 +32,7 @@ public abstract class Volt_engine extends JPanel{
 	protected JButton button_start;
 	static final int MIN = -200;
 	static final int MAX = 1700;
-	static final int INIT = 0;
+	static int INIT;
 		
 	public Volt_engine() {
 		ActionListener start = new ActionListener() {
@@ -58,6 +58,7 @@ public abstract class Volt_engine extends JPanel{
 			}
 			
 		};
+		INIT = Math.round(calc_float_from_int(Run.prog.dac_voltage)*100);
 		setLayout(new BoxLayout(this, BoxLayout.X_AXIS));
 		r_p.setLayout(new BoxLayout(r_p, BoxLayout.Y_AXIS));
 		
@@ -146,6 +147,7 @@ public abstract class Volt_engine extends JPanel{
 		};
 		
 		slider.addChangeListener(listener);
+		
 	}
 	private boolean check_values() {
 		String str_start = start_textbox.getText();
