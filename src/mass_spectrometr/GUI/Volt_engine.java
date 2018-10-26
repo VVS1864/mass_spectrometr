@@ -241,22 +241,11 @@ public abstract class Volt_engine extends JPanel{
 	public void stop_scan() {
 		Run.prog.start_e_scan = 0;
 		
-		
 		StartStopController.set_enable_disable(true);
-		/*
-		button_start.setText("Start scan");
-		slider.setEnabled(true);
-		//Cyclic_check.setEnabled(true);
-		dac_voltage_textbox.setEnabled(true);
-		start_textbox.setEnabled(true);
-		stop_textbox.setEnabled(true);
-		speed_textbox.setEnabled(true);
-		button_update.setEnabled(true);
-		*/
 	}
 	public void set_new_en_el(int en_el) {
-		float f_en_el = calc_float_from_int(en_el);
-		set_value(f_en_el);
+		Run.prog.current_en_el_float = calc_float_from_int(en_el);
+		set_value(Run.prog.current_en_el_float);
 		
 	}
 	
@@ -299,19 +288,14 @@ public abstract class Volt_engine extends JPanel{
 	 * @return
 	 */
 	protected int calc_int_from_float(float f_value){
-		int K = 200;
-		int b = 400;
-		return Math.round(f_value*K + b);
+		return Run.prog.calc_int_en_el(f_value);
 	}
 	/**
 	 * For calc (-2, 17) from (0, 3800)
 	 * @return
 	 */
-	protected float calc_float_from_int(int i_value){
-		float K = 200;
-		float b = 400;
-		
-		return (i_value-b)/K;
+	protected float calc_float_from_int(int i_value){	
+		return Run.prog.calc_float_en_el(i_value);
 	}
 	
 	/**
@@ -320,7 +304,7 @@ public abstract class Volt_engine extends JPanel{
 	 * @return
 	 */
 	protected float calc_step(float step) {
-		return step*200;
+		return Run.prog.calc_step(step);
 	}
 	
 	

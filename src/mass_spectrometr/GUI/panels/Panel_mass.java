@@ -23,6 +23,10 @@ public class Panel_mass extends Panel_base{
 	protected JTextField k_textbox;
 	protected JTextField b0_textbox;
 	protected JTextField N_textbox;
+	
+	protected JTextField en_el_K_textbox;
+	protected JTextField en_el_b_textbox;
+	
 	public Volt_engine volt;
 	public Panel_mass() {
 		
@@ -38,27 +42,45 @@ public class Panel_mass extends Panel_base{
 				String str_N = N_textbox.getText();
 				int new_N;
 				
+				String str_en_el_K = en_el_K_textbox.getText();
+				double new_en_el_K;
+				String str_en_el_b = en_el_b_textbox.getText();
+				double new_en_el_b;
+				
 				try {
 					new_M0 = Double.parseDouble(str_m0);
 					new_K = Double.parseDouble(str_k);
 					new_B0 = Double.parseDouble(str_b0);
 					new_N = Integer.parseInt(str_N);
+					
+					new_en_el_K = Double.parseDouble(str_en_el_K);
+					new_en_el_b = Double.parseDouble(str_en_el_b);
 				}
 				catch(NumberFormatException ex) {
 					k_textbox.setBackground(Color.RED);
 					m0_textbox.setBackground(Color.RED);
 					b0_textbox.setBackground(Color.RED);
 					N_textbox.setBackground(Color.RED);
+					
+					en_el_K_textbox.setBackground(Color.RED);
+					en_el_b_textbox.setBackground(Color.RED);
 					return;
 				}
 				k_textbox.setBackground(Color.WHITE);
 				m0_textbox.setBackground(Color.WHITE);
 				b0_textbox.setBackground(Color.WHITE);
 				N_textbox.setBackground(Color.WHITE);
+				
+				en_el_K_textbox.setBackground(Color.WHITE);
+				en_el_b_textbox.setBackground(Color.WHITE);
+				
 				Run.prog.M0 = new_M0;
 				Run.prog.K = new_K;
 				Run.prog.B0 = new_B0;
 				Run.prog.approx_N = new_N;
+				
+				Run.prog.en_el_K = new_en_el_K;
+				Run.prog.en_el_b = new_en_el_b;
 				
 				cnvs.repaint();
 			}
@@ -78,6 +100,14 @@ public class Panel_mass extends Panel_base{
 		JLabel N = new JLabel(" N: ");
 		N_textbox = new JTextField(Integer.toString(Run.prog.approx_N));
 		N_textbox.setMaximumSize(new Dimension(50, 40));
+		
+		JLabel Energy_K = new JLabel(" En K: ");
+		en_el_K_textbox = new JTextField(Double.toString(Run.prog.en_el_K));
+		en_el_K_textbox.setMaximumSize(new Dimension(50, 40));
+		JLabel Energy_B = new JLabel(" En B: ");
+		en_el_b_textbox = new JTextField(Double.toString(Run.prog.en_el_b));
+		en_el_b_textbox.setMaximumSize(new Dimension(50, 40));
+		
 		JButton button_K = new JButton("Update");
 		button_K.addActionListener(update_K);
 		JLabel current_mass = new JLabel(" Mass: ");
@@ -95,6 +125,12 @@ public class Panel_mass extends Panel_base{
 	    top_panel_2.add(b0_textbox);
 	    top_panel_2.add(N);
 	    top_panel_2.add(N_textbox);
+	    
+	    top_panel_2.add(Energy_K);
+	    top_panel_2.add(en_el_K_textbox);
+	    top_panel_2.add(Energy_B);
+	    top_panel_2.add(en_el_b_textbox);
+	    
 	    top_panel_2.add(button_K);
 	    top_panel_2.add(current_mass);
 	    top_panel_2.add(label_X);

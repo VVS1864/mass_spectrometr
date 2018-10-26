@@ -18,7 +18,7 @@ public class Graph_energy extends Graph_canvas{
 	void draw_data() {
 // Current mass and intensity rendering
         
-        double current_ = Run.prog.current_en_el;
+        double current_ = Run.prog.current_en_el_float;
         int current_intensity = Run.prog.current_intensity;
         paint_current_data(current_, current_intensity);
         

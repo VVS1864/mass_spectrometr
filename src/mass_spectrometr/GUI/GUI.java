@@ -46,9 +46,9 @@ public class GUI {
 	protected boolean reset = false;
 	
 	public GUI(){
-		mainFrame = new JFrame("Java AWT Examples");
+		mainFrame = new JFrame("USSR Mass spectrometr software");
 		mainFrame.setLayout(new BorderLayout());
-	    mainFrame.setSize(800,600);
+	    mainFrame.setSize(1000,600);
 	    mainFrame.setMinimumSize(new Dimension(640, 480));
 	    mainFrame.addWindowListener(new WindowAdapter() {
 	

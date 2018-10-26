@@ -34,9 +34,11 @@ public class Config {
 		}
 	}
 	public void set_conf_value(String value_name, String new_value) {
-		if(config.containsKey(value_name)) {
-			config.setProperty(value_name, new_value);
+		if(!config.containsKey(value_name)) {
+			System.err.println("Set value error: config.txt has not setting '" + value_name +"'");
+			System.err.println("Set new setting field: '" + value_name +"'");
 		}
+		config.setProperty(value_name, new_value);
 	}
 	
 	public String get_conf_value(String value_name) {
@@ -44,7 +46,7 @@ public class Config {
 			return config.getProperty(value_name);
 		}
 		else {
-			System.err.println("config.txt has not setting '" + value_name +"'");
+			System.err.println("Get value error: config.txt has not setting '" + value_name +"'");
 			return null;
 		}
 	}

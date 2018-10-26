@@ -54,6 +54,9 @@ public class Run {
 	public  double K;
 	public  double B0;
 	
+	public double en_el_K;
+	public double en_el_b;
+	
 	// Parameters for electron energy
 	
 	public int start_V_cyclic = 0;
@@ -67,6 +70,10 @@ public class Run {
 	public int start_e_scan = 0; //0 - stop, 1 - start
 	public int dac_voltage = 0;
 	public float dac_voltage_float = 0; //for use step_V (float)
+	/**
+	 * en_el value in volts (-2, 17)
+	 */
+	public  float current_en_el_float;
 	
 	//public int scan_count = 0;
 	/**
@@ -124,6 +131,9 @@ public class Run {
 		B0 = parse_double("B0", 0);
 		K = parse_double("K", 0.001);
 		
+		en_el_b = parse_double("en_el_b", 400);
+		en_el_K = parse_double("en_el_K", 200);
+		
 		//load standard settings for fast scan of energy
 		//start_V_cyclic = parse_double("start_V_cyclic", 0);
 		//stop_V_cyclic = parse_double("stop_V_cyclic", 0);
@@ -136,6 +146,10 @@ public class Run {
 		cfg.set_conf_value("M0", Double.toString(M0));
 		cfg.set_conf_value("B0", Double.toString(B0));
 		cfg.set_conf_value("K", Double.toString(K));
+		
+		cfg.set_conf_value("en_el_b", Double.toString(en_el_b));
+		cfg.set_conf_value("en_el_K", Double.toString(en_el_K));
+		
 		cfg.store_config();
 	}
 	
@@ -151,8 +165,33 @@ public class Run {
 		return ret;
 	}
 	
+	/**
+	 * For calc (0, 3800) from (-2, 17)
+	 * @return
+	 */
 	public double calc_mass(double B) {
 		return M0 + K * (B0+B)*(B0+B);
+	}
+	
+	public int calc_int_en_el(float en_el) {
+		return Math.round(en_el*(float)en_el_K + (float)en_el_b);
+	}
+	
+	/**
+	 * For calc (-2, 17) from (0, 3800)
+	 * @return
+	 */
+	public float calc_float_en_el(int en_el) {
+		return (en_el-(float)en_el_b)/(float)en_el_K;
+	}
+	
+	/**
+	 * for calc (-2, 17) step to (0, 3800)
+	 * @param step
+	 * @return
+	 */
+	public float calc_step(float step) {
+		return step*(float)en_el_K;
 	}
 	
 	public void print_current_mass_intensity() {
@@ -171,22 +210,12 @@ public class Run {
 	
 	public void en_el_scan_loop() {
 		switch(cycle_scan) {
-		case(0): en_el_scan_long();
-		case(1): en_el_scan_fast();
+			case 0: en_el_scan_long(); break;
+			case 1: en_el_scan_fast(); break;
 		}
 	}
 	
-	public void en_el_scan_long() {
-		if(dac_voltage + step_V < stop_V) {
-			dac_voltage_float += step_V;
-			dac_voltage = Math.round(dac_voltage_float);
-		}
-		else {
-			user_interface.mass_panel.volt.stop_scan();
-		}
-	}
-	
-	public void en_el_scan_fast() {
+	private void en_el_scan_long() {
 		if(dac_voltage + step_V < stop_V) {
 			dac_voltage_float += step_V;
 			dac_voltage = Math.round(dac_voltage_float);
@@ -195,7 +224,17 @@ public class Run {
 		else {
 			dac_voltage = start_V;
 			dac_voltage_float = start_V;
-			
+		}
+	}
+	
+	private void en_el_scan_fast() {
+		if(dac_voltage + step_V < stop_V) {
+			dac_voltage_float += step_V;
+			dac_voltage = Math.round(dac_voltage_float);
+		}
+		else {
+			dac_voltage = start_V;
+			dac_voltage_float = start_V;		
 		}
 	}
 	
