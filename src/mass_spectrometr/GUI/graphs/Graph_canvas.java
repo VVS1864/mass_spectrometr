@@ -18,7 +18,13 @@ import mass_spectrometr.Run;
 
 public abstract class Graph_canvas extends JPanel {
 	protected ArrayList<Double> x_data;
+	protected ArrayList<Integer> x_data_int;
 	protected ArrayList<Integer> y_data;
+	
+	/*
+	protected int[] xx;
+	protected int[] yy;
+	*/
 	
 	private final int h_axis = 51;
 	private final int w_axis = 100;
@@ -32,7 +38,10 @@ public abstract class Graph_canvas extends JPanel {
 	public  double manual_X_factor = 4.0;
 	public  double manual_Y_factor = 4.0;
 	public  double scale_rate = 1.3;
-	
+	/**
+	 * initial point of x-axis units
+	 */
+	protected int unit_0_X = 0;
 	public int x0 = 100;
 	protected int  H; 
 	public int  W;
@@ -47,6 +56,15 @@ public abstract class Graph_canvas extends JPanel {
 	
 	public Graph_canvas (ArrayList<Double> x_data, ArrayList<Integer> y_data, String x_measure, String y_measure, Chart_analyser analyser) {
 		this.x_data = x_data;
+		this.y_data = y_data;
+		setBackground (Color.lightGray);
+		this.x_measure = x_measure;
+		this.y_measure = y_measure;
+		this.analyser = analyser;
+	}
+	
+	public Graph_canvas (ArrayList<Integer> x_data_i, ArrayList<Integer> y_data, String x_measure, String y_measure, Chart_analyser analyser, int i) {
+		this.x_data_int = x_data_i;
 		this.y_data = y_data;
 		setBackground (Color.lightGray);
 		this.x_measure = x_measure;
@@ -152,7 +170,7 @@ public abstract class Graph_canvas extends JPanel {
         int current_w = x0;
         units_rate = 20;
         current_unit = 0;
-        unit = 0;
+        unit = unit_0_X;
        
         if(X_factor > 30) units_rate = 1;
         else if(X_factor > 6.5) units_rate = 5;
@@ -189,10 +207,17 @@ public abstract class Graph_canvas extends JPanel {
 			
         }
 	}
+	/*
+	protected void add_line_to_array(int x1, int y1, int x2, int y2) {
+		if((x1>=w_axis && x2>=w_axis && x1<=W) && (x2<=W || y1>=10 || y2>=10 || y1<=H || y2<=H)) {
+			
+		}
+	}
+	*/
 	protected void draw_line(int x1, int y1, int x2, int y2, Graphics2D g2) {
 	//	if(x1>=w_axis && x2>=w_axis && x1<=W && x2<=W && y1>=10 && y2>=10 && y1<=H && y2<=H) {
 		if((x1>=w_axis && x2>=w_axis && x1<=W) && (x2<=W || y1>=10 || y2>=10 || y1<=H || y2<=H)) {
-    		g2.drawLine((int)x1, (int)y1, (int)x2, (int)y2);
+    		g2.drawLine(x1, y1, x2, y2);
 		}
 	}
 	private void draw_string(String str, int x1, int y1, Graphics2D g2) {
@@ -231,7 +256,7 @@ public abstract class Graph_canvas extends JPanel {
 		
 		g2.setColor(Color.BLUE);
 		g2.setStroke(new BasicStroke(3));
-		current_x = current_x * X_factor + x0;
+		current_x = (current_x - unit_0_X) * X_factor + x0;
 		current_y *= Y_factor;
 		draw_line((int)current_x, H, (int)current_x, 10, g2);
 		g2.setStroke(new BasicStroke(10));

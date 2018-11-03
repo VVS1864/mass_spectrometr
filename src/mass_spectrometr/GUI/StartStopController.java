@@ -13,6 +13,7 @@ public class StartStopController {
 	public static void set_sliders(int value) {
 		volt_fast.slider.setValue(value);
 		volt_long.slider.setValue(value);
+		//Run.prog.user_interface.repaint_cnvs();
 	}
 	
 	public static void set_enabled(Volt_engine volt, boolean enable) {

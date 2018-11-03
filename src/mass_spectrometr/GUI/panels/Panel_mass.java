@@ -43,9 +43,9 @@ public class Panel_mass extends Panel_base{
 				int new_N;
 				
 				String str_en_el_K = en_el_K_textbox.getText();
-				double new_en_el_K;
+				float new_en_el_K;
 				String str_en_el_b = en_el_b_textbox.getText();
-				double new_en_el_b;
+				float new_en_el_b;
 				
 				try {
 					new_M0 = Double.parseDouble(str_m0);
@@ -53,8 +53,8 @@ public class Panel_mass extends Panel_base{
 					new_B0 = Double.parseDouble(str_b0);
 					new_N = Integer.parseInt(str_N);
 					
-					new_en_el_K = Double.parseDouble(str_en_el_K);
-					new_en_el_b = Double.parseDouble(str_en_el_b);
+					new_en_el_K = Float.parseFloat(str_en_el_K);
+					new_en_el_b = Float.parseFloat(str_en_el_b);
 				}
 				catch(NumberFormatException ex) {
 					k_textbox.setBackground(Color.RED);

@@ -54,7 +54,7 @@ public abstract class Volt_engine extends JPanel{
 			@Override
 			public void actionPerformed(ActionEvent e) {
 				check_values();
-				//cnvs.repaint(); !!!
+				//cnvs.repaint(); 
 			}
 			
 		};
@@ -135,12 +135,10 @@ public abstract class Volt_engine extends JPanel{
 		
 		ChangeListener listener = new ChangeListener(){
 			public void stateChanged(ChangeEvent event){
-		
 				JSlider slider = (JSlider)event.getSource();
-				int i_value = slider.getValue();
 				float f_value = get_slider_value();
 				dac_voltage_textbox.setText(Float.toString(f_value));
-				StartStopController.set_sliders(i_value);
+				StartStopController.set_sliders(slider.getValue());
 				if(Run.prog.start_e_scan == 0) set_dac_voltage();
 				
 			}
@@ -173,9 +171,10 @@ public abstract class Volt_engine extends JPanel{
 		int i_new_stop = Math.round(new_stop * 100);
 		int i_new_start = Math.round(new_start * 100);
 		float f_new_speed = calc_step(new_speed);
-		
+		int i_new_dac_voltage = Math.round(new_dac_voltage*100);
 		// Check values for MAX value
-		if (!set_value(new_dac_voltage)||
+		
+		if (!(i_new_dac_voltage <= MAX && i_new_dac_voltage >= MIN)||
 			(i_new_stop < i_new_start)||
 			(i_new_stop > MAX)||
 			(i_new_start + f_new_speed > MAX)||
@@ -201,6 +200,7 @@ public abstract class Volt_engine extends JPanel{
 		set_stop_V(new_stop);
 		set_step_V(new_speed);
 		set_dac_voltage();
+		StartStopController.set_sliders(i_new_dac_voltage);
 		//Run.prog.dac_voltage = new_dac_voltage;
 		
 		//if (Cyclic_check.isSelected()) Run.prog.cycle_scan = 1;
@@ -245,16 +245,18 @@ public abstract class Volt_engine extends JPanel{
 		
 		StartStopController.set_enable_disable(true);
 	}
+	/*
 	public void set_new_en_el(int en_el) {
 		Run.prog.current_en_el_float = calc_float_from_int(en_el);
 		set_value(Run.prog.current_en_el_float);
 		
 	}
-	
+	*/
+	/*
 	public boolean set_value(float value) {
 		int i_value = Math.round(value*100);
 		if(i_value <= MAX && i_value >= MIN) {
-			dac_voltage_textbox.setText(Float.toString(value));
+			//dac_voltage_textbox.setText(Float.toString(value));
 			//slider.setValue(value);
 			StartStopController.set_sliders(i_value);
 			dac_voltage_textbox.setBackground(Color.WHITE);
@@ -264,6 +266,11 @@ public abstract class Volt_engine extends JPanel{
 			dac_voltage_textbox.setBackground(Color.RED);
 			return false;
 		}
+	}
+	*/
+	public void set_value(float value) {
+		int i_value = Math.round(value*100);
+		StartStopController.set_sliders(i_value);
 	}
 	
 	public float get_slider_value() {

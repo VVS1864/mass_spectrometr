@@ -15,18 +15,18 @@ import mass_spectrometr.GUI.panels.Panel_base_interfase;
 
 public class Run {
 	public static Run prog;
-	public  ArrayList<Integer> data_time = new ArrayList<Integer>();
-	public  ArrayList<Double> data_en_el = new ArrayList<Double>();
-	public  ArrayList<Integer> data_mass_intensity = new ArrayList<Integer>();
-	public  ArrayList<Integer> data_en_el_intensity = new ArrayList<Integer>();
+	public  ArrayList<Integer> data_time = new ArrayList<>();
+	public  ArrayList<Integer> data_en_el = new ArrayList<>();
+	public  ArrayList<Integer> data_mass_intensity = new ArrayList<>();
+	public  ArrayList<Integer> data_en_el_intensity = new ArrayList<>();
 	/**
 	 * B - approximated
 	 */
-	public  ArrayList<Double> data_Bo = new ArrayList<Double>();
+	public  ArrayList<Double> data_Bo = new ArrayList<>();
 	
 	public  int current_time;
 	public  double current_B;
-	public  double current_en_el;
+	public  int current_en_el;
 	public  int current_intensity;
 	
 	public  String[] ports;
@@ -54,8 +54,8 @@ public class Run {
 	public  double K;
 	public  double B0;
 	
-	public double en_el_K;
-	public double en_el_b;
+	public float en_el_K;
+	public float en_el_b;
 	
 	// Parameters for electron energy
 	
@@ -80,6 +80,8 @@ public class Run {
 	 * size of array for approximation B
 	 */
 	public  int approx_N = 100;
+	
+	public boolean en_el_delay = false;
 	
 	
 	
@@ -131,8 +133,8 @@ public class Run {
 		B0 = parse_double("B0", 0);
 		K = parse_double("K", 0.001);
 		
-		en_el_b = parse_double("en_el_b", 400);
-		en_el_K = parse_double("en_el_K", 200);
+		en_el_b = (float)parse_double("en_el_b", 400);
+		en_el_K = (float)parse_double("en_el_K", 200);
 		
 		//load standard settings for fast scan of energy
 		//start_V_cyclic = parse_double("start_V_cyclic", 0);
@@ -165,16 +167,17 @@ public class Run {
 		return ret;
 	}
 	
+	
+	public double calc_mass(double B) {
+		return M0 + K * Math.pow((B0+B), 2);
+	}
+	
 	/**
 	 * For calc (0, 3800) from (-2, 17)
 	 * @return
 	 */
-	public double calc_mass(double B) {
-		return M0 + K * (B0+B)*(B0+B);
-	}
-	
 	public int calc_int_en_el(float en_el) {
-		return Math.round(en_el*(float)en_el_K + (float)en_el_b);
+		return Math.round(en_el*en_el_K + en_el_b);
 	}
 	
 	/**
@@ -182,7 +185,7 @@ public class Run {
 	 * @return
 	 */
 	public float calc_float_en_el(int en_el) {
-		return (en_el-(float)en_el_b)/(float)en_el_K;
+		return (en_el-en_el_b)/en_el_K;
 	}
 	
 	/**
@@ -197,13 +200,17 @@ public class Run {
 	public void print_current_mass_intensity() {
 		DecimalFormat formatter = new DecimalFormat("#0.00");
 		double mass = calc_mass(current_B);
+		current_en_el_float = calc_float_en_el(current_en_el);
+		
 		user_interface.mass_panel.label_X.setText(formatter.format(mass));
 		user_interface.e_energy_frame.energy_panel.mass_indication.setText(formatter.format(mass));
 		user_interface.mass_panel.label_Y.setText(formatter.format(current_intensity));
 		user_interface.e_energy_frame.energy_panel.label_X.setText(formatter.format(current_en_el));
 		user_interface.e_energy_frame.energy_panel.label_Y.setText(formatter.format(current_intensity));
+		//user_interface.mass_panel.volt.set_value(current_en_el_float);
 		if (start_e_scan == 1) {
-			user_interface.mass_panel.volt.set_new_en_el((int)current_en_el);
+			user_interface.mass_panel.volt.set_value(current_en_el_float);
+			//user_interface.mass_panel.volt.set_new_en_el((int)current_en_el);
 			//user_interface.e_energy_frame.energy_panel.volt.set_new_en_el((int)current_en_el);
 		}
 	}
@@ -219,23 +226,17 @@ public class Run {
 		if(dac_voltage + step_V < stop_V) {
 			dac_voltage_float += step_V;
 			dac_voltage = Math.round(dac_voltage_float);
-			
+			en_el_delay = false;
 		}
 		else {
 			dac_voltage = start_V;
 			dac_voltage_float = start_V;
+			en_el_delay = true;
 		}
 	}
 	
 	private void en_el_scan_fast() {
-		if(dac_voltage + step_V < stop_V) {
-			dac_voltage_float += step_V;
-			dac_voltage = Math.round(dac_voltage_float);
-		}
-		else {
-			dac_voltage = start_V;
-			dac_voltage_float = start_V;		
-		}
+		en_el_scan_long();
 	}
 	
 	public void reset() {

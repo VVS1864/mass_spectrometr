@@ -37,6 +37,8 @@ public class GUI {
 	public Panel_mass mass_panel;
 	
 	protected JButton button_connect;
+	protected JButton button_reset;
+	
 	public  JComboBox<String> portbox;
 	
 	public E_energy e_energy_frame;
@@ -65,6 +67,14 @@ public class GUI {
 	    
 //ActionListener  		
 	    
+	    ActionListener reset_action_listener = new ActionListener() {
+			@Override
+			public void actionPerformed(ActionEvent e) {
+				Run.prog.reset();
+			}
+		};
+			
+			
 		ActionListener connect_action_listener = new ActionListener() {
 			@Override
 			public void actionPerformed(ActionEvent e) {
@@ -79,25 +89,16 @@ public class GUI {
 					}
 				}
 				else {
-	  				if(!Run.prog.draw_graph_mass && !reset) {
+	  				if(!Run.prog.draw_graph_mass) {
 	  					button_connect.setText("Stop");
 	  					Run.prog.draw_graph_mass = true;
 	  					set_status(Color.CYAN, "Transfering data from arduino, draw graph");
 	  				}
-	  				else if(Run.prog.draw_graph_mass && !reset) {
-	  					button_connect.setText("Reset");
-	  					Run.prog.draw_graph_mass = false;
-	  					reset = true;
-	  					set_status(Color.CYAN, "Transfering data from arduino");
-	  				}
-	  				else if(reset) {
+	  				else if(Run.prog.draw_graph_mass) {
 	  					button_connect.setText("Draw graph");
-	  					set_status(Color.CYAN, "Transfering data from arduino");
 	  					Run.prog.draw_graph_mass = false;
-	  					reset = false;
-	  					Run.prog.reset();
+	  					set_status(Color.CYAN, "Transfering data from arduino");
 	  				}
-	  				
 				}
 			}
 		};
@@ -133,11 +134,15 @@ public class GUI {
 	    button_connect = new JButton("Connect");
 		button_connect.addActionListener(connect_action_listener);
 		
+		button_reset = new JButton("Reset");
+		button_reset.addActionListener(reset_action_listener);
+		
 		JButton button_E_energy = new JButton("E energy");
 		button_E_energy.addActionListener(show_hide_E);
 		
 	    top_panel_0.add(portbox);
 	    top_panel_0.add(button_connect);
+	    top_panel_0.add(button_reset);
 	    top_panel_0.add(button_E_energy);
 	    top_panel_0.setAlignmentX(Component.LEFT_ALIGNMENT);
 	    

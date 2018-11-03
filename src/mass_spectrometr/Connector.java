@@ -22,7 +22,7 @@ public class Connector {
 	private ArrayList<Double> B_part;
 	private ArrayList<Double> B_approximated;
 	
-	public  ArrayList<Double> en_el_part;
+	public  ArrayList<Integer> en_el_part;
 	public  ArrayList<Integer> intensity_part;
 	//private static boolean f = true;
 	
@@ -70,7 +70,7 @@ public class Connector {
 		time_part = new ArrayList<Integer>(local_N_approx);
 		B_part = new ArrayList<Double>(local_N_approx);
 		B_approximated = new ArrayList<Double>(local_N_approx);
-		en_el_part = new ArrayList<Double>(local_N_approx);
+		en_el_part = new ArrayList<Integer>(local_N_approx);
 		intensity_part = new ArrayList<Integer>(local_N_approx);
 		
 		count = 0;
@@ -121,22 +121,31 @@ public class Connector {
 		public void serialEvent(SerialPortEvent event) {
 			if (event.isRXCHAR() && event.getEventValue() > 0) {
 				try {
-					byte buf[] = serialPort.readBytes(10);
-					
-					byte_to_int(buf);
-					Run.prog.current_B++;
-					//System.out.println(Run.prog.current_B);
+					//Write to arduino
 					byte write_buf[] = new byte[2];
 					int_to_byte(write_buf);
 					serialPort.writeBytes(write_buf);
 					
+					if (Run.prog.en_el_delay) {
+						try {
+							Thread.sleep(1000);
+						} catch (InterruptedException e) {
+							e.printStackTrace();
+						}
+					}
+					//Read from arduino
+					byte buf[] = serialPort.readBytes(10);
+					byte_to_int(buf);
+					Run.prog.current_B++;				
+					
+					//Collect data 
 					if (Run.prog.draw_graph_mass) {
 						time_part.add(Run.prog.current_time);
 						B_part.add(Run.prog.current_B);
 						intensity_part.add(Run.prog.current_intensity);
 						count++;
 
-						// Calculate approximation and repaint
+						// Calculate approximation B and repaint
 						if (count == local_N_approx) {
 							Approximator A = new Approximator();
 							B_approximated = A.Approximate(B_part, time_part, local_N_approx);
@@ -148,15 +157,17 @@ public class Connector {
 						}
 						
 					}
-					/*else if (Run.prog.draw_graph_en_el) {
+					else if (Run.prog.draw_graph_en_el) {
 						//time_part.add(Run.prog.current_time);
-						en_el_part.add(Run.prog.current_en_el);
-						intensity_part.add(Run.prog.current_intensity);
+						//en_el_part.add(Run.prog.current_en_el);
+						//intensity_part.add(Run.prog.current_intensity);
 						
-						Run.prog.data_en_el.addAll(en_el_part);
-						Run.prog.data_en_el_intensity.addAll(intensity_part);
-					}*/
+						Run.prog.data_en_el.add(Run.prog.current_en_el);
+						Run.prog.data_en_el_intensity.add(Run.prog.current_intensity);
+					}
+					
 					if (Run.prog.start_e_scan == 1) Run.prog.en_el_scan_loop();
+					
 					Run.prog.user_interface.repaint_cnvs();
 					Run.prog.print_current_mass_intensity();
 					

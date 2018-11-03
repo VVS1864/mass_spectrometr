@@ -32,10 +32,8 @@ public class Graph_mass extends Graph_canvas{
     	if (current_mass > max_x) max_x = current_mass;
     	if (x_data.size() == 0 || y_data.size() == 0) return;
         for(int i = 1; i<x_data.size()-1; i++) {    
-        	double B1 = x_data.get(i-1);
-        	double mass_1 = Run.prog.calc_mass(B1);
-        	double B2 = x_data.get(i);
-        	double mass_2 = Run.prog.calc_mass(B2); 
+        	double mass_1 = Run.prog.calc_mass(x_data.get(i-1));
+        	double mass_2 = Run.prog.calc_mass(x_data.get(i)); 
         	double x1 = mass_1*X_factor + x0;
         	double y1 = H - (y_data.get(i-1)*Y_factor);
         	double x2 = mass_2*X_factor + x0;
