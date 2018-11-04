@@ -20,8 +20,8 @@ public class Volt_engine_fast extends Volt_engine{
 	}
 
 	@Override
-	int get_cycle_scan() {
-		return 1;
+	boolean get_cycle_scan() {
+		return true;
 	}
 
 	@Override

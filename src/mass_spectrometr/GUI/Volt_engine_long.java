@@ -20,8 +20,8 @@ public class Volt_engine_long extends Volt_engine{
 	}
 
 	@Override
-	int get_cycle_scan() {
-		return 0;
+	boolean get_cycle_scan() {
+		return false;
 	}
 
 	@Override

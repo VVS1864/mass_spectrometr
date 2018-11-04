@@ -89,7 +89,7 @@ public class GUI {
 					}
 				}
 				else {
-	  				if(!Run.prog.draw_graph_mass) {
+	  				if(!Run.prog.draw_graph_mass && !Run.prog.draw_graph_en_el) {
 	  					button_connect.setText("Stop");
 	  					Run.prog.draw_graph_mass = true;
 	  					set_status(Color.CYAN, "Transfering data from arduino, draw graph");
@@ -107,6 +107,16 @@ public class GUI {
 			@Override
 			public void actionPerformed(ActionEvent e) {
 				e_energy_frame.switch_visible();
+			}
+		};
+		
+		ActionListener calibration = new ActionListener() {
+			@Override
+			public void actionPerformed(ActionEvent e) {
+				if(!Run.prog.draw_graph_mass) {
+				double[] scales = mass_panel.cnvs.get_scales();
+				new Calibration_frame(mainFrame, scales[0], scales[1]);
+				}
 			}
 		};
 		
@@ -140,10 +150,14 @@ public class GUI {
 		JButton button_E_energy = new JButton("E energy");
 		button_E_energy.addActionListener(show_hide_E);
 		
+		JButton button_calibration = new JButton("Calibration");
+		button_calibration.addActionListener(calibration);
+		
 	    top_panel_0.add(portbox);
 	    top_panel_0.add(button_connect);
 	    top_panel_0.add(button_reset);
 	    top_panel_0.add(button_E_energy);
+	    top_panel_0.add(button_calibration);
 	    top_panel_0.setAlignmentX(Component.LEFT_ALIGNMENT);
 	    
 	    mass_panel = new Panel_mass();

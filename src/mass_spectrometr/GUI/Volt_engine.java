@@ -39,9 +39,10 @@ public abstract class Volt_engine extends JPanel{
 			@Override
 			public void actionPerformed(ActionEvent e) {
 				if (check_values()) {
-					if (Run.prog.start_e_scan == 0) {
-						Run.prog.cycle_scan = get_cycle_scan();
-						start_scan();
+					if (Run.prog.start_e_scan == false) {
+						Run.prog.en_el_cycle_scan = get_cycle_scan();
+						
+						if(!Run.prog.en_el_cycle_scan) start_scan();
 					}
 					else {
 						stop_scan();
@@ -128,8 +129,8 @@ public abstract class Volt_engine extends JPanel{
 		add(r_p);
 		
 		String t;
-		if(get_cycle_scan() == 1) t = "Fast cyclic scan";
-		else t = "Long linear scan";
+		if(get_cycle_scan()) t = "Fast scan";
+		else t = "Long scan";
 		TitledBorder title = new TitledBorder(t);
 		setBorder(title);
 		
@@ -139,7 +140,7 @@ public abstract class Volt_engine extends JPanel{
 				float f_value = get_slider_value();
 				dac_voltage_textbox.setText(Float.toString(f_value));
 				StartStopController.set_sliders(slider.getValue());
-				if(Run.prog.start_e_scan == 0) set_dac_voltage();
+				if(Run.prog.start_e_scan == false) set_dac_voltage();
 				
 			}
 		};
@@ -216,9 +217,9 @@ public abstract class Volt_engine extends JPanel{
 	}
 	
 	public void start_scan() {
-		Run.prog.start_e_scan = 1;
+		Run.prog.start_e_scan = true;
 		
-		if (Run.prog.cycle_scan == 1) {
+		if (Run.prog.en_el_cycle_scan) {
 			Run.prog.start_V = Run.prog.start_V_cyclic;
 			Run.prog.stop_V = Run.prog.stop_V_cyclic;
 			Run.prog.step_V = Run.prog.step_V_cyclic;
@@ -241,7 +242,7 @@ public abstract class Volt_engine extends JPanel{
 		*/
 	}
 	public void stop_scan() {
-		Run.prog.start_e_scan = 0;
+		Run.prog.start_e_scan = false;
 		
 		StartStopController.set_enable_disable(true);
 	}
@@ -283,7 +284,7 @@ public abstract class Volt_engine extends JPanel{
 	abstract float get_start_V();
 	abstract float get_stop_V();
 	abstract float get_step_V();
-	abstract int get_cycle_scan();
+	abstract boolean get_cycle_scan();
 	
 	abstract void set_start_V(float v);
 	abstract void set_stop_V(float v);

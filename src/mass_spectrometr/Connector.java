@@ -36,7 +36,7 @@ public class Connector {
 		serialPort = new SerialPort(port);
 		try {
 			serialPort.openPort();
-			serialPort.setParams(SerialPort.BAUDRATE_38400, SerialPort.DATABITS_8, SerialPort.STOPBITS_1,
+			serialPort.setParams(SerialPort.BAUDRATE_4800, SerialPort.DATABITS_8, SerialPort.STOPBITS_1,
 					SerialPort.PARITY_NONE);
 			
 			serialPort.setEventsMask(SerialPort.MASK_RXCHAR);
@@ -166,7 +166,7 @@ public class Connector {
 						Run.prog.data_en_el_intensity.add(Run.prog.current_intensity);
 					}
 					
-					if (Run.prog.start_e_scan == 1) Run.prog.en_el_scan_loop();
+					if (Run.prog.start_e_scan) Run.prog.en_el_scan_loop();
 					
 					Run.prog.user_interface.repaint_cnvs();
 					Run.prog.print_current_mass_intensity();

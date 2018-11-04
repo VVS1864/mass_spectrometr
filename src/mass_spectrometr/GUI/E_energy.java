@@ -23,9 +23,11 @@ public class E_energy extends JDialog{
 	public JButton button_start;
 	
 	public E_energy(JFrame jframe) {
-		super(jframe, "Electron energy");
+		super();
+		setTitle("Electron Energy");
 		setSize(1000, 500);
 		setMinimumSize(new Dimension(640, 480));
+		setLocationRelativeTo(jframe);
 		
 		addWindowListener(new WindowAdapter() {
 			public void windowClosing(WindowEvent windowevent) {
@@ -37,7 +39,7 @@ public class E_energy extends JDialog{
 	    ActionListener start_action_listener = new ActionListener() {
 	    	@Override
 			public void actionPerformed(ActionEvent e) {
-	    		if(!Run.prog.draw_graph_en_el) {
+	    		if(!Run.prog.draw_graph_en_el && !Run.prog.draw_graph_mass && !Run.prog.en_el_cycle_scan) {
 	    			button_start.setText("Stop");
   					Run.prog.draw_graph_en_el = true;
 	    		}

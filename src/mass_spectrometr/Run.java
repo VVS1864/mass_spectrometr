@@ -66,8 +66,8 @@ public class Run {
 	public int start_V = 0;
 	public int stop_V = 3800;
 	public float step_V = 0.02f;
-	public int cycle_scan = 0; //0 - linear, 1 - cycle
-	public int start_e_scan = 0; //0 - stop, 1 - start
+	public boolean en_el_cycle_scan = false; //0 - linear, 1 - cycle
+	public boolean start_e_scan = false; //0 - stop, 1 - start
 	public int dac_voltage = 0;
 	public float dac_voltage_float = 0; //for use step_V (float)
 	/**
@@ -205,10 +205,10 @@ public class Run {
 		user_interface.mass_panel.label_X.setText(formatter.format(mass));
 		user_interface.e_energy_frame.energy_panel.mass_indication.setText(formatter.format(mass));
 		user_interface.mass_panel.label_Y.setText(formatter.format(current_intensity));
-		user_interface.e_energy_frame.energy_panel.label_X.setText(formatter.format(current_en_el));
+		user_interface.e_energy_frame.energy_panel.label_X.setText(formatter.format(current_en_el_float));
 		user_interface.e_energy_frame.energy_panel.label_Y.setText(formatter.format(current_intensity));
 		//user_interface.mass_panel.volt.set_value(current_en_el_float);
-		if (start_e_scan == 1) {
+		if (start_e_scan) {
 			user_interface.mass_panel.volt.set_value(current_en_el_float);
 			//user_interface.mass_panel.volt.set_new_en_el((int)current_en_el);
 			//user_interface.e_energy_frame.energy_panel.volt.set_new_en_el((int)current_en_el);
@@ -216,9 +216,11 @@ public class Run {
 	}
 	
 	public void en_el_scan_loop() {
-		switch(cycle_scan) {
-			case 0: en_el_scan_long(); break;
-			case 1: en_el_scan_fast(); break;
+		if(en_el_cycle_scan) {
+			en_el_scan_fast();
+		}
+		else {
+			en_el_scan_long();
 		}
 	}
 	

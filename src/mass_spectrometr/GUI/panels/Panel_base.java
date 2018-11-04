@@ -194,7 +194,8 @@ public class Panel_base extends JPanel implements Panel_base_interfase{
 		double s = (c == '+') ? cnvs.scale_rate : 1.0/cnvs.scale_rate;
 		if (axis == 'Y') {
 			double new_scale = cnvs.manual_Y_factor * s;
-			if(new_scale > 0.25) cnvs.manual_Y_factor *= s;
+			if(new_scale > 0.25 || new_scale > cnvs.manual_Y_factor) cnvs.manual_Y_factor *= s;
+			System.out.println(cnvs.manual_Y_factor);
 		}
 		else {
 			double new_scale = cnvs.manual_X_factor * s;

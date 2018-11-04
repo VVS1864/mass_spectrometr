@@ -262,4 +262,8 @@ public abstract class Graph_canvas extends JPanel {
 		g2.setStroke(new BasicStroke(10));
 		g2.drawLine(w_axis/2, H - current_y, w_axis/2, H);
 	}
+	
+	public double[] get_scales(){
+		return new double[] {X_factor, Y_factor};
+	}
 }

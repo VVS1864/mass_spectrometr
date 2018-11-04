@@ -22,7 +22,7 @@ char read_buf[2];
 
 void setup() {
   pinMode(led, OUTPUT);
-  Serial.begin(38400); 
+  Serial.begin(4800); 
   digitalWrite(led, LOW);
 }
 
