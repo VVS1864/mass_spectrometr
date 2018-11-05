@@ -16,6 +16,8 @@ public class Connector {
 	 * Size of array of B-raw
 	 */
 	private int count = 0;
+	public int total_count = 0;
+	
 	private int local_N_approx;
 	
 	private ArrayList<Integer> time_part;
@@ -24,7 +26,6 @@ public class Connector {
 	
 	public  ArrayList<Integer> en_el_part;
 	public  ArrayList<Integer> intensity_part;
-	//private static boolean f = true;
 	
 	public Connector() {
 		Run.prog.ports = SerialPortList.getPortNames();
@@ -144,26 +145,32 @@ public class Connector {
 						B_part.add(Run.prog.current_B);
 						intensity_part.add(Run.prog.current_intensity);
 						count++;
+						
 
 						// Calculate approximation B and repaint
 						if (count == local_N_approx) {
+							
 							Approximator A = new Approximator();
 							B_approximated = A.Approximate(B_part, time_part, local_N_approx);
-							Run.prog.data_Bo.addAll(B_approximated);
-							Run.prog.data_time.addAll(time_part);
-							
-							Run.prog.data_mass_intensity.addAll(intensity_part);
+							for(int i = 0; i<B_approximated.size(); i++) {
+								Double B = B_approximated.get(i);
+								double b = B.doubleValue();
+								
+								Integer Intensity = intensity_part.get(i);
+								int intensity = Intensity.intValue();
+								
+								int fixed_mass_index = (int)Math.round(b);
+								
+								if(fixed_mass_index < Run.prog.fixed_data_mass_intensity.length && fixed_mass_index > 0) {
+									Run.prog.fixed_data_mass_intensity[fixed_mass_index] = intensity;									
+								}
+								
+							}
 							clear_parts();
 						}
 						
 					}
 					else if (Run.prog.draw_graph_en_el) {;
-						//time_part.add(Run.prog.current_time);
-						//en_el_part.add(Run.prog.current_en_el);
-						//intensity_part.add(Run.prog.current_intensity);
-						
-						///Run.prog.data_en_el.add(Run.prog.current_en_el);
-						///Run.prog.data_en_el_intensity.add(Run.prog.current_intensity);
 						if (Run.prog.current_en_el <= Run.prog.fixed_data_en_el_intensity.length) {
 							Run.prog.fixed_data_en_el_intensity[Run.prog.current_en_el] += Run.prog.current_intensity;
 						}

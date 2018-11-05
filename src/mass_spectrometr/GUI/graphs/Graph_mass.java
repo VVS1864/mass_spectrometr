@@ -23,31 +23,35 @@ public class Graph_mass extends Graph_canvas{
         paint_current_data(current_mass, current_intensity);
         
 // Data rendering
-        if(x_data.size() <= 2) return;
+      
         
         g.setColor(Color.RED);
         g2.setStroke(new BasicStroke(1));
         
     	if (current_intensity > max_y) max_y = current_intensity;
     	if (current_mass > max_x) max_x = current_mass;
-    	if (x_data.size() == 0 || y_data.size() == 0) return;
-        for(int i = 1; i<x_data.size()-1; i++) {    
-        	double mass_1 = Run.prog.calc_mass(x_data.get(i-1));
-        	double mass_2 = Run.prog.calc_mass(x_data.get(i)); 
-        	double x1 = mass_1*X_factor + x0;
-        	double y1 = H - (y_data.get(i-1)*Y_factor);
-        	double x2 = mass_2*X_factor + x0;
-        	double y2 = H - (y_data.get(i)*Y_factor);
-        	
-        	draw_line((int)x1, (int)y1, (int)x2, (int)y2, g2);
-        	
-        }
 
+    	for(int mass = 0; mass < Run.prog.fixed_data_mass_intensity.length - 1; mass++) {
+    		
+    		double intensity_1 = Run.prog.fixed_data_mass_intensity[mass];
+    		double intensity_2 = Run.prog.fixed_data_mass_intensity[mass+1];
+        	double mass_1 = Run.prog.calc_mass(mass);
+        	double mass_2 = Run.prog.calc_mass(mass+1); 
+        	
+        	double x1 = mass_1*X_factor + x0;
+        	double y1 = H - (intensity_1*Y_factor);
+        	double x2 = mass_2*X_factor + x0;
+        	double y2 = H - (intensity_2*Y_factor);
+        	draw_line((int)x1, (int)y1, (int)x2, (int)y2, g2);
+    	}
+    	
         g.setColor(Color.BLUE);
+        /*
         if(x_data.size()>2 && Run.prog.draw_graph_mass == false) {
         	analyser = new Chart_analyser(x_data, y_data);
         	paint_peak_labels(g2);
         }
+        */
         
 	}
 	

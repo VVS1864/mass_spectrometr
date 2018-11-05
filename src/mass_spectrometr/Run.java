@@ -14,11 +14,12 @@ import mass_spectrometr.GUI.panels.Panel_base_interfase;
 
 public class Run {
 	public static Run prog;
-	public ArrayList<Integer> data_time = new ArrayList<>();
+	//public ArrayList<Integer> data_time = new ArrayList<>();
 	public ArrayList<Integer> data_en_el = new ArrayList<>();
 	public ArrayList<Integer> data_mass_intensity = new ArrayList<>();
 	//public ArrayList<Integer> data_en_el_intensity = new ArrayList<>();
 	public int[] fixed_data_en_el_intensity = new int[4000];
+	public double[] fixed_data_mass_intensity = new double[65600];
 	/**
 	 * B - approximated
 	 */
@@ -92,6 +93,7 @@ public class Run {
 		user_interface = new GUI();
 
 		set_zero_energy();
+		set_zero_mass();
 		
 		KeyboardFocusManager.getCurrentKeyboardFocusManager().addKeyEventDispatcher(new KeyEventDispatcher() {
 			@Override
@@ -260,17 +262,24 @@ public class Run {
 			fixed_data_en_el_intensity[i] = 0;
 		}
 	}
+	
+	private void set_zero_mass() {
+		// set zeros in mass intensity array
+		for (int i = 0; i < fixed_data_mass_intensity.length; i++) {
+			fixed_data_mass_intensity[i] = 0;
+		}
+	}
 
 	public void reset() {
-		data_time.clear();
+		//data_time.clear();
 		// data_B.clear();
 		data_Bo.clear();
 		data_en_el.clear();
 		data_mass_intensity.clear();
 		set_zero_energy();
-		
+		set_zero_mass();
 		total_count = 1;
-
+		arduino.total_count = 0;
 		arduino.clear_parts();
 	}
 
