@@ -89,14 +89,17 @@ public class Panel_mass extends Panel_base{
 		
 		JLabel coefficients = new JLabel(" Coefficients: ");
 		JLabel M0 = new JLabel(" M0: ");
-		m0_textbox = new JTextField(Double.toString(Run.prog.M0));
+		m0_textbox = new JTextField();
 		m0_textbox.setMaximumSize(new Dimension(50, 40));
 		JLabel K = new JLabel(" K: ");
-		k_textbox = new JTextField(Double.toString(Run.prog.K));
+		k_textbox = new JTextField();
 		k_textbox.setMaximumSize(new Dimension(50, 40));
 		JLabel B0 = new JLabel(" B0: ");
-		b0_textbox = new JTextField(Double.toString(Run.prog.B0));
+		b0_textbox = new JTextField();
 		b0_textbox.setMaximumSize(new Dimension(50, 40));
+		
+		set_new_coef_values(Run.prog.K, Run.prog.M0, Run.prog.B0);
+		
 		JLabel N = new JLabel(" N: ");
 		N_textbox = new JTextField(Integer.toString(Run.prog.approx_N));
 		N_textbox.setMaximumSize(new Dimension(50, 40));
@@ -144,5 +147,11 @@ public class Panel_mass extends Panel_base{
 	    
 	    volt = new Volt_engine_fast();
 	    add(volt, BorderLayout.SOUTH);
+	}
+	
+	public void set_new_coef_values(double new_K, double new_M0, double new_B0) {
+		m0_textbox.setText(Double.toString(new_M0));
+		b0_textbox.setText(Double.toString(new_B0));
+		k_textbox.setText(Double.toString(new_K));
 	}
 }
