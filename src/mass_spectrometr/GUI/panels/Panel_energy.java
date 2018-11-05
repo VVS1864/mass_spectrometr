@@ -82,7 +82,7 @@ public class Panel_energy extends Panel_base{
 		
 	    top_panel_2.setAlignmentX(Component.LEFT_ALIGNMENT);
 		
-		cnvs = new Graph_energy(Run.prog.data_en_el, Run.prog.data_en_el_intensity, "En", "int", Run.prog.analyser_en_el);
+		cnvs = new Graph_energy(Run.prog.data_en_el, Run.prog.data_mass_intensity, "En", "int", Run.prog.analyser_en_el);
 		add(cnvs, BorderLayout.CENTER);
 		
 		volt = new Volt_engine_long();

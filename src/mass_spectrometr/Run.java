@@ -17,7 +17,8 @@ public class Run {
 	public ArrayList<Integer> data_time = new ArrayList<>();
 	public ArrayList<Integer> data_en_el = new ArrayList<>();
 	public ArrayList<Integer> data_mass_intensity = new ArrayList<>();
-	public ArrayList<Integer> data_en_el_intensity = new ArrayList<>();
+	//public ArrayList<Integer> data_en_el_intensity = new ArrayList<>();
+	public int[] fixed_data_en_el_intensity = new int[4000];
 	/**
 	 * B - approximated
 	 */
@@ -80,6 +81,8 @@ public class Run {
 	public int approx_N = 100;
 
 	public boolean en_el_delay = false;
+	// number of all cycles of energy scan
+	public long total_count = 1;
 
 	public Run() {
 		prog = this;
@@ -88,6 +91,8 @@ public class Run {
 		read_settings();
 		user_interface = new GUI();
 
+		set_zero_energy();
+		
 		KeyboardFocusManager.getCurrentKeyboardFocusManager().addKeyEventDispatcher(new KeyEventDispatcher() {
 			@Override
 			public boolean dispatchKeyEvent(KeyEvent e) {
@@ -157,7 +162,7 @@ public class Run {
 		}
 		return ret;
 	}
-	
+
 	private void set_new_coefficients(double new_K, double new_M0, double new_B0) {
 		K = new_K;
 		M0 = new_M0;
@@ -241,11 +246,19 @@ public class Run {
 			dac_voltage = start_V;
 			dac_voltage_float = start_V;
 			en_el_delay = true;
+			total_count++;
 		}
 	}
 
 	private void en_el_scan_fast() {
 		en_el_scan_long();
+	}
+
+	private void set_zero_energy() {
+		// set zeros in en_el intensity array
+		for (int i = 0; i < fixed_data_en_el_intensity.length; i++) {
+			fixed_data_en_el_intensity[i] = 0;
+		}
 	}
 
 	public void reset() {
@@ -254,6 +267,9 @@ public class Run {
 		data_Bo.clear();
 		data_en_el.clear();
 		data_mass_intensity.clear();
+		set_zero_energy();
+		
+		total_count = 1;
 
 		arduino.clear_parts();
 	}

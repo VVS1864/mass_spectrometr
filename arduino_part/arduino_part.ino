@@ -70,12 +70,16 @@ void set_random(){
   int r = 10;
   int n = 0;
   int x = random(50);
-  if (x == 3) {
-    r = 1000;
-    n = 500;
+  //if (x == 3) {
+  //  r = 1000;
+  //  n = 500;
+  //}
+  if (en_el > 100 && en_el < 200){
+    intensity = 15;
   }
-
-  intensity = random(n, r);
+  else{
+    intensity = random(n, r);
+  }
 }
 
 void send_data(){

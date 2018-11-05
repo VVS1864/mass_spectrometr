@@ -36,7 +36,7 @@ public class Connector {
 		serialPort = new SerialPort(port);
 		try {
 			serialPort.openPort();
-			serialPort.setParams(SerialPort.BAUDRATE_4800, SerialPort.DATABITS_8, SerialPort.STOPBITS_1,
+			serialPort.setParams(SerialPort.BAUDRATE_38400, SerialPort.DATABITS_8, SerialPort.STOPBITS_1,
 					SerialPort.PARITY_NONE);
 			
 			serialPort.setEventsMask(SerialPort.MASK_RXCHAR);
@@ -157,13 +157,16 @@ public class Connector {
 						}
 						
 					}
-					else if (Run.prog.draw_graph_en_el) {
+					else if (Run.prog.draw_graph_en_el) {;
 						//time_part.add(Run.prog.current_time);
 						//en_el_part.add(Run.prog.current_en_el);
 						//intensity_part.add(Run.prog.current_intensity);
 						
-						Run.prog.data_en_el.add(Run.prog.current_en_el);
-						Run.prog.data_en_el_intensity.add(Run.prog.current_intensity);
+						///Run.prog.data_en_el.add(Run.prog.current_en_el);
+						///Run.prog.data_en_el_intensity.add(Run.prog.current_intensity);
+						if (Run.prog.current_en_el <= Run.prog.fixed_data_en_el_intensity.length) {
+							Run.prog.fixed_data_en_el_intensity[Run.prog.current_en_el] += Run.prog.current_intensity;
+						}
 					}
 					
 					if (Run.prog.start_e_scan) Run.prog.en_el_scan_loop();
