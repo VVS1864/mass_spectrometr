@@ -3,6 +3,7 @@ package mass_spectrometr.GUI;
 import java.awt.BorderLayout;
 import java.awt.Color;
 import java.awt.Component;
+import java.awt.Dialog;
 import java.awt.Dimension;
 import java.awt.KeyEventDispatcher;
 import java.awt.KeyboardFocusManager;
@@ -35,17 +36,19 @@ import mass_spectrometr.GUI.panels.Panel_mass;
 public class GUI {
 	public JFrame mainFrame;
 	public Panel_mass mass_panel;
+	public E_energy e_energy_frame;
 	
 	protected JButton button_connect;
 	protected JButton button_reset;
 	
 	public  JComboBox<String> portbox;
 	
-	public E_energy e_energy_frame;
+	
 	public  JLabel status_info2;
 	
 	protected boolean is_ready = false;
 	protected boolean reset = false;
+
 	
 	public GUI(){
 		mainFrame = new JFrame("USSR Mass spectrometr software");
@@ -114,8 +117,8 @@ public class GUI {
 			@Override
 			public void actionPerformed(ActionEvent e) {
 				if(!Run.prog.draw_graph_mass) {
-				double[] scales = mass_panel.cnvs.get_scales();
-				new Calibration_frame(mainFrame, scales[0], scales[1]);
+					double[] scales = mass_panel.cnvs.get_scales();
+					new Calibration_frame(mainFrame, scales[0], scales[1]);
 				}
 			}
 		};

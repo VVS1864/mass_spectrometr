@@ -12,6 +12,8 @@ import java.awt.event.MouseEvent;
 import java.awt.event.MouseListener;
 import java.awt.event.MouseMotionAdapter;
 import java.awt.event.MouseMotionListener;
+import java.awt.event.WindowAdapter;
+import java.awt.event.WindowEvent;
 
 import javax.swing.BoxLayout;
 import javax.swing.JButton;
@@ -29,7 +31,7 @@ import mass_spectrometr.GUI.graphs.mass_setter_panel.Mass_setter_panel;
 public class Calibration_frame extends JDialog implements MouseMotionListener, MouseListener, ActionListener{
 	private double X_scale;
 	private double Y_scale;
-	private Graph_canvas cnvs;
+	public Graph_canvas cnvs;
 	private Mass_setter_panel mass_1_panel;
 	private Mass_setter_panel mass_2_panel;
 	private Mass_setter_panel mass_3_panel;
@@ -40,11 +42,11 @@ public class Calibration_frame extends JDialog implements MouseMotionListener, M
 	private JButton button_apply;
 
 	public Calibration_frame(JFrame jframe, double X_scale, double Y_scale) {
-		super(jframe, "Mass calibration");
+		super(jframe, "Mass calibration");		
 		// setSize(1000, 500);
 		setMinimumSize(new Dimension(640, 480));
 		setBounds(GraphicsEnvironment.getLocalGraphicsEnvironment().getMaximumWindowBounds());
-		setModalityType(Dialog.ModalityType.APPLICATION_MODAL);
+		setModalityType(Dialog.ModalityType.DOCUMENT_MODAL);
 		this.X_scale = X_scale;
 		this.Y_scale = Y_scale;
 
@@ -155,7 +157,7 @@ public class Calibration_frame extends JDialog implements MouseMotionListener, M
 			if (format_err) return;
 			
 			Run.prog.calc_coefficients(mass_1, mass_2, mass_3, mass_1_real, mass_2_real, mass_3_real);
-			
+			dispose();
 		}
 	}
 

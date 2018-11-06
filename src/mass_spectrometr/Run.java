@@ -173,11 +173,29 @@ public class Run {
 	}
 
 	public void calc_coefficients(float M1, float M2, float M3, float M1_real, float M2_real, float M3_real) {
-		System.out.println(M1 + " " + M2 + " " + M3);
-		System.out.println(M1_real + " " + M2_real + " " + M3_real);
-		double new_K = 10;
-		double new_M0 = 1;
-		double new_B0 = 4;
+		//System.out.println(M1 + " " + M2 + " " + M3);
+		//System.out.println(M1_real + " " + M2_real + " " + M3_real);
+		double B1 = Math.sqrt((M1 - M0)/K) - B0;
+		double B2 = Math.sqrt((M2 - M0)/K) - B0;
+		double B3 = Math.sqrt((M3 - M0)/K) - B0;
+		//System.out.println("M " + M1 + " " + M2 + " " + M3);
+		M1 = M1_real;
+		M2 = M2_real;
+		M3 = M3_real;
+		//System.out.println("M_real " + M1 + " " + M2 + " " + M3);
+		//System.out.println("B " + B1 + " " + B2 + " " + B3);
+		//System.out.println("M1_new " + calc_mass(B1));
+		
+		double new_B0 = ((M3-M1)*(B1-B2)+(M1-M2)*(B3-B1)) / 
+				(2* (  ((M2-M1)*(Math.pow(B3, 2)-Math.pow(B1, 2))) + ((M1-M3)*(Math.pow(B2, 2)-Math.pow(B1, 2)))  )  );
+					
+		double new_K = (M2-M1) / (Math.pow(B2, 2) - Math.pow(B1, 2) + 2*new_B0*(B2-B1));
+		
+		double new_M0 = M1 - new_K*Math.pow(B1, 2) - 2*new_K*B1*new_B0 - new_K*Math.pow(new_B0, 2);
+		
+		System.out.println("K" + new_K);
+		System.out.println("B0" + new_B0);
+		System.out.println("M0" + new_M0);
 		set_new_coefficients(new_K, new_M0, new_B0);
 	}
 

@@ -6,6 +6,8 @@ import java.awt.Component;
 import java.awt.Dimension;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.text.DecimalFormat;
+import java.text.DecimalFormatSymbols;
 
 import javax.swing.JButton;
 import javax.swing.JLabel;
@@ -150,8 +152,12 @@ public class Panel_mass extends Panel_base{
 	}
 	
 	public void set_new_coef_values(double new_K, double new_M0, double new_B0) {
-		m0_textbox.setText(Double.toString(new_M0));
-		b0_textbox.setText(Double.toString(new_B0));
-		k_textbox.setText(Double.toString(new_K));
+		DecimalFormatSymbols otherSymbols = new DecimalFormatSymbols();
+		otherSymbols.setDecimalSeparator('.');
+		DecimalFormat formatter = new DecimalFormat("#0.000000", otherSymbols);
+		
+		m0_textbox.setText(formatter.format(new_M0));
+		b0_textbox.setText(formatter.format(new_B0));
+		k_textbox.setText(formatter.format(new_K));
 	}
 }
