@@ -16,17 +16,8 @@ import mass_spectrometr.Chart_analyser;
 import mass_spectrometr.Peak;
 import mass_spectrometr.Run;
 
-public abstract class Graph_canvas extends JPanel {
-	protected ArrayList<Double> x_data;
-	protected ArrayList<Integer> x_data_int;
-	protected ArrayList<Integer> y_data;
-	
-	/*
-	protected int[] xx;
-	protected int[] yy;
-	*/
-	
-	private final int h_axis = 51;
+public abstract class Graph_canvas extends JPanel {	
+	private final int h_axis = 50;
 	private final int w_axis = 100;
 	private final int arrow_w = 10;
 	protected double max_y = 100;
@@ -42,8 +33,14 @@ public abstract class Graph_canvas extends JPanel {
 	 * initial point of x-axis units
 	 */
 	protected int unit_0_X = 0;
-	public int x0 = 100;
+	public int x0 = w_axis; //100;
+	/**
+	 * height of rendering area
+	 */
 	protected int  H; 
+	/**
+	 * width of rendering area
+	 */
 	public int  W;
 	
 	protected Graphics g;
@@ -54,18 +51,7 @@ public abstract class Graph_canvas extends JPanel {
 	
 	protected Chart_analyser analyser;
 	
-	public Graph_canvas (ArrayList<Double> x_data, ArrayList<Integer> y_data, String x_measure, String y_measure, Chart_analyser analyser) {
-		this.x_data = x_data;
-		this.y_data = y_data;
-		setBackground (Color.lightGray);
-		this.x_measure = x_measure;
-		this.y_measure = y_measure;
-		this.analyser = analyser;
-	}
-	
-	public Graph_canvas (ArrayList<Integer> x_data_i, ArrayList<Integer> y_data, String x_measure, String y_measure, Chart_analyser analyser, int i) {
-		this.x_data_int = x_data_i;
-		this.y_data = y_data;
+	public Graph_canvas (String x_measure, String y_measure, Chart_analyser analyser) {
 		setBackground (Color.lightGray);
 		this.x_measure = x_measure;
 		this.y_measure = y_measure;
@@ -167,7 +153,10 @@ public abstract class Graph_canvas extends JPanel {
         }
 
 // Units X
-        int current_w = x0;
+        /**
+         * In graph units!!!
+         */
+        double current_w = x0/X_factor;
         units_rate = 20;
         current_unit = 0;
         unit = unit_0_X;
@@ -178,9 +167,11 @@ public abstract class Graph_canvas extends JPanel {
         else if(X_factor > 2) units_rate = 20;
         else if(X_factor > 1.2) units_rate = 50;
         else units_rate = 100;
-        
-        while(current_w < W-units_rate*X_factor) {
-        	
+        //System.out.println(x0);
+        //System.out.println("c " + current_w);
+        //System.out.println(X_factor);
+        //while(current_w < W-units_rate*X_factor) {
+        while(current_w*X_factor < W-units_rate*X_factor) {
 			
 			int w;
 			if (current_unit == 10 || current_unit == 100) {
@@ -191,19 +182,21 @@ public abstract class Graph_canvas extends JPanel {
 				unit_stroke = new BasicStroke(1);
 				w = w_units;
 			}
-			if (current_w > w_axis) {
+			int current_w_window = (int)Math.round(current_w*X_factor);
+			if (current_w_window > w_axis) {
 				g2.setStroke(new BasicStroke(1));
 				g.setColor(Color.GRAY);
-				g2.drawLine(current_w, H, current_w, h_axis);
+				g2.drawLine(current_w_window, H, current_w_window, h_axis);
 
 				g2.setStroke(unit_stroke);
 				g.setColor(Color.BLACK);
-				g2.drawString(Integer.toString(unit), current_w - 8, H + w + 30);
-				g2.drawLine(current_w, H - w, current_w, H + w);
+				g2.drawString(Integer.toString(unit), current_w_window - 8, H + w + 30);
+				g2.drawLine(current_w_window, H - w, current_w_window, H + w);
 			}
 			current_unit += units_rate;
-			current_w += units_rate * X_factor;
+			current_w += units_rate;
 			unit += units_rate;
+			//unit++;
 			
         }
 	}
@@ -266,4 +259,8 @@ public abstract class Graph_canvas extends JPanel {
 	public double[] get_scales(){
 		return new double[] {X_factor, Y_factor};
 	}
+	public int get_x0(){
+		return x0;
+	}
+	
 }

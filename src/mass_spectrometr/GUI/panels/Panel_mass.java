@@ -92,26 +92,31 @@ public class Panel_mass extends Panel_base{
 		JLabel coefficients = new JLabel(" Coefficients: ");
 		JLabel M0 = new JLabel(" M0: ");
 		m0_textbox = new JTextField();
-		m0_textbox.setMaximumSize(new Dimension(50, 40));
+		m0_textbox.setPreferredSize(new Dimension(80, 25));
+		//m0_textbox.setMaximumSize(new Dimension(50, 40));
 		JLabel K = new JLabel(" K: ");
 		k_textbox = new JTextField();
-		k_textbox.setMaximumSize(new Dimension(50, 40));
+		k_textbox.setPreferredSize(new Dimension(80, 25));
+		//k_textbox.setMaximumSize(new Dimension(50, 40));
 		JLabel B0 = new JLabel(" B0: ");
 		b0_textbox = new JTextField();
-		b0_textbox.setMaximumSize(new Dimension(50, 40));
+		b0_textbox.setPreferredSize(new Dimension(80, 25));
+		//b0_textbox.setMaximumSize(new Dimension(50, 40));
 		
 		set_new_coef_values(Run.prog.K, Run.prog.M0, Run.prog.B0);
 		
 		JLabel N = new JLabel(" N: ");
 		N_textbox = new JTextField(Integer.toString(Run.prog.approx_N));
-		N_textbox.setMaximumSize(new Dimension(50, 40));
-		
+		//N_textbox.setMaximumSize(new Dimension(50, 40));
+		N_textbox.setPreferredSize(new Dimension(80, 25));
 		JLabel Energy_K = new JLabel(" En K: ");
 		en_el_K_textbox = new JTextField(Double.toString(Run.prog.en_el_K));
-		en_el_K_textbox.setMaximumSize(new Dimension(50, 40));
+		en_el_K_textbox.setPreferredSize(new Dimension(80, 25));
+		//en_el_K_textbox.setMaximumSize(new Dimension(50, 40));
 		JLabel Energy_B = new JLabel(" En B: ");
 		en_el_b_textbox = new JTextField(Double.toString(Run.prog.en_el_b));
-		en_el_b_textbox.setMaximumSize(new Dimension(50, 40));
+		en_el_b_textbox.setPreferredSize(new Dimension(80, 25));
+		//en_el_b_textbox.setMaximumSize(new Dimension(50, 40));
 		
 		JButton button_K = new JButton("Update");
 		button_K.addActionListener(update_K);
@@ -144,7 +149,8 @@ public class Panel_mass extends Panel_base{
 	    top_panel_2.add(label_Y);
 	    top_panel_2.setAlignmentX(Component.LEFT_ALIGNMENT);
 	    
-	    cnvs = new Graph_mass(Run.prog.data_Bo, Run.prog.data_mass_intensity, "M", "int", Run.prog.analyser_mass);
+	    cnvs = new Graph_mass("M", "int", Run.prog.analyser_mass);
+	    cnvs.addMouseListener(this);
 	    add(cnvs, BorderLayout.CENTER);
 	    
 	    volt = new Volt_engine_fast();
@@ -152,12 +158,12 @@ public class Panel_mass extends Panel_base{
 	}
 	
 	public void set_new_coef_values(double new_K, double new_M0, double new_B0) {
-		DecimalFormatSymbols otherSymbols = new DecimalFormatSymbols();
-		otherSymbols.setDecimalSeparator('.');
-		DecimalFormat formatter = new DecimalFormat("#0.000000", otherSymbols);
+		//DecimalFormatSymbols otherSymbols = new DecimalFormatSymbols();
+		//otherSymbols.setDecimalSeparator('.');
+		//DecimalFormat formatter = new DecimalFormat("#0.000000", otherSymbols);
 		
-		m0_textbox.setText(formatter.format(new_M0));
-		b0_textbox.setText(formatter.format(new_B0));
-		k_textbox.setText(formatter.format(new_K));
+		m0_textbox.setText(Double.toString(new_M0));
+		b0_textbox.setText(Double.toString(new_B0));
+		k_textbox.setText(Double.toString(new_K));
 	}
 }

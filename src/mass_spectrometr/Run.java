@@ -7,6 +7,7 @@ import java.awt.event.KeyEvent;
 import java.text.DecimalFormat;
 import java.util.ArrayList;
 
+import javax.swing.JSlider;
 import javax.swing.JTextField;
 
 import mass_spectrometr.GUI.GUI;
@@ -15,17 +16,21 @@ import mass_spectrometr.GUI.panels.Panel_base_interfase;
 public class Run {
 	public static Run prog;
 	//public ArrayList<Integer> data_time = new ArrayList<>();
-	public ArrayList<Integer> data_en_el = new ArrayList<>();
-	public ArrayList<Integer> data_mass_intensity = new ArrayList<>();
+	//public ArrayList<Integer> data_en_el = new ArrayList<>();
+	//public ArrayList<Integer> data_mass_intensity = new ArrayList<>();
 	//public ArrayList<Integer> data_en_el_intensity = new ArrayList<>();
-	public int[] fixed_data_en_el_intensity = new int[4000];
+	/**
+	 * Array like:
+	 * { {Sum_value_1, number_of_addition_1}, {Sum_value_2, number_of_addition_2},}
+	 */
+	public int[][] fixed_data_en_el_intensity = new int[4000][2];
 	public double[] fixed_data_mass_intensity = new double[65600];
 	/**
 	 * B - approximated
 	 */
-	public ArrayList<Double> data_Bo = new ArrayList<>();
+	//public ArrayList<Double> data_Bo = new ArrayList<>();
 
-	public int current_time;
+	public long current_time;
 	public double current_B;
 	public int current_en_el;
 	public int current_intensity;
@@ -66,24 +71,24 @@ public class Run {
 	public int start_V = 0;
 	public int stop_V = 3800;
 	public float step_V = 0.02f;
-	public boolean en_el_cycle_scan = false; // 0 - linear, 1 - cycle
-	public boolean start_e_scan = false; // 0 - stop, 1 - start
+	public boolean en_el_cycle_scan = false; 
+	public boolean start_e_scan = false; 
 	public int dac_voltage = 0;
-	public float dac_voltage_float = 0; // for use step_V (float)
+	/**
+	 * for use step_V (float)
+	 */
+	public float dac_voltage_float = 0;
 	/**
 	 * en_el value in volts (-2, 17)
 	 */
 	public float current_en_el_float;
 
-	// public int scan_count = 0;
 	/**
 	 * size of array for approximation B
 	 */
 	public int approx_N = 100;
 
 	public boolean en_el_delay = false;
-	// number of all cycles of energy scan
-	public long total_count = 1;
 
 	public Run() {
 		prog = this;
@@ -94,7 +99,12 @@ public class Run {
 
 		set_zero_energy();
 		set_zero_mass();
-		
+		/*
+		System.out.println(calc_mass(50));
+		System.out.println(calc_mass(200));
+		System.out.println(calc_mass(400));
+		calc_coefficients(2.5, 40, 160, 2.5, 40, 160);
+		*/
 		KeyboardFocusManager.getCurrentKeyboardFocusManager().addKeyEventDispatcher(new KeyEventDispatcher() {
 			@Override
 			public boolean dispatchKeyEvent(KeyEvent e) {
@@ -104,7 +114,7 @@ public class Run {
 				// if (focus != m0_textbox && focus != b0_textbox && focus != k_textbox && focus
 				// != N_textbox &&
 				// action == KeyEvent.KEY_PRESSED) {
-				if (!(focus instanceof JTextField) && action == KeyEvent.KEY_PRESSED) {
+				if (!(focus instanceof JTextField) && !(focus instanceof JSlider) && action == KeyEvent.KEY_PRESSED) {
 					Panel_base_interfase D;
 					if (user_interface.e_energy_frame.isAncestorOf(focus)) {
 						D = user_interface.e_energy_frame.energy_panel;
@@ -172,7 +182,7 @@ public class Run {
 		user_interface.mass_panel.set_new_coef_values(K, M0, B0);
 	}
 
-	public void calc_coefficients(float M1, float M2, float M3, float M1_real, float M2_real, float M3_real) {
+	public void calc_coefficients(double M1, double M2, double M3, double M1_real, double M2_real, double M3_real) {
 		//System.out.println(M1 + " " + M2 + " " + M3);
 		//System.out.println(M1_real + " " + M2_real + " " + M3_real);
 		double B1 = Math.sqrt((M1 - M0)/K) - B0;
@@ -182,15 +192,17 @@ public class Run {
 		M1 = M1_real;
 		M2 = M2_real;
 		M3 = M3_real;
-		//System.out.println("M_real " + M1 + " " + M2 + " " + M3);
-		//System.out.println("B " + B1 + " " + B2 + " " + B3);
-		//System.out.println("M1_new " + calc_mass(B1));
+		System.out.println("M_real " + M1 + " " + M2 + " " + M3);
+		System.out.println("B " + B1 + " " + B2 + " " + B3);
+		System.out.println("M1_new " + calc_mass(B1) + " M2_new " + calc_mass(B2) + " M3_new " + calc_mass(B3));
 		
 		double new_B0 = ((M3-M1)*(B1-B2)+(M1-M2)*(B3-B1)) / 
 				(2* (  ((M2-M1)*(Math.pow(B3, 2)-Math.pow(B1, 2))) + ((M1-M3)*(Math.pow(B2, 2)-Math.pow(B1, 2)))  )  );
-					
-		double new_K = (M2-M1) / (Math.pow(B2, 2) - Math.pow(B1, 2) + 2*new_B0*(B2-B1));
 		
+		System.out.println("B0 den"	+ (2* (  ((M2-M1)*(Math.pow(B3, 2)-Math.pow(B1, 2))) + ((M1-M3)*(Math.pow(B2, 2)-Math.pow(B1, 2)))  )));	
+		
+				double new_K = (M2-M1) / (Math.pow(B2, 2) - Math.pow(B1, 2) + 2*new_B0*(B2-B1));
+		System.out.println("K den" + (Math.pow(B2, 2) - Math.pow(B1, 2) + 2*new_B0*(B2-B1)));
 		double new_M0 = M1 - new_K*Math.pow(B1, 2) - 2*new_K*B1*new_B0 - new_K*Math.pow(new_B0, 2);
 		
 		System.out.println("K" + new_K);
@@ -266,7 +278,6 @@ public class Run {
 			dac_voltage = start_V;
 			dac_voltage_float = start_V;
 			en_el_delay = true;
-			total_count++;
 		}
 	}
 
@@ -277,7 +288,8 @@ public class Run {
 	private void set_zero_energy() {
 		// set zeros in en_el intensity array
 		for (int i = 0; i < fixed_data_en_el_intensity.length; i++) {
-			fixed_data_en_el_intensity[i] = 0;
+			fixed_data_en_el_intensity[i][0] = 0;
+			fixed_data_en_el_intensity[i][1] = 0;
 		}
 	}
 	
@@ -288,16 +300,16 @@ public class Run {
 		}
 	}
 
-	public void reset() {
-		//data_time.clear();
-		// data_B.clear();
-		data_Bo.clear();
-		data_en_el.clear();
-		data_mass_intensity.clear();
+	public void reset_mass() {
 		set_zero_energy();
 		set_zero_mass();
-		total_count = 1;
-		arduino.total_count = 0;
+		arduino.clear_parts();
+	}
+	public void reset_energy() {
+		
+		
+		set_zero_energy();
+	
 		arduino.clear_parts();
 	}
 

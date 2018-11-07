@@ -1,8 +1,31 @@
 package mass_spectrometr.GUI;
 
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
+
+import javax.swing.JButton;
+
 import mass_spectrometr.Run;
 
-public class Volt_engine_fast extends Volt_engine{
+public class Volt_engine_fast extends Volt_engine {
+
+	public Volt_engine_fast() {
+		ActionListener start = new ActionListener() {
+			@Override
+			public void actionPerformed(ActionEvent e) {
+				if (!Run.prog.start_e_scan) {
+					Run.prog.en_el_cycle_scan = true;
+					start_scan();
+				}
+				else if (Run.prog.start_e_scan && Run.prog.en_el_cycle_scan) {
+					stop_scan();
+				}
+			}
+		};
+		button_start = new JButton("Start fast scan");
+		button_start.addActionListener(start);
+		update_panel.add(button_start);
+	}
 
 	@Override
 	float get_start_V() {
@@ -32,14 +55,13 @@ public class Volt_engine_fast extends Volt_engine{
 	@Override
 	void set_stop_V(float v) {
 		Run.prog.stop_V_cyclic = calc_int_from_float(v);
-		
+
 	}
 
 	@Override
 	void set_step_V(float v) {
 		Run.prog.step_V_cyclic = calc_step(v);
-		
-	}
 
+	}
 
 }

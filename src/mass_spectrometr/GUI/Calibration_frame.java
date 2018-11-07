@@ -31,6 +31,7 @@ import mass_spectrometr.GUI.graphs.mass_setter_panel.Mass_setter_panel;
 public class Calibration_frame extends JDialog implements MouseMotionListener, MouseListener, ActionListener{
 	private double X_scale;
 	private double Y_scale;
+	private double x0;
 	public Graph_canvas cnvs;
 	private Mass_setter_panel mass_1_panel;
 	private Mass_setter_panel mass_2_panel;
@@ -41,7 +42,7 @@ public class Calibration_frame extends JDialog implements MouseMotionListener, M
 	public boolean format_err = false;
 	private JButton button_apply;
 
-	public Calibration_frame(JFrame jframe, double X_scale, double Y_scale) {
+	public Calibration_frame(JFrame jframe, double X_scale, double Y_scale, int x0) {
 		super(jframe, "Mass calibration");		
 		// setSize(1000, 500);
 		setMinimumSize(new Dimension(640, 480));
@@ -49,9 +50,9 @@ public class Calibration_frame extends JDialog implements MouseMotionListener, M
 		setModalityType(Dialog.ModalityType.DOCUMENT_MODAL);
 		this.X_scale = X_scale;
 		this.Y_scale = Y_scale;
-
-		cnvs = new Graph_calibration(Run.prog.data_Bo, Run.prog.data_mass_intensity, "M", "int", Run.prog.analyser_mass,
-				X_scale, Y_scale);
+		this.x0 = x0;
+		cnvs = new Graph_calibration("M", "int", Run.prog.analyser_mass,
+				X_scale, Y_scale, x0);
 
 		cnvs.addMouseMotionListener(this);
 		cnvs.addMouseListener(this);
@@ -105,7 +106,7 @@ public class Calibration_frame extends JDialog implements MouseMotionListener, M
 		if (move_active) {
 			int x = e.getX();
 			double real_x = (x - cnvs.x0) / X_scale;
-			current_set.set_mass((float)real_x);
+			current_set.set_mass(real_x);
 		}
 
 	}
@@ -147,9 +148,9 @@ public class Calibration_frame extends JDialog implements MouseMotionListener, M
 		//Apply masses and real masses for calc coefficients
 		if(mass_1_panel.is_used() && mass_2_panel.is_used() && mass_3_panel.is_used()) {
 			format_err = false;
-			float mass_1 = mass_1_panel.get_mass();
-			float mass_2 = mass_2_panel.get_mass();
-			float mass_3 = mass_3_panel.get_mass();
+			double mass_1 = mass_1_panel.get_mass();
+			double mass_2 = mass_2_panel.get_mass();
+			double mass_3 = mass_3_panel.get_mass();
 			
 			float mass_1_real = mass_1_panel.get_real_mass();
 			float mass_2_real = mass_2_panel.get_real_mass();

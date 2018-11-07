@@ -9,8 +9,8 @@ import mass_spectrometr.Run;
 
 public class Graph_mass extends Graph_canvas{
 
-	public Graph_mass(ArrayList<Double> x_data, ArrayList<Integer> y_data, String x_measure, String y_measure, Chart_analyser analyser) {
-		super(x_data, y_data, x_measure, y_measure, analyser);
+	public Graph_mass(String x_measure, String y_measure, Chart_analyser analyser) {
+		super(x_measure, y_measure, analyser);
 	}
 	
 	@Override 
@@ -18,7 +18,7 @@ public class Graph_mass extends Graph_canvas{
 		// Current mass and intensity rendering
         
         double current_mass = Run.prog.calc_mass(Run.prog.current_B);
-        //System.out.println(Run.prog.current_mass + " " + current_mass);
+        
         int current_intensity = Run.prog.current_intensity;
         paint_current_data(current_mass, current_intensity);
         

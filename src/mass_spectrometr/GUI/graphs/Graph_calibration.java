@@ -8,9 +8,9 @@ import mass_spectrometr.Chart_analyser;
 import mass_spectrometr.Run;
 
 public class Graph_calibration extends Graph_canvas{
-	public Graph_calibration(ArrayList<Double> x_data, ArrayList<Integer> y_data, String x_measure, String y_measure, Chart_analyser analyser, double X_scale, double Y_scale) {
-		super(x_data, y_data, x_measure, y_measure, analyser);
-		set_scales(X_scale, Y_scale);
+	public Graph_calibration(String x_measure, String y_measure, Chart_analyser analyser, double X_scale, double Y_scale, int x0) {
+		super(x_measure, y_measure, analyser);
+		set_scales(X_scale, Y_scale, x0);
 	}
 	
 	@Override 
@@ -35,10 +35,11 @@ public class Graph_calibration extends Graph_canvas{
     	}
 	}
 	
-	private void set_scales(double X, double Y){
+	private void set_scales(double X, double Y, int x0){
 		autoscaleY = false;
 		manual_Y_factor = Y;
 		manual_X_factor = X;
+		this.x0 = x0;
 	}
 
 }

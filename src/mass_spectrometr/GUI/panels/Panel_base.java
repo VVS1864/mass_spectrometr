@@ -9,6 +9,8 @@ import java.awt.KeyboardFocusManager;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.KeyEvent;
+import java.awt.event.MouseEvent;
+import java.awt.event.MouseListener;
 
 import javax.swing.BoxLayout;
 import javax.swing.JButton;
@@ -21,7 +23,7 @@ import mass_spectrometr.Run;
 import mass_spectrometr.GUI.graphs.Graph_canvas;
 import mass_spectrometr.GUI.graphs.Graph_mass;
 
-public class Panel_base extends JPanel implements Panel_base_interfase{
+public class Panel_base extends JPanel implements Panel_base_interfase,  MouseListener{
 	
 	public  JLabel label_X;
 	public  JLabel label_Y;
@@ -201,11 +203,35 @@ public class Panel_base extends JPanel implements Panel_base_interfase{
 			double new_scale = cnvs.manual_X_factor * s;
 			if(new_scale < 0.25) return;
 			
-			double cn = (cnvs.W/2-cnvs.x0);
+			double cn = cnvs.W/2.0-cnvs.x0;
 			double o = cn*s - cn;
-			cnvs.x0 -= (int)o;
+			cnvs.x0 -= Math.round(o);
 			cnvs.manual_X_factor *= s;	
 		}
 		cnvs.repaint();
+	}
+	@Override
+	public void mouseClicked(MouseEvent arg0) {
+		button_pY.grabFocus();
+	}
+	@Override
+	public void mouseEntered(MouseEvent arg0) {
+		// TODO Auto-generated method stub
+		
+	}
+	@Override
+	public void mouseExited(MouseEvent arg0) {
+		// TODO Auto-generated method stub
+		
+	}
+	@Override
+	public void mousePressed(MouseEvent arg0) {
+		// TODO Auto-generated method stub
+		
+	}
+	@Override
+	public void mouseReleased(MouseEvent arg0) {
+		// TODO Auto-generated method stub
+		
 	}
 }

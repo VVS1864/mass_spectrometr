@@ -13,7 +13,6 @@ public class StartStopController {
 	public static void set_sliders(int value) {
 		volt_fast.slider.setValue(value);
 		volt_long.slider.setValue(value);
-		//Run.prog.user_interface.repaint_cnvs();
 	}
 	
 	public static void set_enabled(Volt_engine volt, boolean enable) {
@@ -23,8 +22,6 @@ public class StartStopController {
 		volt.stop_textbox.setEnabled(enable);
 		volt.speed_textbox.setEnabled(enable);
 		volt.button_update.setEnabled(enable);
-		if(enable) volt.button_start.setText("Start scan");
-		else volt.button_start.setText("Stop scan");
 		
 	}
 }

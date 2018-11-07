@@ -21,7 +21,7 @@ import mass_spectrometr.Run;
 public abstract class Volt_engine extends JPanel{
 	protected JTextField dac_voltage_textbox;
 	protected JSlider slider;
-	//private JRadioButton Cyclic_check;
+	protected JPanel update_panel;
 	
 	protected JTextField start_textbox;
 	protected JTextField stop_textbox;
@@ -30,32 +30,16 @@ public abstract class Volt_engine extends JPanel{
 	
 	public JButton button_update;
 	protected JButton button_start;
+	
 	static final int MIN = -200;
 	static final int MAX = 1700;
 	static int INIT;
 		
-	public Volt_engine() {
-		ActionListener start = new ActionListener() {
-			@Override
-			public void actionPerformed(ActionEvent e) {
-				if (check_values()) {
-					if (Run.prog.start_e_scan == false) {
-						Run.prog.en_el_cycle_scan = get_cycle_scan();
-						
-						if(!Run.prog.en_el_cycle_scan) start_scan();
-					}
-					else {
-						stop_scan();
-					}
-				}
-			}
-		};
-		
+	public Volt_engine() {		
 		ActionListener update = new ActionListener() {
 			@Override
 			public void actionPerformed(ActionEvent e) {
 				check_values();
-				//cnvs.repaint(); 
 			}
 			
 		};
@@ -77,8 +61,8 @@ public abstract class Volt_engine extends JPanel{
 		slider.setMajorTickSpacing(100);
 		slider.setMinorTickSpacing(50);
 		
-		JPanel p = new JPanel();
-		p.setLayout(new BoxLayout(p, BoxLayout.X_AXIS));
+		update_panel = new JPanel();
+		update_panel.setLayout(new BoxLayout(update_panel, BoxLayout.X_AXIS));
 		
 		JLabel spacer = new JLabel("  ");
 		
@@ -102,10 +86,7 @@ public abstract class Volt_engine extends JPanel{
 		
 		button_update = new JButton("Update");
 		button_update.addActionListener(update);
-		
-		button_start = new JButton("Start scan");
-		button_start.addActionListener(start);
-		
+				
 		//Cyclic_check = new JRadioButton(" Cyclic:");
 		
 		//slider.setMaximumSize(new Dimension(300, 100));
@@ -118,12 +99,12 @@ public abstract class Volt_engine extends JPanel{
 		add(speed_textbox);
 	    
 		//add(Cyclic_check);
-		p.add(dac_voltage);
-		p.add(dac_voltage_textbox);
-		p.add(button_update);
-		p.add(button_start);
+		update_panel.add(dac_voltage);
+		update_panel.add(dac_voltage_textbox);
+		update_panel.add(button_update);
 		
-		r_p.add(p);
+		
+		r_p.add(update_panel);
 		r_p.add(slider);
 		
 		add(r_p);
@@ -217,34 +198,37 @@ public abstract class Volt_engine extends JPanel{
 	}
 	
 	public void start_scan() {
+		if (check_values()) {
+			start_scan_event();
+			
+		}
+	}
+	
+	private void start_scan_event() {
 		Run.prog.start_e_scan = true;
 		
-		if (Run.prog.en_el_cycle_scan) {
+		if (Run.prog.en_el_cycle_scan == true) {
+			button_start.setText("Stop fast scan");
 			Run.prog.start_V = Run.prog.start_V_cyclic;
 			Run.prog.stop_V = Run.prog.stop_V_cyclic;
 			Run.prog.step_V = Run.prog.step_V_cyclic;
 		}
+		
 		Run.prog.dac_voltage_float = Run.prog.start_V;
 		Run.prog.dac_voltage = Run.prog.start_V;
-		//else {
-			//Run.prog.scan_count = Math.round((Run.prog.stop_V - Run.prog.start_V)/Run.prog.step_V);
-		//}
-		
+				
 		StartStopController.set_enable_disable(false);
-		/*
-		button_start.setText("Stop scan");
-		slider.setEnabled(false);
-		dac_voltage_textbox.setEnabled(false);
-		start_textbox.setEnabled(false);
-		stop_textbox.setEnabled(false);
-		speed_textbox.setEnabled(false);
-		button_update.setEnabled(false);
-		*/
 	}
-	public void stop_scan() {
+	public boolean stop_scan() {
+		if(Run.prog.en_el_delay) return false;
 		Run.prog.start_e_scan = false;
-		
+		Run.prog.draw_graph_en_el = false;
+		if (Run.prog.en_el_cycle_scan == true) {
+			Run.prog.en_el_cycle_scan = false;
+			button_start.setText("Start fast scan");
+		}
 		StartStopController.set_enable_disable(true);
+		return true;
 	}
 	/*
 	public void set_new_en_el(int en_el) {

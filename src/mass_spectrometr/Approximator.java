@@ -4,14 +4,14 @@ import java.util.ArrayList;
 
 public class Approximator {
 	ArrayList<Double> B = new ArrayList<Double>();
-	ArrayList<Integer> data_time = new ArrayList<Integer>();
-	ArrayList<Integer> data_time_cuted = new ArrayList<Integer>();
+	ArrayList<Long> data_time = new ArrayList<>();
+	ArrayList<Long> data_time_cuted = new ArrayList<>();
 	ArrayList<Double> data_Bo = new ArrayList<Double>();
 	/**
 	 * Approximates B with linear Least squares method
 	 * @return Array of approximated B
 	 */
-	public ArrayList<Double> Approximate(ArrayList<Double> B, ArrayList<Integer> data_time, int N) {
+	public ArrayList<Double> Approximate(ArrayList<Double> B, ArrayList<Long> data_time, int N) {
 		this.data_time.addAll(data_time);
 		this.data_time_cuted.addAll(data_time);
 		this.B.addAll(B);
@@ -49,11 +49,11 @@ public class Approximator {
 	}
 	
 	private void recalc_time() {
-		int t_first = data_time.get(0);
+		long t_first = data_time.get(0);
 		
 		for (int i = 0; i < data_time.size(); i++) {
-			int t_old = data_time.get(i);
-			int t_new = t_old-t_first;
+			long t_old = data_time.get(i);
+			long t_new = t_old-t_first;
 			data_time_cuted.set(i, t_new);
 		}
 	}

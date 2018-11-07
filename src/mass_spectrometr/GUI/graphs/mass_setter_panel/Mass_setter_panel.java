@@ -19,7 +19,7 @@ public class Mass_setter_panel extends JPanel implements ActionListener{
 	private JButton button;
 	private JTextField mass_textbox;
 	private Calibration_frame parent;
-	private float mass;
+	private double mass;
 	private boolean used = false;
 	
 	public Mass_setter_panel(String text, Calibration_frame parent) {
@@ -33,6 +33,7 @@ public class Mass_setter_panel extends JPanel implements ActionListener{
 		button.addActionListener(this);
 		
 		mass_textbox = new JTextField();
+		mass_textbox.setPreferredSize(new Dimension(50, 40));
 		
 		JPanel button_panel = new JPanel(new CardLayout());
 		button_panel.setPreferredSize(new Dimension(50, 25));
@@ -49,13 +50,13 @@ public class Mass_setter_panel extends JPanel implements ActionListener{
 	public boolean is_used() {
 		return used;
 	}
-	public void set_mass(float mass) {
+	public void set_mass(double mass) {
 		this.mass = mass;
-		set_text(Float.toString(mass));
+		set_text(Double.toString(mass));
 		used = true;
 	}
 	
-	public float get_mass() {
+	public double get_mass() {
 		return mass;
 	}
 	

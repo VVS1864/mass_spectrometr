@@ -16,11 +16,10 @@ public class Connector {
 	 * Size of array of B-raw
 	 */
 	private int count = 0;
-	public int total_count = 0;
 	
 	private int local_N_approx;
 	
-	private ArrayList<Integer> time_part;
+	private ArrayList<Long> time_part;
 	private ArrayList<Double> B_part;
 	private ArrayList<Double> B_approximated;
 	
@@ -68,7 +67,7 @@ public class Connector {
 	
 	public void clear_parts() {
 		local_N_approx = Run.prog.approx_N;
-		time_part = new ArrayList<Integer>(local_N_approx);
+		time_part = new ArrayList<Long>(local_N_approx);
 		B_part = new ArrayList<Double>(local_N_approx);
 		B_approximated = new ArrayList<Double>(local_N_approx);
 		en_el_part = new ArrayList<Integer>(local_N_approx);
@@ -137,7 +136,7 @@ public class Connector {
 					//Read from arduino
 					byte buf[] = serialPort.readBytes(10);
 					byte_to_int(buf);
-					Run.prog.current_B++;				
+					//Run.prog.current_B++;				
 					
 					//Collect data 
 					if (Run.prog.draw_graph_mass) {
@@ -170,9 +169,10 @@ public class Connector {
 						}
 						
 					}
-					else if (Run.prog.draw_graph_en_el) {;
+					if (Run.prog.draw_graph_en_el) {;
 						if (Run.prog.current_en_el <= Run.prog.fixed_data_en_el_intensity.length) {
-							Run.prog.fixed_data_en_el_intensity[Run.prog.current_en_el] += Run.prog.current_intensity;
+							Run.prog.fixed_data_en_el_intensity[Run.prog.current_en_el][0] += Run.prog.current_intensity;
+							Run.prog.fixed_data_en_el_intensity[Run.prog.current_en_el][1] ++;
 						}
 					}
 					

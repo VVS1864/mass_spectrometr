@@ -22,6 +22,7 @@ import javax.swing.JButton;
 import javax.swing.JComboBox;
 import javax.swing.JFrame;
 import javax.swing.JLabel;
+import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 import javax.swing.JRootPane;
 import javax.swing.JTextField;
@@ -73,7 +74,12 @@ public class GUI {
 	    ActionListener reset_action_listener = new ActionListener() {
 			@Override
 			public void actionPerformed(ActionEvent e) {
-				Run.prog.reset();
+				int n = JOptionPane.showConfirmDialog(mainFrame,
+					    "Reset Mass graph?",
+					    "Mass Reset",
+					    JOptionPane.YES_NO_OPTION);
+
+				if(n == 0) Run.prog.reset_mass();
 			}
 		};
 			
@@ -92,7 +98,7 @@ public class GUI {
 					}
 				}
 				else {
-	  				if(!Run.prog.draw_graph_mass && !Run.prog.draw_graph_en_el) {
+	  				if(!Run.prog.draw_graph_mass) {
 	  					button_connect.setText("Stop");
 	  					Run.prog.draw_graph_mass = true;
 	  					set_status(Color.CYAN, "Transfering data from arduino, draw graph");
@@ -118,7 +124,8 @@ public class GUI {
 			public void actionPerformed(ActionEvent e) {
 				if(!Run.prog.draw_graph_mass) {
 					double[] scales = mass_panel.cnvs.get_scales();
-					new Calibration_frame(mainFrame, scales[0], scales[1]);
+					int x0 = mass_panel.cnvs.get_x0();
+					new Calibration_frame(mainFrame, scales[0], scales[1], x0);
 				}
 			}
 		};
