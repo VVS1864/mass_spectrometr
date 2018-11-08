@@ -24,7 +24,7 @@ public class Run {
 	 * { {Sum_value_1, number_of_addition_1}, {Sum_value_2, number_of_addition_2},}
 	 */
 	public int[][] fixed_data_en_el_intensity = new int[4000][2];
-	public double[] fixed_data_mass_intensity = new double[65600];
+	public int[] fixed_data_mass_intensity = new int[65600];
 	/**
 	 * B - approximated
 	 */
@@ -59,34 +59,34 @@ public class Run {
 	public double K;
 	public double B0;
 
-	public float en_el_K;
-	public float en_el_b;
+	public double en_el_K;
+	public double en_el_b;
 
 	// Parameters for electron energy
 
 	public int start_V_cyclic = 0;
 	public int stop_V_cyclic = 3800;
-	public float step_V_cyclic = 0.02f;
+	public double step_V_cyclic = 0.02;
 
 	public int start_V = 0;
 	public int stop_V = 3800;
-	public float step_V = 0.02f;
+	public double step_V = 0.02;
 	public boolean en_el_cycle_scan = false; 
 	public boolean start_e_scan = false; 
 	public int dac_voltage = 0;
 	/**
 	 * for use step_V (float)
 	 */
-	public float dac_voltage_float = 0;
+	public double dac_voltage_float = 0;
 	/**
 	 * en_el value in volts (-2, 17)
 	 */
-	public float current_en_el_float;
+	public double current_en_el_float;
 
 	/**
 	 * size of array for approximation B
 	 */
-	public int approx_N = 100;
+	public int approx_N = 50;
 
 	public boolean en_el_delay = false;
 
@@ -99,12 +99,12 @@ public class Run {
 
 		set_zero_energy();
 		set_zero_mass();
-		/*
+		
 		System.out.println(calc_mass(50));
 		System.out.println(calc_mass(200));
 		System.out.println(calc_mass(400));
 		calc_coefficients(2.5, 40, 160, 2.5, 40, 160);
-		*/
+		
 		KeyboardFocusManager.getCurrentKeyboardFocusManager().addKeyEventDispatcher(new KeyEventDispatcher() {
 			@Override
 			public boolean dispatchKeyEvent(KeyEvent e) {
@@ -143,8 +143,8 @@ public class Run {
 		B0 = parse_double("B0", 0);
 		K = parse_double("K", 0.001);
 
-		en_el_b = (float) parse_double("en_el_b", 400);
-		en_el_K = (float) parse_double("en_el_K", 200);
+		en_el_b = parse_double("en_el_b", 400.0);
+		en_el_K = parse_double("en_el_K", 200.0);
 
 		// load standard settings for fast scan of energy
 		// start_V_cyclic = parse_double("start_V_cyclic", 0);
@@ -195,16 +195,26 @@ public class Run {
 		System.out.println("M_real " + M1 + " " + M2 + " " + M3);
 		System.out.println("B " + B1 + " " + B2 + " " + B3);
 		System.out.println("M1_new " + calc_mass(B1) + " M2_new " + calc_mass(B2) + " M3_new " + calc_mass(B3));
+		double a = M3 - M1;
+		double b = M2 - M1;
+		double new_B0 = (a * (Math.pow(B1, 2) - Math.pow(B2, 2)) + b * (Math.pow(B3, 2) - (Math.pow(B1, 2)))) /
+				(2 * ( a*(B1-B2) - b*(B1-B3) ) );
 		
+		double new_K = (M2-M1) / (Math.pow(B2, 2) - Math.pow(B1, 2) + 2*new_B0*(B1-B2));
+		
+		double new_M0 = M1 - new_K*Math.pow(B1, 2) + 2*new_K*B1*new_B0 - new_K*Math.pow(new_B0, 2);
+		/*
 		double new_B0 = ((M3-M1)*(B1-B2)+(M1-M2)*(B3-B1)) / 
 				(2* (  ((M2-M1)*(Math.pow(B3, 2)-Math.pow(B1, 2))) + ((M1-M3)*(Math.pow(B2, 2)-Math.pow(B1, 2)))  )  );
-		
-		System.out.println("B0 den"	+ (2* (  ((M2-M1)*(Math.pow(B3, 2)-Math.pow(B1, 2))) + ((M1-M3)*(Math.pow(B2, 2)-Math.pow(B1, 2)))  )));	
-		
-				double new_K = (M2-M1) / (Math.pow(B2, 2) - Math.pow(B1, 2) + 2*new_B0*(B2-B1));
-		System.out.println("K den" + (Math.pow(B2, 2) - Math.pow(B1, 2) + 2*new_B0*(B2-B1)));
+		*/
+		//System.out.println("B0 den"	+ (2* (  ((M2-M1)*(Math.pow(B3, 2)-Math.pow(B1, 2))) + ((M1-M3)*(Math.pow(B2, 2)-Math.pow(B1, 2)))  )));	
+		/*
+		c = (M2-M1) / (Math.pow(B2, 2) - Math.pow(B1, 2) + 2*new_B0*(B2-B1));
+		*/
+		//System.out.println("K den" + (Math.pow(B2, 2) - Math.pow(B1, 2) + 2*new_B0*(B2-B1)));
+		/*
 		double new_M0 = M1 - new_K*Math.pow(B1, 2) - 2*new_K*B1*new_B0 - new_K*Math.pow(new_B0, 2);
-		
+		*/
 		System.out.println("K" + new_K);
 		System.out.println("B0" + new_B0);
 		System.out.println("M0" + new_M0);
@@ -220,8 +230,8 @@ public class Run {
 	 * 
 	 * @return
 	 */
-	public int calc_int_en_el(float en_el) {
-		return Math.round(en_el * en_el_K + en_el_b);
+	public int calc_int_en_el(double en_el) {
+		return (int)Math.round(en_el * en_el_K + en_el_b);
 	}
 
 	/**
@@ -229,7 +239,7 @@ public class Run {
 	 * 
 	 * @return
 	 */
-	public float calc_float_en_el(int en_el) {
+	public double calc_float_en_el(int en_el) {
 		return (en_el - en_el_b) / en_el_K;
 	}
 
@@ -239,8 +249,8 @@ public class Run {
 	 * @param step
 	 * @return
 	 */
-	public float calc_step(float step) {
-		return step * (float) en_el_K;
+	public double calc_step(double step) {
+		return step * en_el_K;
 	}
 
 	public void print_current_mass_intensity() {
@@ -272,7 +282,7 @@ public class Run {
 	private void en_el_scan_long() {
 		if (dac_voltage + step_V < stop_V) {
 			dac_voltage_float += step_V;
-			dac_voltage = Math.round(dac_voltage_float);
+			dac_voltage = (int)Math.round(dac_voltage_float);
 			en_el_delay = false;
 		} else {
 			dac_voltage = start_V;

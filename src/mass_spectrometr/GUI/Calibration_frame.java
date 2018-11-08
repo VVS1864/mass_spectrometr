@@ -32,7 +32,7 @@ public class Calibration_frame extends JDialog implements MouseMotionListener, M
 	private double X_scale;
 	private double Y_scale;
 	private double x0;
-	public Graph_canvas cnvs;
+	public Graph_calibration cnvs;
 	private Mass_setter_panel mass_1_panel;
 	private Mass_setter_panel mass_2_panel;
 	private Mass_setter_panel mass_3_panel;
@@ -106,7 +106,22 @@ public class Calibration_frame extends JDialog implements MouseMotionListener, M
 		if (move_active) {
 			int x = e.getX();
 			double real_x = (x - cnvs.x0) / X_scale;
-			current_set.set_mass(real_x);
+			
+			
+			int B = (int)Math.round(Math.sqrt((real_x - Run.prog.M0)/Run.prog.K) - Run.prog.B0);
+			int B_exact = B;
+			double max_value = 0;
+			for(int i = 0; i<Run.prog.fixed_data_mass_intensity.length; i++) {
+				if (Math.abs(B-i) < cnvs.snap && Run.prog.fixed_data_mass_intensity[i]>max_value) {
+					max_value = Run.prog.fixed_data_mass_intensity[i];
+					B_exact = i;
+				}
+			}
+			cnvs.cursor_x = Run.prog.calc_mass(B_exact);
+			cnvs.cursor_y = max_value;
+			cnvs.draw_cursor = true;
+			current_set.set_mass(Run.prog.calc_mass(B_exact));
+			cnvs.repaint();
 		}
 
 	}
@@ -152,9 +167,9 @@ public class Calibration_frame extends JDialog implements MouseMotionListener, M
 			double mass_2 = mass_2_panel.get_mass();
 			double mass_3 = mass_3_panel.get_mass();
 			
-			float mass_1_real = mass_1_panel.get_real_mass();
-			float mass_2_real = mass_2_panel.get_real_mass();
-			float mass_3_real = mass_3_panel.get_real_mass();
+			double mass_1_real = mass_1_panel.get_real_mass();
+			double mass_2_real = mass_2_panel.get_real_mass();
+			double mass_3_real = mass_3_panel.get_real_mass();
 			if (format_err) return;
 			
 			Run.prog.calc_coefficients(mass_1, mass_2, mass_3, mass_1_real, mass_2_real, mass_3_real);

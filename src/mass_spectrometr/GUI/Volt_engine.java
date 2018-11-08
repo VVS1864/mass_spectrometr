@@ -43,7 +43,7 @@ public abstract class Volt_engine extends JPanel{
 			}
 			
 		};
-		INIT = Math.round(calc_float_from_int(Run.prog.dac_voltage)*100);
+		INIT = (int)Math.round(calc_float_from_int(Run.prog.dac_voltage)*100);
 		setLayout(new BoxLayout(this, BoxLayout.X_AXIS));
 		r_p.setLayout(new BoxLayout(r_p, BoxLayout.Y_AXIS));
 		
@@ -67,20 +67,20 @@ public abstract class Volt_engine extends JPanel{
 		JLabel spacer = new JLabel("  ");
 		
 		JLabel Start = new JLabel(" Start: ");
-		start_textbox = new JTextField(Float.toString(get_start_V()));
+		start_textbox = new JTextField(Double.toString(get_start_V()));
 		start_textbox.setMaximumSize(new Dimension(50, 30));
 		
 		
 		JLabel Stop = new JLabel(" Stop: ");
-		stop_textbox = new JTextField(Float.toString(get_stop_V()));
+		stop_textbox = new JTextField(Double.toString(get_stop_V()));
 		stop_textbox.setMaximumSize(new Dimension(50, 30));
 		
 		JLabel Speed = new JLabel(" Speed: ");		
-		speed_textbox = new JTextField(Float.toString(get_step_V()));
+		speed_textbox = new JTextField(Double.toString(get_step_V()));
 		speed_textbox.setMaximumSize(new Dimension(50, 30));
 		
 		JLabel dac_voltage = new JLabel("Voltage: ");
-		dac_voltage_textbox = new JTextField(Float.toString(calc_float_from_int(Run.prog.dac_voltage)));
+		dac_voltage_textbox = new JTextField(Double.toString(calc_float_from_int(Run.prog.dac_voltage)));
 		dac_voltage_textbox.setMaximumSize(new Dimension(50, 30));
 		
 		
@@ -118,8 +118,8 @@ public abstract class Volt_engine extends JPanel{
 		ChangeListener listener = new ChangeListener(){
 			public void stateChanged(ChangeEvent event){
 				JSlider slider = (JSlider)event.getSource();
-				float f_value = get_slider_value();
-				dac_voltage_textbox.setText(Float.toString(f_value));
+				double f_value = get_slider_value();
+				dac_voltage_textbox.setText(Double.toString(f_value));
 				StartStopController.set_sliders(slider.getValue());
 				if(Run.prog.start_e_scan == false) set_dac_voltage();
 				
@@ -131,29 +131,29 @@ public abstract class Volt_engine extends JPanel{
 	}
 	private boolean check_values() {
 		String str_start = start_textbox.getText();
-		float new_start;
+		double new_start;
 		String str_stop = stop_textbox.getText();
-		float new_stop;
+		double new_stop;
 		String str_speed = speed_textbox.getText();
-		float new_speed;
+		double new_speed;
 		String str_dac_voltage = dac_voltage_textbox.getText();
-		float new_dac_voltage;
+		double new_dac_voltage;
 		
 		
 		try {
-			new_start = Float.parseFloat(str_start);
-			new_stop = Float.parseFloat(str_stop);
-			new_speed = Float.parseFloat(str_speed);
-			new_dac_voltage = Float.parseFloat(str_dac_voltage);
+			new_start = Double.parseDouble(str_start);
+			new_stop = Double.parseDouble(str_stop);
+			new_speed = Double.parseDouble(str_speed);
+			new_dac_voltage = Double.parseDouble(str_dac_voltage);
 		}
 		catch(NumberFormatException ex) {
 			set_red();
 			return false;
 		}
-		int i_new_stop = Math.round(new_stop * 100);
-		int i_new_start = Math.round(new_start * 100);
-		float f_new_speed = calc_step(new_speed);
-		int i_new_dac_voltage = Math.round(new_dac_voltage*100);
+		int i_new_stop = (int)Math.round(new_stop * 100);
+		int i_new_start = (int)Math.round(new_start * 100);
+		double f_new_speed = calc_step(new_speed);
+		int i_new_dac_voltage = (int)Math.round(new_dac_voltage*100);
 		// Check values for MAX value
 		
 		if (!(i_new_dac_voltage <= MAX && i_new_dac_voltage >= MIN)||
@@ -253,26 +253,26 @@ public abstract class Volt_engine extends JPanel{
 		}
 	}
 	*/
-	public void set_value(float value) {
-		int i_value = Math.round(value*100);
+	public void set_value(double value) {
+		int i_value = (int)Math.round(value*100);
 		StartStopController.set_sliders(i_value);
 	}
 	
-	public float get_slider_value() {
+	public double get_slider_value() {
 		return slider.getValue()/100.0f;
 	}
-	private void set_slider_value(float v) {
-		slider.setValue(Math.round(v*100));
+	private void set_slider_value(double v) {
+		slider.setValue((int)Math.round(v*100));
 	}
 	
-	abstract float get_start_V();
-	abstract float get_stop_V();
-	abstract float get_step_V();
+	abstract double get_start_V();
+	abstract double get_stop_V();
+	abstract double get_step_V();
 	abstract boolean get_cycle_scan();
 	
-	abstract void set_start_V(float v);
-	abstract void set_stop_V(float v);
-	abstract void set_step_V(float v);
+	abstract void set_start_V(double v);
+	abstract void set_stop_V(double v);
+	abstract void set_step_V(double v);
 	
 	private void set_dac_voltage() {
 		Run.prog.dac_voltage = calc_int_from_float(get_slider_value());
@@ -281,14 +281,14 @@ public abstract class Volt_engine extends JPanel{
 	 * For calc (0, 3800) from (-2, 17)
 	 * @return
 	 */
-	protected int calc_int_from_float(float f_value){
+	protected int calc_int_from_float(double f_value){
 		return Run.prog.calc_int_en_el(f_value);
 	}
 	/**
 	 * For calc (-2, 17) from (0, 3800)
 	 * @return
 	 */
-	protected float calc_float_from_int(int i_value){	
+	protected double calc_float_from_int(int i_value){	
 		return Run.prog.calc_float_en_el(i_value);
 	}
 	
@@ -297,7 +297,7 @@ public abstract class Volt_engine extends JPanel{
 	 * @param step
 	 * @return
 	 */
-	protected float calc_step(float step) {
+	protected double calc_step(double step) {
 		return Run.prog.calc_step(step);
 	}
 	

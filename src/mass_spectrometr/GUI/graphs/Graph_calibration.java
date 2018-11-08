@@ -8,6 +8,10 @@ import mass_spectrometr.Chart_analyser;
 import mass_spectrometr.Run;
 
 public class Graph_calibration extends Graph_canvas{
+	public boolean draw_cursor = false;
+	public double cursor_x;
+	public double cursor_y;
+	public int snap = 5;
 	public Graph_calibration(String x_measure, String y_measure, Chart_analyser analyser, double X_scale, double Y_scale, int x0) {
 		super(x_measure, y_measure, analyser);
 		set_scales(X_scale, Y_scale, x0);
@@ -33,6 +37,7 @@ public class Graph_calibration extends Graph_canvas{
         	double y2 = H - (intensity_2*Y_factor);
         	draw_line((int)x1, (int)y1, (int)x2, (int)y2, g2);
     	}
+    	if(draw_cursor) draw_X_line();
 	}
 	
 	private void set_scales(double X, double Y, int x0){
@@ -40,6 +45,20 @@ public class Graph_calibration extends Graph_canvas{
 		manual_Y_factor = Y;
 		manual_X_factor = X;
 		this.x0 = x0;
+	}
+	
+	public void draw_X_line() {
+		g2.setStroke(new BasicStroke(3));
+		g2.setColor(Color.BLACK);
+		// g2.drawLine((int)(x1 * X_factor + x0), H, (int)(x2 * X_factor + x0), 10);
+		double x1 = cursor_x*X_factor + x0;
+    	double y1 = H - (cursor_y*Y_factor);
+    	double w = x1 + snap;
+    	double h = y1 + snap;
+		//g2.drawRect((int)x1, (int)y1, (int)w, (int)h);
+		g2.drawLine((int)x1-2, (int)y1-2, (int)x1+2, (int)y1+2);
+		g2.drawLine((int)x1+2, (int)y1-2, (int)x1-2, (int)y1+2);
+		System.out.println("X line");
 	}
 
 }

@@ -60,10 +60,10 @@ public class Mass_setter_panel extends JPanel implements ActionListener{
 		return mass;
 	}
 	
-	public float get_real_mass() {
-		float real_mass = 0;
+	public double get_real_mass() {
+		double real_mass = 0;
 		try {
-			real_mass = Float.parseFloat(mass_textbox.getText());
+			real_mass = Double.parseDouble(mass_textbox.getText());
 			mass_textbox.setBackground(Color.WHITE);
 		}
 		catch(NumberFormatException ex) {

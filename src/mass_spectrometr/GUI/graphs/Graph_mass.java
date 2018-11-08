@@ -42,7 +42,7 @@ public class Graph_mass extends Graph_canvas{
         	double y1 = H - (intensity_1*Y_factor);
         	double x2 = mass_2*X_factor + x0;
         	double y2 = H - (intensity_2*Y_factor);
-        	draw_line((int)x1, (int)y1, (int)x2, (int)y2, g2);
+        	draw_line((int)Math.round(x1), (int)Math.round(y1), (int)Math.round(x2), (int)Math.round(y2), g2);
     	}
     	
         g.setColor(Color.BLUE);
