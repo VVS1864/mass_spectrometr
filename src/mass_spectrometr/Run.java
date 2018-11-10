@@ -100,10 +100,11 @@ public class Run {
 		set_zero_energy();
 		set_zero_mass();
 		
-		System.out.println(calc_mass(50));
-		System.out.println(calc_mass(200));
-		System.out.println(calc_mass(400));
-		calc_coefficients(2.5, 40, 160, 2.5, 40, 160);
+		//set_demo_mass();
+		//System.out.println(calc_mass(50));
+		//System.out.println(calc_mass(200));
+		//System.out.println(calc_mass(400));
+		//calc_coefficients(2.5, 40, 160, 2.5, 40, 160);
 		
 		KeyboardFocusManager.getCurrentKeyboardFocusManager().addKeyEventDispatcher(new KeyEventDispatcher() {
 			@Override
@@ -195,28 +196,35 @@ public class Run {
 		System.out.println("M_real " + M1 + " " + M2 + " " + M3);
 		System.out.println("B " + B1 + " " + B2 + " " + B3);
 		System.out.println("M1_new " + calc_mass(B1) + " M2_new " + calc_mass(B2) + " M3_new " + calc_mass(B3));
+		// may version
 		/*
 		double a = M3 - M1;
 		double b = M2 - M1;
 		
-		double new_B0 = (a * (Math.pow(B1, 2) - Math.pow(B2, 2)) + b * (Math.pow(B3, 2) - (Math.pow(B1, 2)))) /
-				(2 * ( a*(B1-B2) - b*(B1-B3) ) );
+		double new_B0 = (a * (Math.pow(B1, 2.0) - Math.pow(B2, 2.0)) + b * (Math.pow(B3, 2.0) - (Math.pow(B1, 2.0)))) /
+				(2.0 * ( a*(B1-B2) - b*(B1-B3) ) );
 		
-		double new_K = (M2-M1) / (Math.pow(B2, 2) - Math.pow(B1, 2) + 2*new_B0*(B1-B2));
+		double new_K = (M2-M1) / (Math.pow(B2, 2.0) - Math.pow(B1, 2.0) + 2.0*new_B0*(B1-B2));
 		
-		double new_M0 = M1 - new_K*Math.pow(B1, 2) + 2*new_K*B1*new_B0 - new_K*Math.pow(new_B0, 2);
+		double new_M0 = M1 - new_K*Math.pow(B1, 2.0) + 2.0*new_K*B1*new_B0 - new_K*Math.pow(new_B0, 2.0);
 		*/
-		
+		/*first
 		double new_B0 = ((M3-M1)*(B1-B2)+(M1-M2)*(B3-B1)) / 
 				(2* (  ((M2-M1)*(Math.pow(B3, 2)-Math.pow(B1, 2))) + ((M1-M3)*(Math.pow(B2, 2)-Math.pow(B1, 2)))  )  );
-		
+		*/
 		//System.out.println("B0 den"	+ (2* (  ((M2-M1)*(Math.pow(B3, 2)-Math.pow(B1, 2))) + ((M1-M3)*(Math.pow(B2, 2)-Math.pow(B1, 2)))  )));	
-		
+		/*first
 		double new_K = (M2-M1) / (Math.pow(B2, 2) - Math.pow(B1, 2) + 2*new_B0*(B2-B1));
-		
+		*/
 		//System.out.println("K den" + (Math.pow(B2, 2) - Math.pow(B1, 2) + 2*new_B0*(B2-B1)));
-		
+		/*first
 		double new_M0 = M1 - new_K*Math.pow(B1, 2) - 2*new_K*B1*new_B0 - new_K*Math.pow(new_B0, 2);
+		*/
+		//new Alexey version
+		double new_B0 = (  (M2-M1) * (Math.pow(B3, 2)-Math.pow(B1, 2)) + (M1-M3) * (Math.pow(B2, 2)-Math.pow(B1, 2)) ) / 
+				(2*(  M3*(B2-B1) - M1*(B2-B3) - M2*(B3-B1)  ) );
+		double new_K = (M1-M2) / (Math.pow(B2, 2) + 2*new_B0*(B1-B2) - Math.pow(B1, 2));
+		double new_M0 = M1 - new_K*Math.pow(B1, 2) + 2*new_K*B1*new_B0 - new_K*Math.pow(new_B0, 2);
 		
 		System.out.println("K" + new_K);
 		System.out.println("B0" + new_B0);
@@ -314,7 +322,7 @@ public class Run {
 	}
 
 	public void reset_mass() {
-		set_zero_energy();
+		//set_zero_energy();
 		set_zero_mass();
 		arduino.clear_parts();
 	}
@@ -323,7 +331,15 @@ public class Run {
 		
 		set_zero_energy();
 	
-		arduino.clear_parts();
+		//arduino.clear_parts();
+	}
+	
+	private void set_demo_mass(){
+		for (int i = 0; i < fixed_data_mass_intensity.length; i++) {
+			if (i == 200 || i == 500 || i == 800){
+				fixed_data_mass_intensity[i] = 500;
+			}
+		}
 	}
 
 	public void close() {

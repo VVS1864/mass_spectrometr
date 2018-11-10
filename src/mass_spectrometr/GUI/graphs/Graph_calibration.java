@@ -11,7 +11,7 @@ public class Graph_calibration extends Graph_canvas{
 	public boolean draw_cursor = false;
 	public double cursor_x;
 	public double cursor_y;
-	public int snap = 5;
+	public int snap = 7;
 	public Graph_calibration(String x_measure, String y_measure, Chart_analyser analyser, double X_scale, double Y_scale, int x0) {
 		super(x_measure, y_measure, analyser);
 		set_scales(X_scale, Y_scale, x0);
@@ -58,7 +58,7 @@ public class Graph_calibration extends Graph_canvas{
 		//g2.drawRect((int)x1, (int)y1, (int)w, (int)h);
 		g2.drawLine((int)x1-2, (int)y1-2, (int)x1+2, (int)y1+2);
 		g2.drawLine((int)x1+2, (int)y1-2, (int)x1-2, (int)y1+2);
-		System.out.println("X line");
+		//System.out.println("X line");
 	}
 
 }
