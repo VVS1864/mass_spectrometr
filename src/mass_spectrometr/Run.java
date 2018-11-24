@@ -196,18 +196,18 @@ public class Run {
 		System.out.println("M_real " + M1 + " " + M2 + " " + M3);
 		System.out.println("B " + B1 + " " + B2 + " " + B3);
 		System.out.println("M1_new " + calc_mass(B1) + " M2_new " + calc_mass(B2) + " M3_new " + calc_mass(B3));
-		// may version
-		/*
+		// my version
+		
 		double a = M3 - M1;
 		double b = M2 - M1;
 		
 		double new_B0 = (a * (Math.pow(B1, 2.0) - Math.pow(B2, 2.0)) + b * (Math.pow(B3, 2.0) - (Math.pow(B1, 2.0)))) /
-				(2.0 * ( a*(B1-B2) - b*(B1-B3) ) );
+				(2.0 * ( a*(B2-B1) + b*(B1-B3) ) );
 		
-		double new_K = (M2-M1) / (Math.pow(B2, 2.0) - Math.pow(B1, 2.0) + 2.0*new_B0*(B1-B2));
+		double new_K = b / (Math.pow(B2, 2.0) + 2.0*new_B0*(B2-B1) - Math.pow(B1, 2.0));
 		
-		double new_M0 = M1 - new_K*Math.pow(B1, 2.0) + 2.0*new_K*B1*new_B0 - new_K*Math.pow(new_B0, 2.0);
-		*/
+		double new_M0 = M1 - new_K*Math.pow(B1, 2.0) - 2.0*new_K*B1*new_B0 - new_K*Math.pow(new_B0, 2.0);
+		
 		/*first
 		double new_B0 = ((M3-M1)*(B1-B2)+(M1-M2)*(B3-B1)) / 
 				(2* (  ((M2-M1)*(Math.pow(B3, 2)-Math.pow(B1, 2))) + ((M1-M3)*(Math.pow(B2, 2)-Math.pow(B1, 2)))  )  );
@@ -221,11 +221,12 @@ public class Run {
 		double new_M0 = M1 - new_K*Math.pow(B1, 2) - 2*new_K*B1*new_B0 - new_K*Math.pow(new_B0, 2);
 		*/
 		//new Alexey version
+		/*
 		double new_B0 = (  (M2-M1) * (Math.pow(B3, 2)-Math.pow(B1, 2)) + (M1-M3) * (Math.pow(B2, 2)-Math.pow(B1, 2)) ) / 
 				(2*(  M3*(B2-B1) - M1*(B2-B3) - M2*(B3-B1)  ) );
 		double new_K = (M1-M2) / (Math.pow(B2, 2) + 2*new_B0*(B1-B2) - Math.pow(B1, 2));
 		double new_M0 = M1 - new_K*Math.pow(B1, 2) + 2*new_K*B1*new_B0 - new_K*Math.pow(new_B0, 2);
-		
+		*/
 		System.out.println("K" + new_K);
 		System.out.println("B0" + new_B0);
 		System.out.println("M0" + new_M0);

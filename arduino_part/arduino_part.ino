@@ -9,8 +9,8 @@ Adafruit_ADS1115 ads(0x48);
 //LiquidCrystal_PCF8574 lcd(0x3F);
 
 unsigned long current_time = 0;
-int mass = 1224;
-int init_mass = 1224;
+int mass = 12240;
+int init_mass = 12240;
 int en_el;
 int intensity;
 
@@ -60,7 +60,7 @@ void set_mass(){
 void set_demo_mass(){
   if (back_flag == false){
     if(mass>0){
-      mass-=1 + random(-3, 3);
+      mass-=5 + random(-3, 3);
     }
     else{
       mass = 0;
@@ -69,7 +69,7 @@ void set_demo_mass(){
   }
   else{
     if(mass<init_mass){
-      mass+=1 + random(-3, 3);
+      mass+=5 + random(-3, 3);
     }
 
     else{
@@ -99,15 +99,15 @@ void set_random(){
   int x = random(50);
   //if (x == 3) {
   
-  if (mass == 50){
+  if (mass > 500 && mass < 520){
     r = 1000;
     n = 500;
   }
-  if (mass == 200){
+  if (mass > 2000 && mass < 2020){
     r = 1000;
     n = 500;
   }
-  if (mass == 400){
+  if (mass > 4000 && mass < 4020){
     r = 1000;
     n = 500;
   }
