@@ -109,12 +109,12 @@ public class Calibration_frame extends JDialog implements MouseMotionListener, M
 			
 			
 			int B = (int)Math.round(Math.sqrt((real_x - Run.prog.M0)/Run.prog.K) - Run.prog.B0);
-			//System.out.println("B " + B);
+			System.out.println("B " + B);
 			int B_exact = B;
 			double max_value = 0;
 			for(int i = 0; i<Run.prog.fixed_data_mass_intensity.length; i++) {
 				
-				if (Math.abs(B-i) < cnvs.snap ) {
+				if (Math.abs(B-i) < cnvs.snap/Run.prog.K ) {
 					//System.out.println("B - i " + Math.abs(B-i));
 					if(Run.prog.fixed_data_mass_intensity[i]>max_value) {
 						
@@ -125,7 +125,7 @@ public class Calibration_frame extends JDialog implements MouseMotionListener, M
 					}
 				}
 			}
-			System.out.println("max intens " + max_value);
+			System.out.println("snap " + cnvs.snap/Run.prog.K);
 			cnvs.cursor_x = Run.prog.calc_mass(B_exact);
 			cnvs.cursor_y = max_value;
 			cnvs.draw_cursor = true;
