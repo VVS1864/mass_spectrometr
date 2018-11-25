@@ -31,9 +31,9 @@ public abstract class Volt_engine extends JPanel{
 	public JButton button_update;
 	protected JButton button_start;
 	
-	static final int MIN = -200;
-	static final int MAX = 1700;
-	static int INIT;
+	public static final int MIN = -200;
+	public static final int MAX = 1700;
+	public static int INIT;
 		
 	public Volt_engine() {		
 		ActionListener update = new ActionListener() {

@@ -11,6 +11,7 @@ import javax.swing.JSlider;
 import javax.swing.JTextField;
 
 import mass_spectrometr.GUI.GUI;
+import mass_spectrometr.GUI.Volt_engine;
 import mass_spectrometr.GUI.panels.Panel_base_interfase;
 
 public class Run {
@@ -87,7 +88,11 @@ public class Run {
 	 * size of array for approximation B
 	 */
 	public int approx_N = 50;
-
+	
+	/**
+	 * 1 = forward, -1 = backward
+	 */
+	private int fast_scan_direction = 1; 
 	//public boolean en_el_delay = false;
 
 	public Run() {
@@ -304,7 +309,15 @@ public class Run {
 	}
 
 	private void en_el_scan_fast() {
-		en_el_scan_long();
+		if (dac_voltage > stop_V && fast_scan_direction == 1) {
+			fast_scan_direction = -1;
+		}
+		else if (dac_voltage < start_V && fast_scan_direction == -1){
+			fast_scan_direction = 1;
+		}
+		dac_voltage_float += step_V*fast_scan_direction;
+		dac_voltage = (int)Math.round(dac_voltage_float);
+		
 	}
 
 	private void set_zero_energy() {
