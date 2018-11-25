@@ -104,11 +104,12 @@ public class Run {
 
 		set_zero_energy();
 		set_zero_mass();
-		
-		//set_demo_mass();
-		//System.out.println(calc_mass(50));
-		//System.out.println(calc_mass(200));
-		//System.out.println(calc_mass(400));
+		/*
+		set_demo_mass();
+		System.out.println(calc_mass(200));
+		System.out.println(calc_mass(500));
+		System.out.println(calc_mass(800));
+		*/
 		//calc_coefficients(2.5, 40, 160, 2.5, 40, 160);
 		
 		KeyboardFocusManager.getCurrentKeyboardFocusManager().addKeyEventDispatcher(new KeyEventDispatcher() {
@@ -198,9 +199,11 @@ public class Run {
 		M1 = M1_real;
 		M2 = M2_real;
 		M3 = M3_real;
+		/*
 		System.out.println("M_real " + M1 + " " + M2 + " " + M3);
 		System.out.println("B " + B1 + " " + B2 + " " + B3);
 		System.out.println("M1_new " + calc_mass(B1) + " M2_new " + calc_mass(B2) + " M3_new " + calc_mass(B3));
+		*/
 		// my version
 		
 		double a = M3 - M1;
@@ -232,9 +235,11 @@ public class Run {
 		double new_K = (M1-M2) / (Math.pow(B2, 2) + 2*new_B0*(B1-B2) - Math.pow(B1, 2));
 		double new_M0 = M1 - new_K*Math.pow(B1, 2) + 2*new_K*B1*new_B0 - new_K*Math.pow(new_B0, 2);
 		*/
+		/*
 		System.out.println("K" + new_K);
 		System.out.println("B0" + new_B0);
 		System.out.println("M0" + new_M0);
+		*/
 		set_new_coefficients(new_K, new_M0, new_B0);
 	}
 

@@ -212,6 +212,10 @@ public abstract class Volt_engine extends JPanel{
 			Run.prog.start_V = Run.prog.start_V_cyclic;
 			Run.prog.stop_V = Run.prog.stop_V_cyclic;
 			Run.prog.step_V = Run.prog.step_V_cyclic;
+			StartStopController.set_enabled_long_scan(false);
+		}
+		else {
+			StartStopController.set_enabled_fast_scan(false);
 		}
 		
 		Run.prog.dac_voltage_float = Run.prog.start_V;
@@ -226,6 +230,10 @@ public abstract class Volt_engine extends JPanel{
 		if (Run.prog.en_el_cycle_scan == true) {
 			Run.prog.en_el_cycle_scan = false;
 			button_start.setText("Start fast scan");
+			StartStopController.set_enabled_long_scan(true);
+		}
+		else {
+			StartStopController.set_enabled_fast_scan(true);
 		}
 		StartStopController.set_enable_disable(true);
 		return true;

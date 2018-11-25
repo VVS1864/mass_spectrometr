@@ -83,6 +83,7 @@ public class E_energy extends JDialog {
 		energy_panel = new Panel_energy();
 		add(top_panel, BorderLayout.NORTH);
 		add(energy_panel, BorderLayout.CENTER);
+		energy_panel.volt.button_start = button_start;
 	}
 
 	public boolean is_visible() {

@@ -41,6 +41,7 @@ public class GUI {
 	
 	protected JButton button_connect;
 	protected JButton button_reset;
+	protected JButton button_calibration;
 	
 	public  JComboBox<String> portbox;
 	
@@ -102,11 +103,13 @@ public class GUI {
 	  					button_connect.setText("Stop");
 	  					Run.prog.draw_graph_mass = true;
 	  					set_status(Color.CYAN, "Transfering data from arduino, draw graph");
+	  					StartStopController.set_enabled_calibration(false);
 	  				}
 	  				else if(Run.prog.draw_graph_mass) {
 	  					button_connect.setText("Draw graph");
 	  					Run.prog.draw_graph_mass = false;
 	  					set_status(Color.CYAN, "Transfering data from arduino");
+	  					StartStopController.set_enabled_calibration(true);
 	  				}
 				}
 			}
@@ -160,7 +163,7 @@ public class GUI {
 		JButton button_E_energy = new JButton("E energy");
 		button_E_energy.addActionListener(show_hide_E);
 		
-		JButton button_calibration = new JButton("Calibration");
+		button_calibration = new JButton("Calibration");
 		button_calibration.addActionListener(calibration);
 		
 	    top_panel_0.add(portbox);
