@@ -119,7 +119,7 @@ public class Connector {
 					byte write_buf[] = new byte[2];
 					int_to_byte(write_buf);
 					serialPort.writeBytes(write_buf);
-
+					/*
 					if (Run.prog.en_el_delay) {
 						try {
 							Thread.sleep(1000);
@@ -127,6 +127,7 @@ public class Connector {
 							e.printStackTrace();
 						}
 					}
+					*/
 					// Read from arduino
 					byte buf[] = serialPort.readBytes(10);
 					byte_to_int(buf);

@@ -88,7 +88,7 @@ public class Run {
 	 */
 	public int approx_N = 50;
 
-	public boolean en_el_delay = false;
+	//public boolean en_el_delay = false;
 
 	public Run() {
 		prog = this;
@@ -295,11 +295,11 @@ public class Run {
 		if (dac_voltage + step_V < stop_V) {
 			dac_voltage_float += step_V;
 			dac_voltage = (int)Math.round(dac_voltage_float);
-			en_el_delay = false;
+			//en_el_delay = false;
 		} else {
 			dac_voltage = start_V;
 			dac_voltage_float = start_V;
-			en_el_delay = true;
+			//en_el_delay = true;
 		}
 	}
 
