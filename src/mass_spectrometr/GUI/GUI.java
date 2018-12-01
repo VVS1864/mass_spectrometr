@@ -29,6 +29,7 @@ import javax.swing.JTextField;
 import javax.swing.KeyStroke;
 
 import mass_spectrometr.Run;
+import mass_spectrometr.Save_graph;
 import mass_spectrometr.GUI.graphs.Graph_canvas;
 import mass_spectrometr.GUI.graphs.Graph_mass;
 import mass_spectrometr.GUI.panels.Panel_base;
@@ -42,6 +43,7 @@ public class GUI {
 	protected JButton button_connect;
 	protected JButton button_reset;
 	protected JButton button_calibration;
+	private JButton button_save;
 	
 	public  JComboBox<String> portbox;
 	
@@ -70,7 +72,14 @@ public class GUI {
 // Electron energy window
 	    e_energy_frame = new E_energy(mainFrame);
 	    
-//ActionListener  		
+//ActionListener  
+	    
+	    ActionListener save_action_listener = new ActionListener() {
+			@Override
+			public void actionPerformed(ActionEvent e) {
+				Save_graph a = new Save_graph();
+			}
+		};
 	    
 	    ActionListener reset_action_listener = new ActionListener() {
 			@Override
@@ -166,11 +175,15 @@ public class GUI {
 		button_calibration = new JButton("Calibration");
 		button_calibration.addActionListener(calibration);
 		
+		button_save = new JButton("Save graph");
+		button_save.addActionListener(save_action_listener);
+		
 	    top_panel_0.add(portbox);
 	    top_panel_0.add(button_connect);
 	    top_panel_0.add(button_reset);
 	    top_panel_0.add(button_E_energy);
 	    top_panel_0.add(button_calibration);
+	    top_panel_0.add(button_save);
 	    top_panel_0.setAlignmentX(Component.LEFT_ALIGNMENT);
 	    
 	    mass_panel = new Panel_mass();

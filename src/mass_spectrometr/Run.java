@@ -16,6 +16,8 @@ import mass_spectrometr.GUI.panels.Panel_base_interfase;
 
 public class Run {
 	public static Run prog;
+	
+	public String save_directory = "";
 	//public ArrayList<Integer> data_time = new ArrayList<>();
 	//public ArrayList<Integer> data_en_el = new ArrayList<>();
 	//public ArrayList<Integer> data_mass_intensity = new ArrayList<>();
@@ -100,6 +102,7 @@ public class Run {
 		arduino = new Connector();
 		cfg = new Config();
 		read_settings();
+		if (save_directory == "") save_directory = cfg.config_path;
 		user_interface = new GUI();
 
 		set_zero_energy();
@@ -146,13 +149,14 @@ public class Run {
 	}
 
 	private void read_settings() {
-		M0 = parse_double("M0", 0);
-		B0 = parse_double("B0", 0);
-		K = parse_double("K", 0.001);
+		M0 = Double.parseDouble(parse_conf("M0", "0"));
+		B0 = Double.parseDouble(parse_conf("B0", "0"));
+		K = Double.parseDouble(parse_conf("K", "0.001"));
 
-		en_el_b = parse_double("en_el_b", 400.0);
-		en_el_K = parse_double("en_el_K", 200.0);
-
+		en_el_b = Double.parseDouble(parse_conf("en_el_b", "400.0"));
+		en_el_K = Double.parseDouble(parse_conf("en_el_K", "200.0"));
+		
+		save_directory = parse_conf("save_path", "");
 		// load standard settings for fast scan of energy
 		// start_V_cyclic = parse_double("start_V_cyclic", 0);
 		// stop_V_cyclic = parse_double("stop_V_cyclic", 0);
@@ -167,15 +171,17 @@ public class Run {
 
 		cfg.set_conf_value("en_el_b", Double.toString(en_el_b));
 		cfg.set_conf_value("en_el_K", Double.toString(en_el_K));
-
+		
+		cfg.set_conf_value("save_path", save_directory);
+		
 		cfg.store_config();
 	}
 
-	private double parse_double(String value_name, double default_value) {
+	private String parse_conf(String value_name, String default_value) {
 		String val = cfg.get_conf_value(value_name);
-		double ret;
+		String ret;
 		if (val != null) {
-			ret = Double.parseDouble(val);
+			ret = val;
 		} else {
 			ret = default_value;
 		}

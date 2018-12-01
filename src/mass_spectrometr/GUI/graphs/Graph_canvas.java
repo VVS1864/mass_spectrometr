@@ -224,6 +224,13 @@ public abstract class Graph_canvas extends JPanel {
 		}
 	}
 	
+	protected void draw_poly_line(int[] x, int[] y, Graphics2D g2) {
+		// if(x1>=w_axis && x2>=w_axis && x1<=W && x2<=W && y1>=10 && y2>=10 && y1<=H &&
+		// y2<=H) {
+		g2.drawPolyline(x, y, x.length);
+		
+	}
+	
 	protected void draw_point(int x1, int y1, Graphics2D g2) {
 		// if(x1>=w_axis && x2>=w_axis && x1<=W && x2<=W && y1>=10 && y2>=10 && y1<=H &&
 		// y2<=H) {

@@ -56,7 +56,7 @@ public class Config {
 		boolean read_from_fir = false;
 		File jarDir = new File(ClassLoader.getSystemClassLoader().getResource(".").getPath());
 		File conf = null;
-		
+		config_path = jarDir.getAbsolutePath();
 		try {
 			conf = new File(jarDir, "config.txt");
 			InputStream stream = new FileInputStream(conf);
