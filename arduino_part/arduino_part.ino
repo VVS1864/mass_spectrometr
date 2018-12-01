@@ -28,7 +28,7 @@ char read_buf[2];
 
 void setup() {
   pinMode(led, OUTPUT);
-  Serial.begin(38400); 
+  Serial.begin(115200); 
   digitalWrite(led, LOW);
   /*
   MCP4725.begin(0x62);
@@ -60,21 +60,27 @@ void set_mass(){
 void set_demo_mass(){
   if (back_flag == false){
     if(mass>0){
-      mass-=5 + random(-3, 3);
+      mass-=3 + random(-3, 3);
     }
     else{
       mass = 0;
       back_flag = true;
     }
+    if (mass<0){
+      mass = 0;
+    }
   }
   else{
     if(mass<init_mass){
-      mass+=5 + random(-3, 3);
+      mass+=3 + random(-3, 3);
     }
 
     else{
       mass = init_mass;
       back_flag = false;
+    }
+    if (mass > init_mass){
+      mass = init_mass;
     }
   }
 }
@@ -95,7 +101,7 @@ void set_data(){
 
 void set_random(){
   int r = 10;
-  int n = 0;
+  int n = 2;
   int x = random(50);
   //if (x == 3) {
   

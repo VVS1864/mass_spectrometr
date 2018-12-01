@@ -25,6 +25,8 @@ public class Connector {
 
 	public ArrayList<Integer> en_el_part;
 	public ArrayList<Integer> intensity_part;
+	
+	private long old_time = 0;
 
 	public Connector() {
 		Run.prog.ports = SerialPortList.getPortNames();
@@ -36,7 +38,7 @@ public class Connector {
 		serialPort = new SerialPort(port);
 		try {
 			serialPort.openPort();
-			serialPort.setParams(SerialPort.BAUDRATE_38400, SerialPort.DATABITS_8, SerialPort.STOPBITS_1,
+			serialPort.setParams(SerialPort.BAUDRATE_115200, SerialPort.DATABITS_8, SerialPort.STOPBITS_1,
 					SerialPort.PARITY_NONE);
 
 			serialPort.setEventsMask(SerialPort.MASK_RXCHAR);
@@ -81,7 +83,6 @@ public class Connector {
 
 		public void byte_to_int(byte b[]) {
 			Run.prog.current_time = ((b[0] & 0xff) << 24 | (b[1] & 0xff) << 16 | (b[2] & 0xff) << 8 | (b[3] & 0xff));
-
 			Run.prog.current_B = ((b[4] & 0xff) << 8) | (b[5] & 0xff);
 			Run.prog.current_en_el = ((b[6] & 0xff) << 8) | (b[7] & 0xff);
 			Run.prog.current_intensity = ((b[8] & 0xff) << 8) | (b[9] & 0xff);
@@ -119,7 +120,7 @@ public class Connector {
 					byte write_buf[] = new byte[2];
 					int_to_byte(write_buf);
 					serialPort.writeBytes(write_buf);
-					/*
+					
 					if (Run.prog.en_el_delay) {
 						try {
 							Thread.sleep(1000);
@@ -127,7 +128,7 @@ public class Connector {
 							e.printStackTrace();
 						}
 					}
-					*/
+					
 					// Read from arduino
 					byte buf[] = serialPort.readBytes(10);
 					byte_to_int(buf);
@@ -136,30 +137,41 @@ public class Connector {
 					// Collect data
 					if (Run.prog.draw_graph_mass) {
 						if (Run.prog.approx_N > 0) {
+							
 							time_part.add(Run.prog.current_time);
 							B_part.add(Run.prog.current_B);
 							intensity_part.add(Run.prog.current_intensity);
+							
 							count++;
 
 							// Calculate approximation B and repaint
 							if (count == Run.prog.approx_N) {
+								
 
-								Approximator A = new Approximator();
-								B_approximated = A.Approximate(B_part, time_part, Run.prog.approx_N);
+								Approximator A = new Approximator(B_part, time_part, Run.prog.approx_N);
+								B_approximated = A.get_approx();
 								for (int i = 0; i < B_approximated.size(); i++) {
 									Double B = B_approximated.get(i);
 									double b = B.doubleValue();
 
 									Integer Intensity = intensity_part.get(i);
 									int intensity = Intensity.intValue();
-
+									
 									int fixed_mass_index = (int) Math.round(b);
-
+									/*
+									if (old_ind != fixed_mass_index+1) {
+										System.out.println("=============");
+										System.out.println(fixed_mass_index);
+										System.out.println(old_ind);
+										System.out.println(b);
+										
+									}
+									*/
+									
 									if (fixed_mass_index < Run.prog.fixed_data_mass_intensity.length
 											&& fixed_mass_index > 0) {
 										Run.prog.fixed_data_mass_intensity[fixed_mass_index] = intensity;
 									}
-
 								}
 								clear_parts();
 							}

@@ -222,6 +222,14 @@ public abstract class Graph_canvas extends JPanel {
 			g2.drawLine(x1, y1, x2, y2);
 		}
 	}
+	
+	protected void draw_point(int x1, int y1, Graphics2D g2) {
+		// if(x1>=w_axis && x2>=w_axis && x1<=W && x2<=W && y1>=10 && y2>=10 && y1<=H &&
+		// y2<=H) {
+		if ((x1 >= w_axis && x1 <= W) && (y1 >= 10 || y1 <= H)) {
+			g2.drawLine(x1, y1, x1, y1);
+		}
+	}
 
 	private void draw_string(String str, int x1, int y1, Graphics2D g2) {
 		if (x1 > w_axis && x1 < W && y1 > 10 && y1 < H) {

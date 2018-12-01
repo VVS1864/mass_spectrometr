@@ -224,7 +224,7 @@ public abstract class Volt_engine extends JPanel{
 		StartStopController.set_enable_disable(false);
 	}
 	public boolean stop_scan() {
-		//if(Run.prog.en_el_delay) return false;
+		if(Run.prog.en_el_delay) return false;
 		Run.prog.start_e_scan = false;
 		Run.prog.draw_graph_en_el = false;
 		if (Run.prog.en_el_cycle_scan == true) {

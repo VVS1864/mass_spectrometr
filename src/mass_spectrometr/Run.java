@@ -93,7 +93,7 @@ public class Run {
 	 * 1 = forward, -1 = backward
 	 */
 	private int fast_scan_direction = 1; 
-	//public boolean en_el_delay = false;
+	public boolean en_el_delay = false;
 
 	public Run() {
 		prog = this;
@@ -305,24 +305,33 @@ public class Run {
 		if (dac_voltage + step_V < stop_V) {
 			dac_voltage_float += step_V;
 			dac_voltage = (int)Math.round(dac_voltage_float);
-			//en_el_delay = false;
+			en_el_delay = false;
 		} else {
 			dac_voltage = start_V;
 			dac_voltage_float = start_V;
-			//en_el_delay = true;
+			en_el_delay = true;
 		}
 	}
 
 	private void en_el_scan_fast() {
-		if (dac_voltage > stop_V && fast_scan_direction == 1) {
-			fast_scan_direction = -1;
+		double step;
+		int new_direction;
+		if (dac_voltage + step_V >= stop_V && fast_scan_direction == 1) {
+			new_direction = -1;
+			step = stop_V - dac_voltage;
 		}
-		else if (dac_voltage < start_V && fast_scan_direction == -1){
-			fast_scan_direction = 1;
+		else if (dac_voltage - step_V <= start_V && fast_scan_direction == -1){
+			new_direction = 1;
+			step = dac_voltage - start_V;
 		}
-		dac_voltage_float += step_V*fast_scan_direction;
-		dac_voltage = (int)Math.round(dac_voltage_float);
+		else {
+			new_direction = fast_scan_direction;
+			step = step_V;
+		}
 		
+		dac_voltage_float += step*fast_scan_direction;
+		dac_voltage = (int)Math.round(dac_voltage_float);
+		fast_scan_direction = new_direction;		
 	}
 
 	private void set_zero_energy() {
