@@ -38,7 +38,7 @@ public class Connector {
 		serialPort = new SerialPort(port);
 		try {
 			serialPort.openPort();
-			serialPort.setParams(SerialPort.BAUDRATE_115200, SerialPort.DATABITS_8, SerialPort.STOPBITS_1,
+			serialPort.setParams(SerialPort.BAUDRATE_38400, SerialPort.DATABITS_8, SerialPort.STOPBITS_1,
 					SerialPort.PARITY_NONE);
 
 			serialPort.setEventsMask(SerialPort.MASK_RXCHAR);
@@ -121,13 +121,7 @@ public class Connector {
 					int_to_byte(write_buf);
 					serialPort.writeBytes(write_buf);
 					
-					if (Run.prog.en_el_delay) {
-						try {
-							Thread.sleep(1000);
-						} catch (InterruptedException e) {
-							e.printStackTrace();
-						}
-					}
+					
 					
 					// Read from arduino
 					byte buf[] = serialPort.readBytes(10);
@@ -189,10 +183,12 @@ public class Connector {
 
 					}
 					if (Run.prog.draw_graph_en_el) {
-						;
+						
 						if (Run.prog.current_en_el <= Run.prog.fixed_data_en_el_intensity.length) {
 							Run.prog.fixed_data_en_el_intensity[Run.prog.current_en_el][0] += Run.prog.current_intensity;
 							Run.prog.fixed_data_en_el_intensity[Run.prog.current_en_el][1]++;
+							//System.out.println(Run.prog.current_B + " " + Run.prog.fixed_data_en_el_intensity[Run.prog.current_en_el][0] + " " +
+							//		Run.prog.fixed_data_en_el_intensity[Run.prog.current_en_el][1]);
 						}
 					}
 
@@ -201,7 +197,15 @@ public class Connector {
 
 					Run.prog.user_interface.repaint_cnvs();
 					Run.prog.print_current_mass_intensity();
-
+					
+					if (Run.prog.en_el_delay) {
+						try {
+							Thread.sleep(1000);
+						} catch (InterruptedException e) {
+							e.printStackTrace();
+						}
+					}
+					
 				} catch (SerialPortException ex) {
 					System.err.println(ex);
 				}

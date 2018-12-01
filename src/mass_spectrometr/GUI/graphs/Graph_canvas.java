@@ -63,11 +63,12 @@ public abstract class Graph_canvas extends JPanel {
 		this.g2 = (Graphics2D) g;
 
 		draw_axis();
-
+		draw_current();
 		draw_data();
 	}
 
 	abstract void draw_data();
+	abstract void draw_current();
 
 	protected void draw_axis() {
 		H = this.getHeight() - h_axis;

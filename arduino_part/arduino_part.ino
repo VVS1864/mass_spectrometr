@@ -28,7 +28,7 @@ char read_buf[2];
 
 void setup() {
   pinMode(led, OUTPUT);
-  Serial.begin(115200); 
+  Serial.begin(38400); 
   digitalWrite(led, LOW);
   /*
   MCP4725.begin(0x62);

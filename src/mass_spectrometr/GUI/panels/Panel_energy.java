@@ -81,12 +81,12 @@ public class Panel_energy extends Panel_base{
 	    top_panel_2.add(mass_indication);
 		
 	    top_panel_2.setAlignmentX(Component.LEFT_ALIGNMENT);
-		
-		cnvs = new Graph_energy("En", "int", Run.prog.analyser_en_el);
+	    volt = new Volt_engine_long();
+		cnvs = new Graph_energy("En", "int", Run.prog.analyser_en_el, volt.get_MIN());
 		cnvs.addMouseListener(this);
 		add(cnvs, BorderLayout.CENTER);
 		
-		volt = new Volt_engine_long();
+		
 	    
 		//mass_label = new JLabel("Current mass: ");
 		//mass_indication = new JLabel("");

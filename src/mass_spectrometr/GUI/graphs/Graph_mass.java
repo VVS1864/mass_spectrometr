@@ -14,24 +14,25 @@ public class Graph_mass extends Graph_canvas{
 	}
 	
 	@Override 
-	void draw_data() {
-		// Current mass and intensity rendering
+	void draw_current() {
+// Current mass and intensity rendering
         
-        double current_mass = Run.prog.calc_mass(Run.prog.current_B);
-        
+        double current_mass = Run.prog.calc_mass(Run.prog.current_B);  
         int current_intensity = Run.prog.current_intensity;
         paint_current_data(current_mass, current_intensity);
         
+        if (current_intensity > max_y) max_y = current_intensity;
+    	if (current_mass > max_x) max_x = current_mass;
+	}
+	
+	
+	@Override 
+	void draw_data() {
 // Data rendering
-      
-        
         g.setColor(Color.RED);
         g2.setStroke(new BasicStroke(1));
-        
-    	if (current_intensity > max_y) max_y = current_intensity;
-    	if (current_mass > max_x) max_x = current_mass;
 
-    	for(int mass_first = 0; mass_first < Run.prog.fixed_data_mass_intensity.length; mass_first++) {
+        for(int mass_first = 0; mass_first < Run.prog.fixed_data_mass_intensity.length; mass_first++) {
     		boolean make_line = false;
     		double mass_1 = 0;
     		double mass_2 = 0;

@@ -7,7 +7,7 @@ import java.util.ArrayList;
 import mass_spectrometr.Chart_analyser;
 import mass_spectrometr.Run;
 
-public class Graph_calibration extends Graph_canvas{
+public class Graph_calibration extends Graph_mass{
 	public boolean draw_cursor = false;
 	public double cursor_x;
 	public double cursor_y;
@@ -16,7 +16,11 @@ public class Graph_calibration extends Graph_canvas{
 		super(x_measure, y_measure, analyser);
 		set_scales(X_scale, Y_scale, x0);
 	}
-	
+	@Override 
+	void draw_current() {
+		if(draw_cursor) draw_X_line();
+	}
+	/*
 	@Override 
 	void draw_data() {
 // Data rendering
@@ -39,7 +43,7 @@ public class Graph_calibration extends Graph_canvas{
     	}
     	if(draw_cursor) draw_X_line();
 	}
-	
+	*/
 	private void set_scales(double X, double Y, int x0){
 		autoscaleY = false;
 		manual_Y_factor = Y;

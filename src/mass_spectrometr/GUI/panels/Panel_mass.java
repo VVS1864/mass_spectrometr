@@ -14,6 +14,7 @@ import javax.swing.JLabel;
 import javax.swing.JTextField;
 
 import mass_spectrometr.Run;
+import mass_spectrometr.GUI.StartStopController;
 import mass_spectrometr.GUI.Volt_engine;
 import mass_spectrometr.GUI.Volt_engine_fast;
 import mass_spectrometr.GUI.Volt_engine_long;
@@ -28,6 +29,8 @@ public class Panel_mass extends Panel_base{
 	
 	protected JTextField en_el_K_textbox;
 	protected JTextField en_el_b_textbox;
+	
+	public JButton button_K;
 	
 	public Volt_engine volt;
 	public Panel_mass() {
@@ -84,6 +87,7 @@ public class Panel_mass extends Panel_base{
 				Run.prog.en_el_K = new_en_el_K;
 				Run.prog.en_el_b = new_en_el_b;
 				
+				StartStopController.update_volt_engines();
 				cnvs.repaint();
 			}
 			
@@ -118,7 +122,7 @@ public class Panel_mass extends Panel_base{
 		en_el_b_textbox.setPreferredSize(new Dimension(80, 25));
 		//en_el_b_textbox.setMaximumSize(new Dimension(50, 40));
 		
-		JButton button_K = new JButton("Update");
+		button_K = new JButton("Update");
 		button_K.addActionListener(update_K);
 		JLabel current_mass = new JLabel(" Mass: ");
 		label_X = new JLabel();

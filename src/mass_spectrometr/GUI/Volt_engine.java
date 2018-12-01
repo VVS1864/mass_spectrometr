@@ -22,6 +22,7 @@ public abstract class Volt_engine extends JPanel{
 	protected JTextField dac_voltage_textbox;
 	protected JSlider slider;
 	protected JPanel update_panel;
+	protected ChangeListener c_listener;
 	
 	protected JTextField start_textbox;
 	protected JTextField stop_textbox;
@@ -31,9 +32,12 @@ public abstract class Volt_engine extends JPanel{
 	public JButton button_update;
 	protected JButton button_start;
 	
-	public static final int MIN = -200;
-	public static final int MAX = 1700;
-	public static int INIT;
+	private int MIN;
+	private int MAX;
+	private int INIT;
+	//public static final int MIN = -200;
+	//public static final int MAX = 1700;
+	//public static int INIT;
 		
 	public Volt_engine() {		
 		ActionListener update = new ActionListener() {
@@ -43,23 +47,19 @@ public abstract class Volt_engine extends JPanel{
 			}
 			
 		};
-		INIT = (int)Math.round(calc_float_from_int(Run.prog.dac_voltage)*100);
+		c_listener = new ChangeListener(){
+			public void stateChanged(ChangeEvent event){
+				JSlider slider = (JSlider)event.getSource();
+				double f_value = get_slider_value();
+				dac_voltage_textbox.setText(Double.toString(f_value));
+				StartStopController.set_sliders(slider.getValue());
+				if(Run.prog.start_e_scan == false) set_dac_voltage();
+				
+			}
+		};
+		create_slider();
 		setLayout(new BoxLayout(this, BoxLayout.X_AXIS));
 		r_p.setLayout(new BoxLayout(r_p, BoxLayout.Y_AXIS));
-		
-		Hashtable<Integer, JLabel> label_table = new Hashtable<>();
-		int[] labels_ints = new int[] {-2, -1, 0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17};
-		for(int i:labels_ints) {
-			label_table.put(new Integer(i*100), new JLabel(Integer.toString(i)));
-		}
-		
-		slider = new JSlider(JSlider.HORIZONTAL, MIN, MAX, INIT);
-		
-		slider.setLabelTable(label_table);
-		slider.setPaintTicks(true);
-		slider.setPaintLabels(true);
-		slider.setMajorTickSpacing(100);
-		slider.setMinorTickSpacing(50);
 		
 		update_panel = new JPanel();
 		update_panel.setLayout(new BoxLayout(update_panel, BoxLayout.X_AXIS));
@@ -115,18 +115,9 @@ public abstract class Volt_engine extends JPanel{
 		TitledBorder title = new TitledBorder(t);
 		setBorder(title);
 		
-		ChangeListener listener = new ChangeListener(){
-			public void stateChanged(ChangeEvent event){
-				JSlider slider = (JSlider)event.getSource();
-				double f_value = get_slider_value();
-				dac_voltage_textbox.setText(Double.toString(f_value));
-				StartStopController.set_sliders(slider.getValue());
-				if(Run.prog.start_e_scan == false) set_dac_voltage();
-				
-			}
-		};
 		
-		slider.addChangeListener(listener);
+		
+		
 		
 	}
 	private boolean check_values() {
@@ -307,6 +298,53 @@ public abstract class Volt_engine extends JPanel{
 	 */
 	protected double calc_step(double step) {
 		return Run.prog.calc_step(step);
+	}
+	
+	private Hashtable<Integer, JLabel> make_label_table(int MIN, int MAX) {
+		Hashtable<Integer, JLabel> label_table = new Hashtable<>();
+		int[] labels_ints = new int[(MAX - MIN)/100+1];
+		labels_ints[0] = MIN/100;
+		
+		int j = MIN/100+1;
+		for (int i = 1; i<labels_ints.length; i++) {
+			labels_ints[i] = j;
+			j++;
+		}
+		
+		for(int i:labels_ints) {
+			label_table.put(new Integer(i*100), new JLabel(Integer.toString(i)));
+		}
+		return label_table;
+	}
+	
+	public void create_slider() {
+		try{
+			r_p.remove(slider);
+		}
+		catch(NullPointerException ex) {
+		}
+		MIN = (int)Math.round(calc_float_from_int(0)*100);
+		MAX = (int)Math.round(calc_float_from_int(3800)*100);
+		INIT = (int)Math.round(calc_float_from_int(Run.prog.dac_voltage)*100);
+		
+		Hashtable<Integer, JLabel> label_table = make_label_table(MIN, MAX);
+		
+		slider = new JSlider(JSlider.HORIZONTAL, MIN, MAX, INIT);
+		
+		slider.setLabelTable(label_table);
+		slider.setPaintTicks(true);
+		slider.setPaintLabels(true);
+		slider.setMajorTickSpacing(100);
+		slider.setMinorTickSpacing(50);
+		slider.addChangeListener(c_listener);
+		r_p.add(slider);
+		revalidate();
+		repaint();
+		
+	}
+	
+	public int get_MIN() {
+		return MIN/100;
 	}
 	
 	

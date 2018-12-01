@@ -10,6 +10,7 @@ public class StartStopController {
 	public static void set_enable_disable(boolean enable) {
 		set_enabled(volt_fast, enable);
 		set_enabled(volt_long, enable);
+		Run.prog.user_interface.mass_panel.button_K.setEnabled(enable);
 	}
 	public static void set_sliders(int value) {
 		volt_fast.slider.setValue(value);
@@ -24,6 +25,7 @@ public class StartStopController {
 		volt.speed_textbox.setEnabled(enable);
 		volt.button_update.setEnabled(enable);
 		
+		
 	}
 	
 	public static void set_enabled_fast_scan(boolean enable) {
@@ -36,5 +38,10 @@ public class StartStopController {
 	
 	public static void set_enabled_calibration(boolean enable) {
 		user_interface.button_calibration.setEnabled(enable);
+	}
+	
+	public static void update_volt_engines() {
+		volt_fast.create_slider();
+		volt_long.create_slider();
 	}
 }

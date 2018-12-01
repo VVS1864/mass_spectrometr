@@ -302,7 +302,7 @@ public class Run {
 	}
 
 	private void en_el_scan_long() {
-		if (dac_voltage + step_V < stop_V) {
+		if (dac_voltage_float + step_V < stop_V) {
 			dac_voltage_float += step_V;
 			dac_voltage = (int)Math.round(dac_voltage_float);
 			en_el_delay = false;
@@ -338,7 +338,7 @@ public class Run {
 		// set zeros in en_el intensity array
 		for (int i = 0; i < fixed_data_en_el_intensity.length; i++) {
 			fixed_data_en_el_intensity[i][0] = 0;
-			fixed_data_en_el_intensity[i][1] = 0;
+			fixed_data_en_el_intensity[i][1] = 1;
 		}
 	}
 	
