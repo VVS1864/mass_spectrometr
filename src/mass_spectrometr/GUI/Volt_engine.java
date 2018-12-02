@@ -197,7 +197,7 @@ public abstract class Volt_engine extends JPanel{
 	
 	private void start_scan_event() {
 		Run.prog.start_e_scan = true;
-		
+		Run.prog.first_scan = true;
 		if (Run.prog.en_el_cycle_scan == true) {
 			button_start.setText("Stop fast scan");
 			Run.prog.start_V = Run.prog.start_V_cyclic;

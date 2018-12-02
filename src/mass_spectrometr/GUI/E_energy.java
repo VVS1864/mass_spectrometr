@@ -16,13 +16,16 @@ import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 
 import mass_spectrometr.Run;
+import mass_spectrometr.Save_graph;
 import mass_spectrometr.GUI.panels.Panel_energy;
+import mass_spectrometr.Run.graph_type;
 
 public class E_energy extends JDialog {
 	private boolean visible = false;
 	public Panel_energy energy_panel;
 	private JButton button_start;
 	private JButton button_reset;
+	private JButton button_save;
 	private E_energy t;
 
 	public E_energy(JFrame jframe) {
@@ -56,16 +59,23 @@ public class E_energy extends JDialog {
 			public void actionPerformed(ActionEvent e) {
 				if (!Run.prog.start_e_scan) {
 					button_start.setText("Stop scan");
-					Run.prog.draw_graph_en_el = true;
 					energy_panel.volt.start_scan();
+					Run.prog.draw_graph_en_el = true;
 				} else if (Run.prog.start_e_scan && !Run.prog.en_el_cycle_scan) {
 					boolean not_delay = energy_panel.volt.stop_scan();
 					if (not_delay) {
 						button_start.setText("Start scan");
-						Run.prog.draw_graph_en_el = false;
 						energy_panel.volt.stop_scan();
+						Run.prog.draw_graph_en_el = false;
 					}
 				}
+			}
+		};
+		
+		ActionListener save_action_listener = new ActionListener() {
+			@Override
+			public void actionPerformed(ActionEvent e) {
+				Save_graph a = new Save_graph(graph_type.ENERGY_GRAPH);
 			}
 		};
 
@@ -79,6 +89,10 @@ public class E_energy extends JDialog {
 		button_reset = new JButton("Reset");
 		button_reset.addActionListener(reset_action_listener);
 		top_panel.add(button_reset);
+		
+		button_save = new JButton("Save graph");
+		button_save.addActionListener(save_action_listener);
+		top_panel.add(button_save);
 
 		energy_panel = new Panel_energy();
 		add(top_panel, BorderLayout.NORTH);

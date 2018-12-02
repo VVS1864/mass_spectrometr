@@ -182,15 +182,17 @@ public class Connector {
 						}
 
 					}
-					if (Run.prog.draw_graph_en_el) {
+					if (Run.prog.draw_graph_en_el && !Run.prog.first_scan) {
 						
 						if (Run.prog.current_en_el <= Run.prog.fixed_data_en_el_intensity.length) {
+							
 							Run.prog.fixed_data_en_el_intensity[Run.prog.current_en_el][0] += Run.prog.current_intensity;
 							Run.prog.fixed_data_en_el_intensity[Run.prog.current_en_el][1]++;
 							//System.out.println(Run.prog.current_B + " " + Run.prog.fixed_data_en_el_intensity[Run.prog.current_en_el][0] + " " +
 							//		Run.prog.fixed_data_en_el_intensity[Run.prog.current_en_el][1]);
 						}
 					}
+					
 
 					if (Run.prog.start_e_scan)
 						Run.prog.en_el_scan_loop();

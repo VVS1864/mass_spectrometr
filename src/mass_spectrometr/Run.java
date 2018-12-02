@@ -18,6 +18,7 @@ public class Run {
 	public static Run prog;
 	
 	public String save_directory = "";
+	public static enum graph_type {MASS_GRAPH, ENERGY_GRAPH};
 	//public ArrayList<Integer> data_time = new ArrayList<>();
 	//public ArrayList<Integer> data_en_el = new ArrayList<>();
 	//public ArrayList<Integer> data_mass_intensity = new ArrayList<>();
@@ -76,6 +77,7 @@ public class Run {
 	public double step_V = 0.02;
 	public boolean en_el_cycle_scan = false; 
 	public boolean start_e_scan = false; 
+	public boolean first_scan = false;
 	public int dac_voltage = 0;
 	/**
 	 * for use step_V (float)
@@ -300,6 +302,12 @@ public class Run {
 	}
 
 	public void en_el_scan_loop() {
+		if (first_scan && current_en_el == start_V) {
+			first_scan = false;
+			dac_voltage = start_V;
+			dac_voltage_float = start_V;
+			return;
+		}
 		if (en_el_cycle_scan) {
 			en_el_scan_fast();
 		} else {

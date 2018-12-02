@@ -29,6 +29,7 @@ import javax.swing.JTextField;
 import javax.swing.KeyStroke;
 
 import mass_spectrometr.Run;
+import mass_spectrometr.Run.graph_type;
 import mass_spectrometr.Save_graph;
 import mass_spectrometr.GUI.graphs.Graph_canvas;
 import mass_spectrometr.GUI.graphs.Graph_mass;
@@ -77,7 +78,7 @@ public class GUI {
 	    ActionListener save_action_listener = new ActionListener() {
 			@Override
 			public void actionPerformed(ActionEvent e) {
-				Save_graph a = new Save_graph();
+				Save_graph a = new Save_graph(graph_type.MASS_GRAPH);
 			}
 		};
 	    
