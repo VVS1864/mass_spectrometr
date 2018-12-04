@@ -39,7 +39,7 @@ public class Volt_engine_fast extends Volt_engine {
 
 	@Override
 	double get_step_V() {
-		return Run.prog.step_V_cyclic;
+		return calc_float_step(Run.prog.step_V_cyclic);
 	}
 
 	@Override
@@ -60,7 +60,7 @@ public class Volt_engine_fast extends Volt_engine {
 
 	@Override
 	void set_step_V(double v) {
-		Run.prog.step_V_cyclic = calc_step(v);
+		Run.prog.step_V_cyclic = calc_int_step(v);
 
 	}
 

@@ -68,13 +68,13 @@ public class Run {
 
 	// Parameters for electron energy
 
-	public int start_V_cyclic = 0;
-	public int stop_V_cyclic = 3800;
-	public double step_V_cyclic = 0.02;
+	public int start_V_cyclic;
+	public int stop_V_cyclic;
+	public double step_V_cyclic;
 
-	public int start_V = 0;
-	public int stop_V = 3800;
-	public double step_V = 0.02;
+	public int start_V;
+	public int stop_V;
+	public double step_V;
 	public boolean en_el_cycle_scan = false; 
 	public boolean start_e_scan = false; 
 	public boolean first_scan = false;
@@ -98,6 +98,7 @@ public class Run {
 	 */
 	private int fast_scan_direction = 1; 
 	public boolean en_el_delay = false;
+	public int delay_count = 0; 
 
 	public Run() {
 		prog = this;
@@ -159,14 +160,20 @@ public class Run {
 		en_el_K = Double.parseDouble(parse_conf("en_el_K", "200.0"));
 		
 		save_directory = parse_conf("save_path", "");
-		// load standard settings for fast scan of energy
-		// start_V_cyclic = parse_double("start_V_cyclic", 0);
-		// stop_V_cyclic = parse_double("stop_V_cyclic", 0);
-		// step_V_cyclic = (float)parse_double("step_V_cyclic", 0);
+		//load standard settings for fast scan of energy
+		start_V_cyclic =  Integer.parseInt(parse_conf("start_V_cyclic", "0"));
+		stop_V_cyclic =  Integer.parseInt(parse_conf("stop_V_cyclic", "3800"));
+		step_V_cyclic = Double.parseDouble(parse_conf("step_V_cyclic", "0.01"));
+		
+		start_V = Integer.parseInt(parse_conf("start_V", "0"));
+		stop_V = Integer.parseInt(parse_conf("stop_V", "3800"));
+		step_V = Double.parseDouble(parse_conf("step_V", "0.02"));
+		//System.out.println(step_V + " " + calc_int_step(step_V));
 
 	}
 
 	private void write_settings() {
+		
 		cfg.set_conf_value("M0", Double.toString(M0));
 		cfg.set_conf_value("B0", Double.toString(B0));
 		cfg.set_conf_value("K", Double.toString(K));
@@ -175,6 +182,14 @@ public class Run {
 		cfg.set_conf_value("en_el_K", Double.toString(en_el_K));
 		
 		cfg.set_conf_value("save_path", save_directory);
+		
+		cfg.set_conf_value("start_V_cyclic", Integer.toString(start_V_cyclic));
+		cfg.set_conf_value("stop_V_cyclic", Integer.toString(stop_V_cyclic));
+		cfg.set_conf_value("step_V_cyclic", Double.toString(step_V_cyclic));
+		
+		cfg.set_conf_value("start_V", Integer.toString(start_V));
+		cfg.set_conf_value("stop_V", Integer.toString(stop_V));
+		cfg.set_conf_value("step_V", Double.toString(step_V));
 		
 		cfg.store_config();
 	}
@@ -274,13 +289,23 @@ public class Run {
 	}
 
 	/**
-	 * for calc (-2, 17) step to (0, 3800)
+	 * for calc (-2, 17)-step to (0, 3800)-step
 	 * 
 	 * @param step
 	 * @return
 	 */
-	public double calc_step(double step) {
+	public double calc_int_step(double step) {
 		return step * en_el_K;
+	}
+	
+	/**
+	 * for calc (0, 3800)-step to (-2, 17)-step
+	 * 
+	 * @param step
+	 * @return
+	 */
+	public double calc_float_step(double step) {
+		return step / en_el_K;
 	}
 
 	public void print_current_mass_intensity() {
@@ -293,11 +318,8 @@ public class Run {
 		user_interface.mass_panel.label_Y.setText(formatter.format(current_intensity));
 		user_interface.e_energy_frame.energy_panel.label_X.setText(formatter.format(current_en_el_float));
 		user_interface.e_energy_frame.energy_panel.label_Y.setText(formatter.format(current_intensity));
-		// user_interface.mass_panel.volt.set_value(current_en_el_float);
 		if (start_e_scan) {
 			user_interface.mass_panel.volt.set_value(current_en_el_float);
-			// user_interface.mass_panel.volt.set_new_en_el((int)current_en_el);
-			// user_interface.e_energy_frame.energy_panel.volt.set_new_en_el((int)current_en_el);
 		}
 	}
 
@@ -316,14 +338,19 @@ public class Run {
 	}
 
 	private void en_el_scan_long() {
+		if (en_el_delay == true && delay_count > 0) {
+			delay_count--;
+			return;
+		}
 		if (dac_voltage_float + step_V < stop_V) {
 			dac_voltage_float += step_V;
 			dac_voltage = (int)Math.round(dac_voltage_float);
-			en_el_delay = false;
+			en_el_delay = false; 
 		} else {
 			dac_voltage = start_V;
 			dac_voltage_float = start_V;
-			en_el_delay = true;
+			en_el_delay = true; 
+			delay_count = 100;
 		}
 	}
 
@@ -369,8 +396,6 @@ public class Run {
 		arduino.clear_parts();
 	}
 	public void reset_energy() {
-		
-		
 		set_zero_energy();
 	
 		//arduino.clear_parts();

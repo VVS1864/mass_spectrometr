@@ -17,22 +17,25 @@ import mass_spectrometr.GUI.Save_dialog;
 public class Save_graph {
 	String big_string = "";
 	ArrayList<String> s_array = new ArrayList<>();
-	DecimalFormat formatter = new DecimalFormat("#0.00");
-	
+	DecimalFormat formatter_mass = new DecimalFormat("#0.00000");
+	DecimalFormat formatter_intensity = new DecimalFormat("#0.00");
+
 	public Save_graph(graph_type graph_type) {
 		String g_name = "";
-		if (graph_type == mass_spectrometr.Run.graph_type.MASS_GRAPH) g_name = "Mass";
-		else if (graph_type == mass_spectrometr.Run.graph_type.ENERGY_GRAPH) g_name = "Energy";
+		if (graph_type == mass_spectrometr.Run.graph_type.MASS_GRAPH)
+			g_name = "Mass";
+		else if (graph_type == mass_spectrometr.Run.graph_type.ENERGY_GRAPH)
+			g_name = "Energy";
 		Save_dialog dialog = new Save_dialog(Run.prog.user_interface.mainFrame, "Save new " + g_name + " graph",
-				JFileChooser.SAVE_DIALOG, Run.prog.save_directory, "graph_" + g_name +"_1.txt");
+				JFileChooser.SAVE_DIALOG, Run.prog.save_directory, "graph_" + g_name + "_1.txt");
 		if (dialog.userSelection == JFileChooser.APPROVE_OPTION) {
 			// new current file name and dir
 			Path p = Paths.get(dialog.selected_file);
 			String f_name = p.getFileName().toString();
 			Run.prog.save_directory = p.getParent().toString();
-			
+
 			get_big_string(graph_type);
-			
+
 			try {
 				Files.deleteIfExists(p);
 				p = Files.createFile(p);
@@ -61,12 +64,12 @@ public class Save_graph {
 				if (intensity_1 == 0)
 					continue;
 
-				double x1 = mass_1;
+				double x1 = Run.prog.calc_mass(mass_1);
 				double y1 = intensity_1;
 
-				put_to_big_string(x1, y1);
+				put_to_big_string(x1, y1, formatter_mass, formatter_intensity);
 			}
-			
+
 		} else if (graph_type == mass_spectrometr.Run.graph_type.ENERGY_GRAPH) {
 			for (int energy = 0; energy < Run.prog.fixed_data_en_el_intensity.length; energy++) {
 				double intensity_1 = Run.prog.fixed_data_en_el_intensity[energy][0];
@@ -83,26 +86,18 @@ public class Save_graph {
 				double x1 = en_el_1_float;
 				double y1 = intensity_1;
 
-				put_to_big_string(x1, y1);
+				put_to_big_string(x1, y1, formatter_intensity, formatter_intensity);
 
 			}
 		}
-		
+
 		big_string = String.join("", s_array);
 	}
 
-	private void put_to_big_string(double x, double y) {
-		s_array.add(formatter.format(x));
+	private void put_to_big_string(double x, double y, DecimalFormat formatter_1, DecimalFormat formatter_2) {
+		s_array.add(formatter_1.format(x));
 		s_array.add("          ");
-		s_array.add(formatter.format(y));
+		s_array.add(formatter_2.format(y));
 		s_array.add("\n");
-		
-		//big_string += String.join("", formatter.format(x), "          ", formatter.format(y), "\n");
-		/*
-		big_string += formatter.format(x);
-		big_string += "          ";
-		big_string += formatter.format(y);
-		big_string += "\n";
-		*/
 	}
 }

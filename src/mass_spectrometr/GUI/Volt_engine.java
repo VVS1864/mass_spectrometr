@@ -143,7 +143,7 @@ public abstract class Volt_engine extends JPanel{
 		}
 		int i_new_stop = (int)Math.round(new_stop * 100);
 		int i_new_start = (int)Math.round(new_start * 100);
-		double f_new_speed = calc_step(new_speed);
+		double f_new_speed = calc_int_step(new_speed);
 		int i_new_dac_voltage = (int)Math.round(new_dac_voltage*100);
 		// Check values for MAX value
 		
@@ -188,10 +188,13 @@ public abstract class Volt_engine extends JPanel{
 		dac_voltage_textbox.setBackground(Color.RED);
 	}
 	
-	public void start_scan() {
+	public boolean start_scan() {
 		if (check_values()) {
 			start_scan_event();
-			
+			return true;
+		}
+		else {
+			return false;
 		}
 	}
 	
@@ -215,7 +218,9 @@ public abstract class Volt_engine extends JPanel{
 		StartStopController.set_enable_disable(false);
 	}
 	public boolean stop_scan() {
-		if(Run.prog.en_el_delay) return false;
+		//if(Run.prog.en_el_delay) return false;
+		Run.prog.en_el_delay = false;
+		Run.prog.delay_count = 0;
 		Run.prog.start_e_scan = false;
 		Run.prog.draw_graph_en_el = false;
 		if (Run.prog.en_el_cycle_scan == true) {
@@ -296,8 +301,17 @@ public abstract class Volt_engine extends JPanel{
 	 * @param step
 	 * @return
 	 */
-	protected double calc_step(double step) {
-		return Run.prog.calc_step(step);
+	protected double calc_int_step(double step) {
+		return Run.prog.calc_int_step(step);
+	}
+	
+	/**
+	 * for calc (0, 3800)-step to (-2, 17)
+	 * @param step
+	 * @return
+	 */
+	protected double calc_float_step(double step) {
+		return Run.prog.calc_float_step(step);
 	}
 	
 	private Hashtable<Integer, JLabel> make_label_table(int MIN, int MAX) {

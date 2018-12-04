@@ -82,7 +82,7 @@ public class Panel_energy extends Panel_base{
 		
 	    top_panel_2.setAlignmentX(Component.LEFT_ALIGNMENT);
 	    volt = new Volt_engine_long();
-		cnvs = new Graph_energy("En", "int", Run.prog.analyser_en_el, volt.get_MIN());
+		cnvs = new Graph_energy("En", "int", Run.prog.analyser_en_el, -4);
 		cnvs.addMouseListener(this);
 		add(cnvs, BorderLayout.CENTER);
 		

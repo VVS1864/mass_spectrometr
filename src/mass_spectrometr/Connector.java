@@ -17,16 +17,12 @@ public class Connector {
 	 */
 	private int count = 0;
 
-	// private int local_N_approx;
-
 	private ArrayList<Long> time_part;
 	private ArrayList<Double> B_part;
 	private ArrayList<Double> B_approximated;
 
 	public ArrayList<Integer> en_el_part;
 	public ArrayList<Integer> intensity_part;
-	
-	private long old_time = 0;
 
 	public Connector() {
 		Run.prog.ports = SerialPortList.getPortNames();
@@ -89,24 +85,8 @@ public class Connector {
 		}
 
 		public void int_to_byte(byte buf[]) {
-			/*
-			 * //unsigned long time buf[0] = (byte)((Run.prog.current_time >> 24) & 0xFF);
-			 * buf[1] = (byte)((Run.prog.current_time >> 16) & 0xFF); buf[2] =
-			 * (byte)((Run.prog.current_time >> 8) & 0xFF); buf[3] =
-			 * (byte)(Run.prog.current_time & 0xFF);
-			 */
 			buf[0] = (byte) (((int) Run.prog.dac_voltage >> 8) & 0xFF);
 			buf[1] = (byte) ((int) Run.prog.dac_voltage & 0xFF);
-			/*
-			 * buf[2] = (byte)((Run.prog.start_e_scan >> 8) & 0xFF); buf[3] =
-			 * (byte)(Run.prog.start_e_scan & 0xFF); buf[4] = (byte)((Run.prog.start_V >> 8)
-			 * & 0xFF); buf[5] = (byte)(Run.prog.start_V & 0xFF); buf[6] =
-			 * (byte)((Run.prog.stop_V >> 8) & 0xFF); buf[7] = (byte)(Run.prog.stop_V &
-			 * 0xFF); buf[8] = (byte)((step_V >> 8) & 0xFF); buf[9] = (byte)(step_V & 0xFF);
-			 */
-			// buf[10] = (byte)((Run.prog.cycle_scan >> 8) & 0xFF);
-			// buf[11] = (byte)(Run.prog.cycle_scan & 0xFF);
-
 		}
 
 		/**
@@ -115,104 +95,85 @@ public class Connector {
 		 */
 		public void serialEvent(SerialPortEvent event) {
 			if (event.isRXCHAR() && event.getEventValue() > 0) {
-				try {
+
+				try {				
 					// Write to arduino
 					byte write_buf[] = new byte[2];
 					int_to_byte(write_buf);
 					serialPort.writeBytes(write_buf);
 					
-					
-					
 					// Read from arduino
 					byte buf[] = serialPort.readBytes(10);
 					byte_to_int(buf);
-					// Run.prog.current_B++;
 
 					// Collect data
-					if (Run.prog.draw_graph_mass) {
-						if (Run.prog.approx_N > 0) {
-							
-							time_part.add(Run.prog.current_time);
-							B_part.add(Run.prog.current_B);
-							intensity_part.add(Run.prog.current_intensity);
-							
-							count++;
-
-							// Calculate approximation B and repaint
-							if (count == Run.prog.approx_N) {
-								
-
-								Approximator A = new Approximator(B_part, time_part, Run.prog.approx_N);
-								B_approximated = A.get_approx();
-								for (int i = 0; i < B_approximated.size(); i++) {
-									Double B = B_approximated.get(i);
-									double b = B.doubleValue();
-
-									Integer Intensity = intensity_part.get(i);
-									int intensity = Intensity.intValue();
-									
-									int fixed_mass_index = (int) Math.round(b);
-									/*
-									if (old_ind != fixed_mass_index+1) {
-										System.out.println("=============");
-										System.out.println(fixed_mass_index);
-										System.out.println(old_ind);
-										System.out.println(b);
-										
-									}
-									*/
-									
-									if (fixed_mass_index < Run.prog.fixed_data_mass_intensity.length
-											&& fixed_mass_index > 0) {
-										Run.prog.fixed_data_mass_intensity[fixed_mass_index] = intensity;
-									}
-								}
-								clear_parts();
-							}
-
-						}
-						else if(Run.prog.approx_N == 0) {
-							int fixed_mass_index = (int) Math.round(Run.prog.current_B);
-							if (fixed_mass_index < Run.prog.fixed_data_mass_intensity.length
-									&& fixed_mass_index > 0) {
-								
-								Run.prog.fixed_data_mass_intensity[fixed_mass_index] = Run.prog.current_intensity;
-							}
-							
-						}
-
-					}
-					if (Run.prog.draw_graph_en_el && !Run.prog.first_scan) {
-						
-						if (Run.prog.current_en_el <= Run.prog.fixed_data_en_el_intensity.length) {
-							
-							Run.prog.fixed_data_en_el_intensity[Run.prog.current_en_el][0] += Run.prog.current_intensity;
-							Run.prog.fixed_data_en_el_intensity[Run.prog.current_en_el][1]++;
-							//System.out.println(Run.prog.current_B + " " + Run.prog.fixed_data_en_el_intensity[Run.prog.current_en_el][0] + " " +
-							//		Run.prog.fixed_data_en_el_intensity[Run.prog.current_en_el][1]);
-						}
-					}
-					
+					collect_mass_data();
+					collect_en_el_data();
 
 					if (Run.prog.start_e_scan)
 						Run.prog.en_el_scan_loop();
 
 					Run.prog.user_interface.repaint_cnvs();
 					Run.prog.print_current_mass_intensity();
-					
-					if (Run.prog.en_el_delay) {
-						try {
-							Thread.sleep(1000);
-						} catch (InterruptedException e) {
-							e.printStackTrace();
-						}
-					}
-					
+
 				} catch (SerialPortException ex) {
 					System.err.println(ex);
 				}
 			}
 		}
 
+		private void collect_mass_data() {
+			if (Run.prog.draw_graph_mass) {
+				if (Run.prog.approx_N > 0) {
+
+					time_part.add(Run.prog.current_time);
+					B_part.add(Run.prog.current_B);
+					intensity_part.add(Run.prog.current_intensity);
+
+					count++;
+
+					// Calculate approximation B and repaint
+					if (count == Run.prog.approx_N) {
+
+						Approximator A = new Approximator(B_part, time_part, Run.prog.approx_N);
+						B_approximated = A.get_approx();
+						for (int i = 0; i < B_approximated.size(); i++) {
+							Double B = B_approximated.get(i);
+							double b = B.doubleValue();
+
+							Integer Intensity = intensity_part.get(i);
+							int intensity = Intensity.intValue();
+
+							int fixed_mass_index = (int) Math.round(b);
+
+							if (fixed_mass_index < Run.prog.fixed_data_mass_intensity.length && fixed_mass_index > 0) {
+								Run.prog.fixed_data_mass_intensity[fixed_mass_index] = intensity;
+							}
+						}
+						clear_parts();
+					}
+
+				} else if (Run.prog.approx_N == 0) {
+					int fixed_mass_index = (int) Math.round(Run.prog.current_B);
+					if (fixed_mass_index < Run.prog.fixed_data_mass_intensity.length && fixed_mass_index > 0) {
+
+						Run.prog.fixed_data_mass_intensity[fixed_mass_index] = Run.prog.current_intensity;
+					}
+
+				}
+			}
+		}
+
+		private void collect_en_el_data() {
+			if (Run.prog.draw_graph_en_el && !Run.prog.first_scan) {
+
+				if (Run.prog.current_en_el <= Run.prog.fixed_data_en_el_intensity.length) {
+
+					Run.prog.fixed_data_en_el_intensity[Run.prog.current_en_el][0] += Run.prog.current_intensity;
+					Run.prog.fixed_data_en_el_intensity[Run.prog.current_en_el][1]++;
+				}
+			}
+		}
+		
 	}
 }

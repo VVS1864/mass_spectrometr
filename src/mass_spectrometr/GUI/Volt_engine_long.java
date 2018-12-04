@@ -16,7 +16,7 @@ public class Volt_engine_long extends Volt_engine{
 
 	@Override
 	double get_step_V() {
-		return Run.prog.step_V;
+		return calc_float_step(Run.prog.step_V);
 	}
 
 	@Override
@@ -37,7 +37,7 @@ public class Volt_engine_long extends Volt_engine{
 
 	@Override
 	void set_step_V(double v) {
-		Run.prog.step_V = calc_step(v);
+		Run.prog.step_V = calc_int_step(v);
 		
 	}
 	

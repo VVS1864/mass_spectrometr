@@ -87,6 +87,7 @@ public class Panel_mass extends Panel_base{
 				Run.prog.en_el_K = new_en_el_K;
 				Run.prog.en_el_b = new_en_el_b;
 				
+				Run.prog.arduino.clear_parts();
 				StartStopController.update_volt_engines();
 				cnvs.repaint();
 			}

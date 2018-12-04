@@ -58,8 +58,10 @@ public class E_energy extends JDialog {
 			@Override
 			public void actionPerformed(ActionEvent e) {
 				if (!Run.prog.start_e_scan) {
+					
+					if (!energy_panel.volt.start_scan()) return;
+					
 					button_start.setText("Stop scan");
-					energy_panel.volt.start_scan();
 					Run.prog.draw_graph_en_el = true;
 				} else if (Run.prog.start_e_scan && !Run.prog.en_el_cycle_scan) {
 					boolean not_delay = energy_panel.volt.stop_scan();
