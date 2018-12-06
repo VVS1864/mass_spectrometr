@@ -2,7 +2,9 @@ package mass_spectrometr;
 
 import jssc.SerialPortList;
 
+import java.sql.Time;
 import java.util.ArrayList;
+import java.util.Arrays;
 
 import jssc.SerialPort;
 import jssc.SerialPortEvent;
@@ -11,7 +13,9 @@ import jssc.SerialPortException;
 
 public class Connector {
 
+	private Arduino_state_controller state_controller = new Arduino_state_controller();
 	private SerialPort serialPort;
+	private String port;
 	/**
 	 * Size of array of B-raw
 	 */
@@ -24,13 +28,19 @@ public class Connector {
 	public ArrayList<Integer> en_el_part;
 	public ArrayList<Integer> intensity_part;
 
+	/**
+	 * Important variable of data transfer "n" - no transfer, "t" - normal transfer,
+	 * "w" - wrong data, need reconnect
+	 */
+	private String data_transfer_state = "n";
+	private long last_data_time;
+
 	public Connector() {
 		Run.prog.ports = SerialPortList.getPortNames();
-		clear_parts();
 	}
 
-	public boolean Connect() {
-		String port = (String) Run.prog.user_interface.portbox.getSelectedItem();
+	private boolean Connect(String port) {
+		clear_parts();
 		serialPort = new SerialPort(port);
 		try {
 			serialPort.openPort();
@@ -47,11 +57,40 @@ public class Connector {
 			}
 
 			serialPort.writeBytes("1".getBytes());
+			data_transfer_state = "t";
+			last_data_time = System.currentTimeMillis();
+			state_controller.start();
 
 		} catch (SerialPortException ex) {
 			System.err.println(ex);
 			return false;
 		}
+		return true;
+	}
+	
+	public boolean Connect() {
+		port = (String) Run.prog.user_interface.portbox.getSelectedItem();
+		System.out.println(Arrays.toString(SerialPortList.getPortNames()));
+		
+		return Connect(port);
+	}
+		
+
+	public void reconnect() {
+		close();
+		String[] ports = SerialPortList.getPortNames();
+		if (ports.length > 0) {
+			for (String port : ports) {
+				Connect(port);
+			}
+		}
+	}
+
+	public boolean is_running() {
+		long time = System.currentTimeMillis();
+
+		if (time - last_data_time > 2000)
+			return false;
 		return true;
 	}
 
@@ -77,16 +116,21 @@ public class Connector {
 
 	private class EventListener implements SerialPortEventListener {
 
-		public void byte_to_int(byte b[]) {
+		private void byte_to_int(byte b[]) {
 			Run.prog.current_time = ((b[0] & 0xff) << 24 | (b[1] & 0xff) << 16 | (b[2] & 0xff) << 8 | (b[3] & 0xff));
 			Run.prog.current_B = ((b[4] & 0xff) << 8) | (b[5] & 0xff);
 			Run.prog.current_en_el = ((b[6] & 0xff) << 8) | (b[7] & 0xff);
 			Run.prog.current_intensity = ((b[8] & 0xff) << 8) | (b[9] & 0xff);
+			byte[] tr = new byte[1];
+			tr[0] = b[10];
+			data_transfer_state = new String(tr);
+			// System.out.println(Arrays.toString(b));
 		}
 
-		public void int_to_byte(byte buf[]) {
+		private void int_to_byte(byte buf[]) {
 			buf[0] = (byte) (((int) Run.prog.dac_voltage >> 8) & 0xFF);
 			buf[1] = (byte) ((int) Run.prog.dac_voltage & 0xFF);
+			buf[2] = data_transfer_state.getBytes()[0];
 		}
 
 		/**
@@ -95,23 +139,28 @@ public class Connector {
 		 */
 		public void serialEvent(SerialPortEvent event) {
 			if (event.isRXCHAR() && event.getEventValue() > 0) {
-
-				try {				
+				last_data_time = System.currentTimeMillis();
+				try {
 					// Write to arduino
-					byte write_buf[] = new byte[2];
+					byte write_buf[] = new byte[3];
 					int_to_byte(write_buf);
 					serialPort.writeBytes(write_buf);
-					
+
 					// Read from arduino
-					byte buf[] = serialPort.readBytes(10);
+					byte buf[] = serialPort.readBytes(11);
 					byte_to_int(buf);
 
-					// Collect data
-					collect_mass_data();
-					collect_en_el_data();
+					if (data_transfer_state.equals("t")) {
+						// Collect data
+						collect_mass_data();
+						collect_en_el_data();
 
-					if (Run.prog.start_e_scan)
-						Run.prog.en_el_scan_loop();
+						if (Run.prog.start_e_scan)
+							Run.prog.en_el_scan_loop();
+					} else {
+						System.err.println("reconnect");
+						reconnect();
+					}
 
 					Run.prog.user_interface.repaint_cnvs();
 					Run.prog.print_current_mass_intensity();
@@ -120,6 +169,7 @@ public class Connector {
 					System.err.println(ex);
 				}
 			}
+
 		}
 
 		private void collect_mass_data() {
@@ -174,6 +224,6 @@ public class Connector {
 				}
 			}
 		}
-		
+
 	}
 }

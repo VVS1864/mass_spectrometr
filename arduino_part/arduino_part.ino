@@ -13,18 +13,20 @@ int mass = 12240;
 int init_mass = 12240;
 int en_el;
 int intensity;
+char data_transfer_state = 'n';
+char r_transfer_state;
 
 int dac_voltage;
 
 //bytes for transfer [current_time + mass + en_el + intensity]
-byte buf[4+2+2+2];
+byte buf[4+2+2+2+1];
 boolean back_flag = false;
 boolean send_flag = false;
 char start_cmd = '1';
 
 int led = 13;
 
-char read_buf[2];
+char read_buf[3];
 
 void setup() {
   pinMode(led, OUTPUT);
@@ -32,31 +34,33 @@ void setup() {
   digitalWrite(led, LOW);
   /*
   MCP4725.begin(0x62);
-  
   ads.begin();
   ads.setGain(GAIN_TWO);
   pinMode(A0, INPUT);
   */
-//lcd.begin(16, 2); 
-//lcd.setBacklight(255);
-//lcd.home(); lcd.clear();
-//lcd.print("Init");
+  //lcd.begin(16, 2); 
+  //lcd.setBacklight(255);
+  //lcd.home(); lcd.clear();
+  //lcd.print("Init");
 }
 
 // the loop function runs over and over again forever
 void loop() {
-  set_mass();
-  set_en_el();
-  set_data();
-  send_data();
-//  output_lcd();
+  if(Serial.available() > 0){
+    set_mass();
+    set_en_el();
+    set_data();
+    send_data();
+    //  output_lcd();
+  }
 }
+
 void set_mass(){
   set_demo_mass();
-  /*
-  mass = 32767 + ads.readADC_Differential_0_1();
-  */
+  //mass = 32767 + ads.readADC_Differential_0_1();
+  
 }
+
 void set_demo_mass(){
   if (back_flag == false){
     if(mass>0){
@@ -84,19 +88,16 @@ void set_demo_mass(){
     }
   }
 }
+
 void set_en_el(){
   en_el = dac_voltage;
-  /*
-  MCP4725.setVoltage(en_el, false);
-  */
+  //MCP4725.setVoltage(en_el, false);
 }
-  
+
 void set_data(){
-  current_time = millis();
   set_random();
-  /*
-  intensity=analogRead(A0);
-  */
+  //intensity=analogRead(A0);
+  current_time = millis();
 }
 
 void set_random(){
@@ -135,37 +136,39 @@ void set_random(){
 }
 
 void send_data(){
+
   if(send_flag == false){
-    if(Serial.available()){
-      char cmd = Serial.read();
-      if(cmd == start_cmd){
-        send_flag = true;
-      }
+    char cmd = Serial.read();
+    if(cmd == start_cmd){
+      send_flag = true;
+      data_transfer_state = 't';
     }
   }
-  if(send_flag == true){
 
-    Serial.readBytes(read_buf, 2);
+  if(send_flag == true){
+    Serial.readBytes(read_buf, 3);
     bytes_to_ints();
 
+
     ints_to_bytes();
-    Serial.write(buf, 10);
+    Serial.write(buf, 11);
+
 
   }
 }
 
 /**
-void output_lcd() {
-
-lcd.home(); //lcd.clear();
-lcd.print("mass: "); lcd.print(mass); lcd.print(";");
-lcd.setCursor(0, 1); 
-lcd.print("EE:"); lcd.print(en_el);lcd.print(";");
-lcd.setCursor(8, 1);
-lcd.print("INT: "); lcd.print(intensity);
-
-}
-**/
+ * void output_lcd() {
+ * 
+ * lcd.home(); //lcd.clear();
+ * lcd.print("mass: "); lcd.print(mass); lcd.print(";");
+ * lcd.setCursor(0, 1); 
+ * lcd.print("EE:"); lcd.print(en_el);lcd.print(";");
+ * lcd.setCursor(8, 1);
+ * lcd.print("INT: "); lcd.print(intensity);
+ * 
+ * }
+ **/
 
 void ints_to_bytes(){
   //unsigned long time
@@ -185,11 +188,16 @@ void ints_to_bytes(){
   //int intensity
   buf[8] = (intensity >> 8) & 0xFF;
   buf[9] = intensity & 0xFF;
+
+  //char transfer status
+  buf[10] = data_transfer_state;
 }
 
 void bytes_to_ints(){
   dac_voltage = ((read_buf[0] & 0xff) << 8) | (read_buf[1] & 0xff);
+  r_transfer_state = char(read_buf[2]);
 }
+
 
 
 
