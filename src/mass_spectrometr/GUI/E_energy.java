@@ -62,14 +62,15 @@ public class E_energy extends JDialog {
 					if (!energy_panel.volt.start_scan()) return;
 					
 					button_start.setText("Stop scan");
+					Run.prog.set_scan_delay();
 					Run.prog.draw_graph_en_el = true;
 				} else if (Run.prog.start_e_scan && !Run.prog.en_el_cycle_scan) {
-					boolean not_delay = energy_panel.volt.stop_scan();
-					if (not_delay) {
-						button_start.setText("Start scan");
-						energy_panel.volt.stop_scan();
-						Run.prog.draw_graph_en_el = false;
-					}
+					//boolean not_delay = energy_panel.volt.stop_scan();
+					//if (not_delay) {
+					button_start.setText("Start scan");
+					energy_panel.volt.stop_scan();
+					Run.prog.draw_graph_en_el = false;
+					//}
 				}
 			}
 		};

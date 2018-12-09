@@ -9,8 +9,8 @@ Adafruit_ADS1115 ads(0x48);
 //LiquidCrystal_PCF8574 lcd(0x3F);
 
 unsigned long current_time = 0;
-int mass = 12240;
-int init_mass = 12240;
+int mass = 5000;
+int init_mass = 5000;
 int en_el;
 int intensity;
 char data_transfer_state = 'n';
@@ -23,6 +23,9 @@ byte buf[4+2+2+2+1];
 boolean back_flag = false;
 boolean send_flag = false;
 char start_cmd = '1';
+
+boolean fluctuation = false;
+int fluctuation_rate = 0;
 
 int led = 13;
 
@@ -64,7 +67,7 @@ void set_mass(){
 void set_demo_mass(){
   if (back_flag == false){
     if(mass>0){
-      mass-=3 + random(-3, 3);
+      mass-=1 + random(-3, 3);
     }
     else{
       mass = 0;
@@ -76,7 +79,7 @@ void set_demo_mass(){
   }
   else{
     if(mass<init_mass){
-      mass+=3 + random(-3, 3);
+      mass+=1 + random(-3, 3);
     }
 
     else{
@@ -86,6 +89,23 @@ void set_demo_mass(){
     if (mass > init_mass){
       mass = init_mass;
     }
+  }
+  if (mass > 4000 && mass < 4020 && fluctuation == false){
+    fluctuation = true;
+    fluctuation_rate = 10;
+  }
+  if (fluctuation){
+    if (fluctuation_rate == 0){
+      fluctuation = false;
+      mass = 3900;
+      return;
+    }
+    mass = random(1000, 1200);
+    if (mass > 2000 && (fluctuation_rate == 5 || fluctuation_rate == 7 || fluctuation_rate == 3)){
+      mass = random(1000, 4000);
+    }
+    fluctuation_rate--;
+    
   }
 }
 

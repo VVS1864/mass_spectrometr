@@ -349,9 +349,13 @@ public class Run {
 		} else {
 			dac_voltage = start_V;
 			dac_voltage_float = start_V;
-			en_el_delay = true; 
-			delay_count = 100;
+			set_scan_delay();
 		}
+	}
+	
+	public void set_scan_delay() {
+		en_el_delay = true; 
+		delay_count = 100;
 	}
 
 	private void en_el_scan_fast() {
