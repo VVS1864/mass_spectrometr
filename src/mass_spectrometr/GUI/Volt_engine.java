@@ -51,7 +51,7 @@ public abstract class Volt_engine extends JPanel{
 			public void stateChanged(ChangeEvent event){
 				JSlider slider = (JSlider)event.getSource();
 				double f_value = get_slider_value();
-				dac_voltage_textbox.setText(Run.prog.get_fotmatted_value(f_value, "#0.000"));
+				dac_voltage_textbox.setText(Run.prog.get_fotmatted_value(f_value, "#0.00"));
 				StartStopController.set_sliders(slider.getValue());
 				if(Run.prog.start_e_scan == false) set_dac_voltage();
 				
@@ -80,7 +80,7 @@ public abstract class Volt_engine extends JPanel{
 		speed_textbox.setMaximumSize(new Dimension(50, 30));
 		
 		JLabel dac_voltage = new JLabel("Voltage: ");
-		dac_voltage_textbox = new JTextField(Run.prog.get_fotmatted_value(calc_float_from_int(Run.prog.dac_voltage), "#0.000"));
+		dac_voltage_textbox = new JTextField(Run.prog.get_fotmatted_value(calc_float_from_int(Run.prog.dac_voltage), "#0.00"));
 		dac_voltage_textbox.setMaximumSize(new Dimension(50, 30));
 		
 		

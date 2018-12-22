@@ -43,6 +43,7 @@ public class Config {
 	
 	public String get_conf_value(String value_name) {
 		if(config.containsKey(value_name)) {
+			//System.out.println(value_name + " " + config.getProperty(value_name));
 			return config.getProperty(value_name);
 		}
 		else {

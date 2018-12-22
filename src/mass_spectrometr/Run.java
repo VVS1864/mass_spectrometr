@@ -76,6 +76,15 @@ public class Run {
 	public int start_V;
 	public int stop_V;
 	public double step_V;
+	
+	public double d_start_V_cyclic;
+	public double d_stop_V_cyclic;
+	public double d_step_V_cyclic;
+
+	public double d_start_V;
+	public double d_stop_V;
+	public double d_step_V;
+	
 	public boolean en_el_cycle_scan = false; 
 	public boolean start_e_scan = false; 
 	public boolean first_scan = false;
@@ -162,13 +171,21 @@ public class Run {
 		
 		save_directory = parse_conf("save_path", "");
 		//load standard settings for fast scan of energy
-		start_V_cyclic =  Integer.parseInt(parse_conf("start_V_cyclic", "0"));
-		stop_V_cyclic =  Integer.parseInt(parse_conf("stop_V_cyclic", "3800"));
-		step_V_cyclic = Double.parseDouble(parse_conf("step_V_cyclic", "0.01"));
+		d_start_V_cyclic = Double.parseDouble(parse_conf("start_V_cyclic", "0.1"));
+		d_stop_V_cyclic = Double.parseDouble(parse_conf("stop_V_cyclic", "17.0"));
+		d_step_V_cyclic = Double.parseDouble(parse_conf("step_V_cyclic", "0.01"));
 		
-		start_V = Integer.parseInt(parse_conf("start_V", "0"));
-		stop_V = Integer.parseInt(parse_conf("stop_V", "3800"));
-		step_V = Double.parseDouble(parse_conf("step_V", "0.02"));
+		d_start_V = Double.parseDouble(parse_conf("start_V", "0.0"));
+		d_stop_V = Double.parseDouble(parse_conf("stop_V", "17.0"));
+		d_step_V = Double.parseDouble(parse_conf("step_V", "0.02"));
+		
+		start_V_cyclic = calc_int_en_el(d_start_V_cyclic);
+		stop_V_cyclic = calc_int_en_el(d_stop_V_cyclic);
+		step_V_cyclic = calc_int_step(d_step_V_cyclic);
+		
+		start_V = calc_int_en_el(d_start_V);
+		stop_V = calc_int_en_el(d_stop_V);
+		step_V = calc_int_step(d_step_V);
 		//System.out.println(step_V + " " + calc_int_step(step_V));
 
 	}
@@ -184,13 +201,13 @@ public class Run {
 		
 		cfg.set_conf_value("save_path", save_directory);
 		
-		cfg.set_conf_value("start_V_cyclic", Integer.toString(start_V_cyclic));
-		cfg.set_conf_value("stop_V_cyclic", Integer.toString(stop_V_cyclic));
-		cfg.set_conf_value("step_V_cyclic", Double.toString(step_V_cyclic));
+		cfg.set_conf_value("start_V_cyclic", Double.toString(d_start_V_cyclic));
+		cfg.set_conf_value("stop_V_cyclic", Double.toString(d_stop_V_cyclic));
+		cfg.set_conf_value("step_V_cyclic", Double.toString(d_step_V_cyclic));
 		
-		cfg.set_conf_value("start_V", Integer.toString(start_V));
-		cfg.set_conf_value("stop_V", Integer.toString(stop_V));
-		cfg.set_conf_value("step_V", Double.toString(step_V));
+		cfg.set_conf_value("start_V", Double.toString(d_start_V));
+		cfg.set_conf_value("stop_V", Double.toString(d_stop_V));
+		cfg.set_conf_value("step_V", Double.toString(d_step_V));
 		
 		cfg.store_config();
 	}
