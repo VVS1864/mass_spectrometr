@@ -5,6 +5,7 @@ import java.awt.KeyEventDispatcher;
 import java.awt.KeyboardFocusManager;
 import java.awt.event.KeyEvent;
 import java.text.DecimalFormat;
+import java.text.DecimalFormatSymbols;
 import java.util.ArrayList;
 
 import javax.swing.JSlider;
@@ -309,15 +310,15 @@ public class Run {
 	}
 
 	public void print_current_mass_intensity() {
-		DecimalFormat formatter = new DecimalFormat("#0.00");
+		//DecimalFormat formatter = new DecimalFormat("#0.00");
 		double mass = calc_mass(current_B);
 		current_en_el_float = calc_float_en_el(current_en_el);
 
-		user_interface.mass_panel.label_X.setText(formatter.format(mass));
-		user_interface.e_energy_frame.energy_panel.mass_indication.setText(formatter.format(mass));
-		user_interface.mass_panel.label_Y.setText(formatter.format(current_intensity));
-		user_interface.e_energy_frame.energy_panel.label_X.setText(formatter.format(current_en_el_float));
-		user_interface.e_energy_frame.energy_panel.label_Y.setText(formatter.format(current_intensity));
+		user_interface.mass_panel.label_X.setText(get_fotmatted_value(mass));
+		user_interface.e_energy_frame.energy_panel.mass_indication.setText(get_fotmatted_value(mass));
+		user_interface.mass_panel.label_Y.setText(get_fotmatted_value(current_intensity));
+		user_interface.e_energy_frame.energy_panel.label_X.setText(get_fotmatted_value(current_en_el_float));
+		user_interface.e_energy_frame.energy_panel.label_Y.setText(get_fotmatted_value(current_intensity));
 		if (start_e_scan) {
 			user_interface.mass_panel.volt.set_value(current_en_el_float);
 		}
@@ -403,6 +404,24 @@ public class Run {
 		set_zero_energy();
 	
 		//arduino.clear_parts();
+	}
+	public String get_fotmatted_value(double value) {
+		return get_fotmatted_value(value, "#0.00");
+	}
+	
+	public String get_fotmatted_value(double value, String format) {
+		DecimalFormatSymbols otherSymbols = new DecimalFormatSymbols();
+		otherSymbols.setDecimalSeparator('.');
+		DecimalFormat formatter;
+		try {
+			formatter = new DecimalFormat(format, otherSymbols);
+		}
+		catch(IllegalArgumentException e) {
+			formatter = new DecimalFormat("#0.00", otherSymbols);
+			System.err.println("Illegal pattern '" + format + "'");
+		}
+		
+		return formatter.format(value);
 	}
 	
 	private void set_demo_mass(){
